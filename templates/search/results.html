@@ -1,0 +1,39 @@
+{% extends "search/home.html" %}
+
+{% block search_results %}
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        {% for api in api_results %}
+        <li {% if forloop.first %}class="active"{% endif %}><a href="#{{ api.id }}" data-toggle="tab">{{ api.name }}</a></li>
+        {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% for api in api_results %}
+        <div class="tab-pane{% if forloop.first %} active{% endif %}" id="{{ api.id }}">
+{% for result in api.results %}
+<div class="row stream-item">
+    {% if result.uri %}
+    <p><a href="{{ result.uri }}">{{ result.title }}</a></p>
+    {% else %}
+    <p>{{ result.title }}</p>
+    {% endif %}
+    <p><small>
+        {% for author in result.authors %}
+        {% if author.surname %}
+        {{ author.forename }} {{ author.surname }}
+        {% else %}
+        {{ author }}
+        {% endif %}
+        {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </small></p>
+    {% if result.doi %}
+    <small>doi:<a href="http://dx.doi.org/{{ result.doi }}">{{result.doi}}</a></small>
+    {% endif %}
+</div>
+{% endfor %}
+</div>
+{% endfor %}
+</div>
+</div>
+{% endblock %}
