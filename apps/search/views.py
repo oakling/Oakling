@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from libs import citeulike, mendeley, arxiv
+from libs.search import citeulike, mendeley, arxiv
 import Queue
 import threading
 
