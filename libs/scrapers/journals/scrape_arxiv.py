@@ -1,6 +1,7 @@
 import urllib2
 import re
 import urlparse
+import sys
 
 def resolve_doi(doi):
   try:
@@ -41,9 +42,8 @@ def build_paper(abstxt):
 
   paper['title'] = abs_values['title']
   paper['author_names'] = split_authors(abs_values['authors'])
-  paper['abstract'] = abs_values['abstract']
-  paper['categories'] = {'arxiv':
-                         split_categories(abs_values['categories'])}
+  paper['abstract'] = abs_values['abstract'].replace('\n', ' ')
+  paper['arxiv_categories'] = split_categories(abs_values['categories'])
   paper['date_submitted'] = parse_date(abs_values['date'])
 
   if 'license' in abs_values:
@@ -57,7 +57,7 @@ def build_paper(abstxt):
 
   return paper
 
-def grab_by_url(url):
+def scrape(url):
   abstxt = urllib2.urlopen(url + "?fmt=txt").read()
 
   paper = build_paper(abstxt)
@@ -65,3 +65,6 @@ def grab_by_url(url):
   paper['scraper_source'] = url
 
   return paper
+
+if __name__ == '__main__':
+  print scrape(sys.argv[1]) 
