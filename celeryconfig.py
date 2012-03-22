@@ -1,8 +1,10 @@
 from datetime import timedelta
 
+BROKER_URL = "amqplib://akorn:akorn@ip-10-235-51-20:5672/myvhost"
+
 BROKER_HOST = "ip-10-235-51-20"
 
-BROKER_PORT = 5672
+BROKER_PORT = 49724
 BROKER_USER = "akorn"
 BROKER_PASSWORD = "flout29&UFOs"
 

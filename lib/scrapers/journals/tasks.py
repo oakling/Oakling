@@ -16,7 +16,7 @@ def scrape_journal(url, identifier=None):
         if not records:
             scrape_and_add(url)
         else:
-            if 'journal' not in [record.doc['scraper'] for record in records]:
+            if all(['journal' not in record.doc for record in records]):
                 # there is probably no need for asychronous calls here
                 new_id = scrape_and_add(url)
                 merge(new_id, [record.id for record in records])

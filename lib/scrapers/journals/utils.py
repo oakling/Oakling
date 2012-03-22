@@ -6,7 +6,7 @@ def scrape_and_add(url):
 
     #Find the appropriate scraper
     #Call it
-    article = scrape_pr(url)
+    article = scrape_pr.scrape(url)
     #Add entry to database
     return save(article)
 
