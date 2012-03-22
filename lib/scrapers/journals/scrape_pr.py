@@ -62,8 +62,8 @@ def scrape(abstract_url):
   # Find the <div> with the id 'aps-article-info' and take the respective columns cell contents as the type of id and id.
   article['ids'] = dict(zip([e.text.strip().lower().replace(':','') for e in tree.xpath("//div[@id='aps-article-info']//div[@class='table-cell bold']")],\
                             [e.text.strip() for e in tree.xpath("//div[@id='aps-article-info']//div[@class='table-cell']")]))
-  article['journal'] = recognise_journal(abstract_url)
-  article['source_url'] = abstract_url 
+  article['journal'] = recognise_journal(page.geturl())
+  article['source_url'] = page.geturl()
 
   # PACS will be recognised as an id, even though its actually a list of categories.
   # Split them out into their own custom field and delete from ids.
