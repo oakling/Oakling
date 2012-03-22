@@ -1,2 +1,5 @@
 # Complied python files
 *.pyc
+
+# vim swap files
+*.swp

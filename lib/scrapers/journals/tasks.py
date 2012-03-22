@@ -14,7 +14,7 @@ def scrape_journal(url, identifier=None):
 
     # if identifier is already in couchdb:
         if not records:
-            scrape_journal(url)
+            scrape_and_add(url)
         else:
             if 'journal' not in [record.doc['scraper'] for record in records]:
                 # there is probably no need for asychronous calls here

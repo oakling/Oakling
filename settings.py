@@ -152,3 +152,4 @@ LOGGING = {
 
 #Mendeley consumer key
 MENDELEY_CONSUMER_KEY='c03c2cb64ec7dc1522b71127085747ac04f2d516d'
+

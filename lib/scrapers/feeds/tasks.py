@@ -1,20 +1,22 @@
-import couchdb
 from celery.task import task
 from lib.scrapers.journals.tasks import scrape_journal
 from lib.scrapers.feeds import aps_feed_scraper
 import feedparser
 
-@task
-def fetch_feeds():
-    # get list of feed urls from couchdb called feeds
-    couch = couchdb.Couch()
-    db = couch['feeds']
+APS_FEEDS = [
+    "http://feeds.aps.org/rss/recent/prl.xml",
+    "http://feeds.aps.org/rss/recent/pra.xml",
+    "http://feeds.aps.org/rss/recent/prb.xml",
+    "http://feeds.aps.org/rss/recent/prc.xml",
+    "http://feeds.aps.org/rss/recent/prd.xml",
+    "http://feeds.aps.org/rss/recent/pre.xml",
+    "http://feeds.aps.org/rss/recent/prx.xml",
+]
 
-    feeds = db.query("""function(doc){
-                            if (doc.url){ 
-                                emit(doc.url, null);
-                            }}:""")
-    for feed_url in [feed['key'] for feed in feeds.rows]:
+
+@task
+def fetch_APS_feeds():
+    for feed_url in APS_FEEDS:
         add_feed_items.delay(feed_url)
 
 @task
