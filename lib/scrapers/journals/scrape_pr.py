@@ -41,7 +41,7 @@ def scrape(abstract_url):
   tree = lxml.html.parse(page, base_url=abstract_url)
 
   # Make XPATH queries for the first H1 and second H2 for the article title and how to cite it
-  title = tree.xpath('//h1')[0].text.strip()
+  title = tree.xpath('//h1')[0].text_content().strip()
   cite_as = tree.xpath('//h2')[1].text.strip()
 
   # Scrub the citation.
@@ -63,16 +63,13 @@ def scrape(abstract_url):
   article['ids'] = dict(zip([e.text.strip().lower().replace(':','') for e in tree.xpath("//div[@id='aps-article-info']//div[@class='table-cell bold']")],\
                             [e.text.strip() for e in tree.xpath("//div[@id='aps-article-info']//div[@class='table-cell']")]))
   article['journal'] = recognise_journal(abstract_url)
-  article['source'] = abstract_url 
+  article['source_url'] = abstract_url 
 
   # PACS will be recognised as an id, even though its actually a list of categories.
   # Split them out into their own custom field and delete from ids.
   if 'pacs' in article['ids']:
-    article['categories'] = {'pacs':
-      [c.strip() for c in article['ids']['pacs'].split(',')]}
+    article['categories_pacs'] = [c.strip() for c in article['ids']['pacs'].split(',')]
     del article['ids']['pacs']
-
-  article['scraper'] = 'aps'
 
   return article
 

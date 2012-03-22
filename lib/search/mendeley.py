@@ -21,9 +21,14 @@ def search(search_term, page_num=1, per_page=10):
     encoded_args = urllib.urlencode(query_args)
     url = url + urllib2.quote(search_term) + '?'
     headers = { 'User-Agent' : 'Mozilla/5.0' }
+
     req = urllib2.Request(url + encoded_args, headers=headers)
 
-    json_results = urllib2.urlopen(req)
+    try:
+      json_results = urllib2.urlopen(req)
+    except urllib2.HTTPError:
+      return []
+
     results = json.load(json_results)
 
     results = results['documents']
