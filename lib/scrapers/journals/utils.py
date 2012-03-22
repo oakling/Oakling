@@ -1,5 +1,5 @@
-from libs.scrapers.journals import scrape_pr
-from libs.utils import save
+from lib.scrapers.journals import scrape_pr
+from lib.utils import save
 
 def scrape_and_add(url):
     """Scrape the journal page and add to database."""
