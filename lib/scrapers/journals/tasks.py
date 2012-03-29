@@ -1,24 +1,26 @@
 import couchdb
 from celery.task import task
-from utils import scrape_and_add, merge
+from utils import resolve_and_scrape, merge
 
 @task
-def scrape_journal(url, identifier=None):
+def scrape_journal(url):
     """Find the paper in the database and then add or merge as necessary."""
 
-    if identifier is not None:
-        # find identifier in couchdb and get the record_id
-        couch = couchdb.Server()
-        db = couch['store']
-        records = db.view('index/ids', key=identifier, include_docs='true').rows
+    # check the store for this source url
+    couch = couchdb.Server()
+    db = couch['store']
+    records = db.view('index/sources', key=url, include_docs='true').rows
 
-    # if identifier is already in couchdb:
-        if not records:
-            scrape_and_add(url)
-        else:
-            if all(['journal' not in record.doc for record in records]):
-                # there is probably no need for asychronous calls here
-                new_id = scrape_and_add(url)
-                merge(new_id, [record.id for record in records])
+    if not records:
+        # source isn't in db
+        article = resolve_and_scrape(url)
+        doc_id, _ = db.save(article)
     else:
-        scrape_and_add(url)
+        # we've already scraped this url
+        article = records[0].doc
+        doc_id = article.id
+
+    # TODO: At this stage, we check that our source doesn't have the same IDs as any other records.
+      
+    return doc_id
+

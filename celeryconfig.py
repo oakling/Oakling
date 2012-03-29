@@ -1,14 +1,12 @@
 from datetime import timedelta
 
-BROKER_URL = "amqplib://akorn:akorn@ip-10-235-51-20:5672/myvhost"
+BROKER_URL = "amqplib://akorn:akorn@127.0.0.1/myvhost" #amqplib://akorn:akorn@ip-10-235-51-20:5672/myvhost"
 
-BROKER_HOST = "ip-10-235-51-20"
-
-BROKER_PORT = 49724
-BROKER_USER = "akorn"
-BROKER_PASSWORD = "flout29&UFOs"
-
-BROKER_VHOST = "myvhost"
+#BROKER_HOST = "PopeBook-Pro" #ip-10-235-51-20"
+#BROKER_PORT = 49724
+#BROKER_USER = "akorn"
+#BROKER_PASSWORD = "flout29&UFOs"
+#BROKER_VHOST = "myvhost"
 
 CELERY_RESULT_BACKEND = "amqp"
 
