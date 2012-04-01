@@ -16,7 +16,6 @@ journal_domains = {'pra': 'Phys. Rev. A',
                    'pre': 'Phys. Rev. E', 
                    'prx': 'Phys. Rev. X', 
                    'prl': 'Phys. Rev. Lett.', 
-                   'prl': 'Phys. Rev. Lett.', 
                    'prst-ab': 'Phys. Rev. ST Accel. Beams', 
                    'prst-per': 'Phys. Rev. ST Physics Ed. Research', 
 		               'rmp': 'Rev. Mod. Phys.',
@@ -31,7 +30,15 @@ def recognise_journal(abstract_url):
   first = url_parsed.netloc.split('.')[0]
 
   return journal_domains[first]
-    
+
+def parse_citation(citation):
+  # Phys. Rev. B 74, 195118 (2006)
+  journal, volume, page, year = re.findall(r"(.*?) ([0-9]+), ([0-9]+) \(([0-9]+)\)", citation)[0]
+  return {'journal': journal,
+          'volume': int(volume),
+          'page': int(page),
+          'year': int(year),}
+ 
 # Scrape the given url
 def scrape(abstract_url):
   page_req = urllib2.Request(abstract_url, headers=headers)
@@ -52,16 +59,29 @@ def scrape(abstract_url):
   article = {}
   article['title'] = title
   article['cite'] = cite_as
+  
+  try:
+    article['citation'] = parse_citation(cite_as)
+  except:
+    pass
 
   # Grab all links inside the the <div> with the id='aps-authors' and take their text as the author list.
   article['author_names'] = [author.text.strip() for author in tree.xpath("//div[@id='aps-authors']//a")]
 
   # Find the div with class 'aps-abstractbox' and grab the text of the first <p> within it as the abstract
-  article['abstract'] = tree.xpath("//div[@class='aps-abstractbox']/p")[0].text_content()
+  try:
+    article['abstract'] = tree.xpath("//div[@class='aps-abstractbox']/p")[0].text_content()
+  except:
+    pass
 
   # Find the <div> with the id 'aps-article-info' and take the respective columns cell contents as the type of id and id.
   article['ids'] = dict(zip([e.text.strip().lower().replace(':','') for e in tree.xpath("//div[@id='aps-article-info']//div[@class='table-cell bold']")],\
                             [e.text.strip() for e in tree.xpath("//div[@id='aps-article-info']//div[@class='table-cell']")]))
+
+  if 'subject areas' in article['ids']:
+    article['pr_subject_areas'] = article['ids']['subject areas']
+    del article['ids']['subject areas']
+
   article['journal'] = recognise_journal(page.geturl())
   article['source_url'] = page.geturl()
 

@@ -6,6 +6,12 @@ import couchdb
 class ScraperNotFound(Exception):
   pass
 
+def resolve_article(doc, db):
+  if 'merged_into' in doc:
+    return resolve_article(db[doc['merged_into']])
+  else:
+    return doc
+
 def resolve_scraper(url):
   # Do it by domain for now. This might not always work, a full url prefix might be needed, but this is cheaper.
   url_parsed = urlparse.urlparse(url)

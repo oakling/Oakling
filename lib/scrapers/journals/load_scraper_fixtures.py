@@ -18,7 +18,22 @@ scrapers = {'pra.aps.org': ('lib.scrapers.journals.scrape_pr', 'Phys. Rev. A'),
             'pubs.acs.org': ('lib.scrapers.journals.scrape_acs', None),
             'arxiv.org': ('lib.scrapers.journals.scrape_arxiv', None),}
 
-db = couchdb.Server()['scrapers']
+server = couchdb.Server()
+
+if 'scrapers' not in server:
+  server.create('scrapers')
+
+db = server['scrapers']
+
+if '_design/index' not in db:
+ db.save({
+   "_id": "_design/index",
+   "language": "javascript",
+   "views": {
+       "domain": {
+           "map": "function(doc) {\n  emit(doc.domain, null); \n}"
+       }
+   }}) 
 
 for domain, (module, journal) in scrapers.items():
   records = db.view('index/domain', key=domain, include_docs=True).rows
