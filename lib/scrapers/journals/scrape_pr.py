@@ -3,6 +3,7 @@ import urllib2
 import re
 import lxml.html
 import urlparse
+import utils
 
 # The browser identity we'll assume for this run. Possibly not needed.
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
@@ -41,8 +42,8 @@ def parse_citation(citation):
  
 # Scrape the given url
 def scrape(abstract_url):
-  page_req = urllib2.Request(abstract_url, headers=headers)
-  page = urllib2.urlopen(page_req)
+  req = urllib2.Request(abstract_url, headers=headers)
+  urls, page = utils.get_response_chain(req)
 
   # Parse the HTML into a tree we can query
   tree = lxml.html.fromstring(page.read().decode('utf-8'), base_url=abstract_url)
@@ -88,7 +89,7 @@ def scrape(abstract_url):
     del article['ids']['subject areas']
 
   article['journal'] = recognise_journal(page.geturl())
-  article['source_url'] = page.geturl()
+  article['source_urls'] = [uri for _, uri in urls]
 
   # PACS will be recognised as an id, even though its actually a list of categories.
   # Split them out into their own custom field and delete from ids.

@@ -3,7 +3,7 @@ import urllib2
 import lxml.html
 import urlparse
 
-from utils import get_response_chain
+import utils
 
 #DESCRIPTION:
 # Scrapes all journal articles from ACS publishing (American Chemical Society) given the URL of the abstract
@@ -23,7 +23,8 @@ def get_tree(response):
     
 # Scrape the given url
 def scrape(abstract_url):
-  source_urls, response = get_response_chain(abstract_url)
+  req = urllib2.Request(abstract_url, headers=utils.headers)
+  source_urls, response = utils.get_response_chain(req)
 
   tree = get_tree(response)  
 

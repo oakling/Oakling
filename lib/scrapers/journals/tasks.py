@@ -100,7 +100,7 @@ def scrape_journal(url, doc_id=None):
             article['_rev'] = rev_id
         except Exception, e:
           # Make a doc to remember to rescrape later
-          article['error'] = str(e)
+          article['error'] = str(type(e)) + ': ' + str(e)
           article['source_url'] = url
           article['rescrape'] = True
 

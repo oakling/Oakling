@@ -3,6 +3,7 @@ import urllib2
 import lxml.html
 import urlparse
 
+import utils
 #DESCRIPTION:
 # Scrapes an article from Nature Publishing Group
 
@@ -13,25 +14,20 @@ import urlparse
 
 #JOURNALS:
 
-
 #WEBSITES:
 
-
-
-def get_tree(abstract_url):
-  headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
-  page_req = urllib2.Request(abstract_url, headers=headers)
-  page = urllib2.urlopen(page_req)
-  return lxml.html.parse(page, base_url=abstract_url)
-
+def get_tree(response):
+  return lxml.html.parse(response, base_url=response.geturl())
     
 # Scrape the given url
 def scrape(abstract_url):
-  tree = get_tree(abstract_url)  
+  req = urllib2.Request(abstract_url, headers=utils.headers)
+  urls, response = utils.get_response_chain(req)
+  tree = get_tree(response) 
 
   article = {}
   
-  article['source_url'] = abstract_url
+  article['source_urls'] = [uri for _, uri in urls]
   article['title'] = tree.xpath("//meta[@name='DC.title']/@content")[0]
   article['author_names'] = [author for author in tree.xpath("//meta[@name='DC.creator']/@content")]
   

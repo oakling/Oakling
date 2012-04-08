@@ -73,6 +73,7 @@ def resolve_and_scrape(url):
       raise ScraperNotFound(url)
       
     scraper_module = load_module(scraper_doc['module'])
+
     article = scraper_module.scrape(url)
     
     article['scraper_module'] = scraper_doc['module']
