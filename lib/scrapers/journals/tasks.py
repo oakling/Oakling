@@ -4,17 +4,17 @@ from utils import resolve_and_scrape, merge, ScraperNotFound, resolve_doi
 
 def resolve_merges():
     # TODO: At this stage, we check that our source doesn't have the same IDs as any other records.
-    if article:
-      to_merge = set()
-
-      for id_type, id in article['ids'].items():
-        #print id_type, id
-        for row in db.view('index/ids', key=id_type + ":" + id).rows:
-          to_merge.add(row.id)
-
-      if len(to_merge) >= 2:
-        pass
-  
+    #if article:
+    #  to_merge = set()
+    #
+    #  for id_type, id in article['ids'].items():
+    #    #print id_type, id
+    #    for row in db.view('index/ids', key=id_type + ":" + id).rows:
+    #      to_merge.add(row.id)
+    #
+    #  if len(to_merge) >= 2:
+    #    pass
+    pass 
 
 @task
 def rescrape_articles():
@@ -28,7 +28,7 @@ def rescrape_articles():
 @task
 def scrape_doi(doi, doc_id=None):
     db = couchdb.Server()['store']
-    records = db.view('index/ids', key='doi:' + url, include_docs='true').rows
+    records = db.view('index/ids', key='doi:' + doi, include_docs='true').rows
 
     url = resolve_doi(doi)
     
@@ -51,6 +51,15 @@ def scrape_doi(doi, doc_id=None):
           if doc_id:
             article['_id'] = doc_id
             article['_rev'] = rev_id
+        except Exception, e:
+          # Make a doc to remember to rescrape later
+          article['error'] = str(e)
+          article['rescrape'] = True
+          article['source_url'] = url
+
+        if article:
+          doc_id, _ = db.save(article)
+
     else:
         article = records[0].doc
         doc_id = article.id

@@ -34,7 +34,6 @@ def get_response_chain(req):
   response = opener.open(req)
 
   code = 200 # Not technically correct
-
   urls.append((code, response.geturl()))
   return (urls, response)
 

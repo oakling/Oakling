@@ -65,7 +65,7 @@ def _add_to_store(search_results, db):
       if doc is None:
         bare_doc['source_url'] = 'http://dx.doi.org/' + result['doi']
         doc_id, _ = db.save(bare_doc)
-        scraping_tasks.scrape_journal.delay(bare_doc['source_url'], doc_id)
+        scraping_tasks.scrape_doi.delay(result['doi'], doc_id)
         docs.append(db[doc_id])
       else:
         print "%s already in db" % result['doi']
