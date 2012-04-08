@@ -33,10 +33,10 @@ def recognise_journal(abstract_url):
 
 def parse_citation(citation):
   # Phys. Rev. B 74, 195118 (2006)
-  journal, volume, page, year = re.findall(r"(.*?) ([0-9]+), ([0-9]+) \(([0-9]+)\)", citation)[0]
+  journal, volume, page, year = re.findall(r"(.*?) ([0-9]+), ([0-9\(\)A-Z]+) \(([0-9]+)\)", citation)[0]
   return {'journal': journal,
           'volume': int(volume),
-          'page': int(page),
+          'page': page,
           'year': int(year),}
  
 # Scrape the given url
@@ -45,7 +45,7 @@ def scrape(abstract_url):
   page = urllib2.urlopen(page_req)
 
   # Parse the HTML into a tree we can query
-  tree = lxml.html.parse(page, base_url=abstract_url)
+  tree = lxml.html.fromstring(page.read().decode('utf-8'), base_url=abstract_url)
 
   # Make XPATH queries for the first H1 and second H2 for the article title and how to cite it
   title = tree.xpath('//h1')[0].text_content().strip()
@@ -67,6 +67,11 @@ def scrape(abstract_url):
 
   # Grab all links inside the the <div> with the id='aps-authors' and take their text as the author list.
   article['author_names'] = [author.text.strip() for author in tree.xpath("//div[@id='aps-authors']//a")]
+
+  try:
+    article['author_names'].remove('Hide All Authors/Affiliations')
+  except:
+    pass
 
   # Find the div with class 'aps-abstractbox' and grab the text of the first <p> within it as the abstract
   try:

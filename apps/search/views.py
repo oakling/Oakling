@@ -1,8 +1,13 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from libs.search import citeulike, mendeley, arxiv
+from lib.search import citeulike, mendeley, arxiv
 import Queue
 import threading
+import itertools
+import couchdb
+
+import lib.scrapers.journals.tasks as scraping_tasks
+import lib.scrapers.journals.utils as scraping_utils
 
 def home(request):
     return render_to_response('search/home.html',
@@ -25,6 +30,59 @@ class SearchThread(threading.Thread):
                                 'id':api['id'],
                                 'results':results})
             self.queue.task_done()
+
+def _check_doi(doi, db):
+  records = db.view('index/ids', key='doi:' + doi, include_docs=True).rows
+
+  if len(records) == 0:
+    return None
+  else:
+    return records[0].doc
+
+def _check_source(source_url, db):
+  records = db.view('index/sources', key=source_url, include_docs=True).rows
+  
+  if len(records) == 0:
+    return None
+  else:
+    return records[0].doc
+
+def _add_to_store(search_results, db):
+  docs = []
+  for result in search_results:
+    bare_doc = {'title': result['title'],
+                'author_names': result['authors'],
+                'ids': {},}
+
+    if 'journal' in result:
+      bare_doc['journal'] = result['journal']
+
+    if 'doi' in result and result['doi'] is not None:
+      # Resolve the DOI's canonical url for the correct url.
+      bare_doc['ids']['doi'] = result['doi']
+      
+      doc = _check_doi(result['doi'], db)
+      if doc is None:
+        bare_doc['source_url'] = 'http://dx.doi.org/' + result['doi']
+        doc_id, _ = db.save(bare_doc)
+        scraping_tasks.scrape_journal.delay(bare_doc['source_url'], doc_id)
+        docs.append(db[doc_id])
+      else:
+        print "%s already in db" % result['doi']
+        docs.append(doc)
+    else:
+      # Check source
+      doc = _check_source(result['uri'], db) 
+      if doc is None:
+        bare_doc['source_url'] = result['uri']
+        doc_id, _ = db.save(bare_doc)
+        scraping_tasks.scrape_journal.delay(result['uri'], doc_id)
+        docs.append(db[doc_id])
+      else:
+        print "%s already in db" % result['uri']
+        docs.append(doc)
+
+  return docs
 
 def search(request):
     if 'q' in request.GET:
@@ -59,6 +117,11 @@ def search(request):
             queue.put((api, request.GET['q']))
 
         queue.join()
+        
+        results = itertools.chain(*[api['results'] for api in api_results])
+  
+        db = couchdb.Server()['store']
+        docs = _add_to_store(results, db) 
 
         return render_to_response('search/results.html',
                                   {'api_results':api_results},

@@ -3,6 +3,8 @@ import urllib2
 import lxml.html
 import urlparse
 
+from utils import get_response_chain
+
 #DESCRIPTION:
 # Scrapes all journal articles from ACS publishing (American Chemical Society) given the URL of the abstract
 
@@ -16,22 +18,18 @@ import urlparse
 #WEBSITES:
 # http://pubs.acs.org/
 
-
-
-def get_tree(abstract_url):
-  headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
-  page_req = urllib2.Request(abstract_url, headers=headers)
-  page = urllib2.urlopen(page_req)
-  return lxml.html.parse(page, base_url=abstract_url)
-
+def get_tree(response):
+  return lxml.html.parse(response, base_url=response.geturl())
     
 # Scrape the given url
 def scrape(abstract_url):
-  tree = get_tree(abstract_url)  
+  source_urls, response = get_response_chain(abstract_url)
+
+  tree = get_tree(response)  
 
   article = {}
   
-  article['source_url'] = abstract_url
+  article['source_urls'] = [url for code, url in source_urls]
   article['title'] = tree.xpath("//meta[@name='dc.Title']/@content")[0]
   article['author_names'] = [author for author in tree.xpath("//meta[@name='dc.Creator']/@content")]
   article['citation'] = {'journal': tree.xpath("//div[@id='citation']/cite")[0].text}
