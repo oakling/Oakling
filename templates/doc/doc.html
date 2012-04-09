@@ -1,7 +1,9 @@
 {% extends 'page.html' %}
+{% load urls %}
 
 {% block content %}
   <h1>{{ doc.title }}</h1>
+<div class='grid_8 alpha'>
   <p><small>
     {% for author in doc.author_names %}
       {% if author.surname %}
@@ -12,9 +14,18 @@
       {% if not forloop.last %}, {% endif %}
     {% endfor %}
   </small></p>
+</div>
+<div class='clear'></div>
+<div class='grid_8 alpha'>
   {% if doc.abstract %}
   <div class='abstract'>
     {{ doc.abstract }}
   </div>
   {% endif %}
+</div>
+<div class='grid_4 omega'>
+  {% if doc.ids.doi %}<strong>doi</strong> <a href='http://dx.doi.org/{{ doc.ids.doi }}'>{{ doc.ids.doi }}</a>{% endif %}<br/>
+  {% if doc.ids.url %}<strong>link</strong> <a href='{{ doc.ids.url }}'>{{ doc.ids.url|domain }}</a>{% endif %}<br/>
+  {% if doc.source_url or doc.source_urls %}<strong>from</strong> <a href='{{ doc|scraped_location }}'>{{ doc|scraped_location }}</a> by {{ doc.scraper_module }}{% endif %}<br/>
+</div>
 {% endblock %}

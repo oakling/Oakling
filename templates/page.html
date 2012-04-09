@@ -4,6 +4,7 @@
         <meta charset="utf-8"> 
         <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
         <link rel="stylesheet" href="{{STATIC_URL}}search/css/base.css">
+        <link rel="stylesheet" href="{{STATIC_URL}}grid.css">
         <title>Akorn</title>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
@@ -22,13 +23,9 @@
             </div>
         </div>
 
-        <div class="container">
-            <div class="row">
-                <div class="span12">
-                {% block content %}
-                {% endblock %}
-                </div>
-            </div>
+        <div class="container_12">
+           {% block content %}
+           {% endblock %}
         </div>
     </body>
 </html>
