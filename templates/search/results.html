@@ -1,6 +1,30 @@
-{% extends "search/home.html" %}
+{% extends "page.html" %}
 
-{% block search_results %}
+{% block content %}
+<h1>Results for '{{ search_request }}'</h1>
+{% for doc in docs %}
+        <div class="row stream-item">
+            {% if doc.uri %}
+              <p><a href='{{ doc.uri }}'>{{ doc.title }}</a></p>
+            {% else %}
+              <p>{{ doc.title }}</p>
+            {% endif %}
+            <p><small>
+                {% for author in doc.author_names %}
+                  {% if author.surname %}
+                    {{ author.forename }} {{ author.surname }}
+                  {% else %}
+                    {{ author }}
+                  {% endif %}
+                  {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </small></p>
+            {% if doc.ids.doi %}
+              {{ doc.ids.doi }}
+            {% endif %}
+            <a href='{% url viewdoc id=doc.docid %}'>{{ doc.docid }}</a>
+        </div>
+{% endfor %}
 <div class="tabbable">
     <ul class="nav nav-tabs">
         {% for api in api_results %}
@@ -10,30 +34,30 @@
     <div class="tab-content">
         {% for api in api_results %}
         <div class="tab-pane{% if forloop.first %} active{% endif %}" id="{{ api.id }}">
-{% for result in api.results %}
-<div class="row stream-item">
-    {% if result.uri %}
-    <p><a href="{{ result.uri }}">{{ result.title }}</a></p>
-    {% else %}
-    <p>{{ result.title }}</p>
-    {% endif %}
-    <p><small>
-        {% for author in result.authors %}
-        {% if author.surname %}
-        {{ author.forename }} {{ author.surname }}
-        {% else %}
-        {{ author }}
-        {% endif %}
-        {% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </small></p>
-    {% if result.doi %}
-    <small>doi:<a href="http://dx.doi.org/{{ result.doi }}">{{result.doi}}</a></small>
-    {% endif %}
-</div>
-{% endfor %}
-</div>
-{% endfor %}
+          {% for result in api.results %}
+            <div class="row stream-item">
+                {% if result.uri %}
+                <p><a href="{{ result.uri }}">{{ result.title }}</a></p>
+                {% else %}
+                <p>{{ result.title }}</p>
+                {% endif %}
+                <p><small>
+                    {% for author in result.authors %}
+                    {% if author.surname %}
+                    {{ author.forename }} {{ author.surname }}
+                    {% else %}
+                    {{ author }}
+                    {% endif %}
+                    {% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </small></p>
+                {% if result.doi %}
+                <small>doi:<a href="http://dx.doi.org/{{ result.doi }}">{{result.doi}}</a></small>
+                {% endif %}
+            </div>
+          {% endfor %}
+      </div>
+      {% endfor %}
 </div>
 </div>
 {% endblock %}

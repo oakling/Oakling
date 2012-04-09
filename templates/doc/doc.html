@@ -1,0 +1,20 @@
+{% extends 'page.html' %}
+
+{% block content %}
+  <h1>{{ doc.title }}</h1>
+  <p><small>
+    {% for author in doc.author_names %}
+      {% if author.surname %}
+        {{ author.forename }} {{ author.surname }}
+      {% else %}
+        {{ author }}
+      {% endif %}
+      {% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </small></p>
+  {% if doc.abstract %}
+  <div class='abstract'>
+    {{ doc.abstract }}
+  </div>
+  {% endif %}
+{% endblock %}

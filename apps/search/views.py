@@ -1,4 +1,8 @@
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
+
+import json
+
 from django.template import RequestContext
 from lib.search import citeulike, mendeley, arxiv
 import Queue
@@ -84,6 +88,35 @@ def _add_to_store(search_results, db):
 
   return docs
 
+def score_doc(keywords, doc):
+  # Function to score a doc for ordering. Pretty arbitrary.
+  score = 0.0
+  for keyword in keywords:
+    if 'title' in doc and keyword in doc['title']:
+      score += 0.5
+    if 'keyword' in doc and keyword in doc['abstract']:
+      score += 0.5
+    if 'author_names' in doc:
+      for author_name in doc['author_names']:
+        if type(author_name) is dict:
+          if keyword in author_name['surname'] + ' ' + author_name['forename']:
+            score += 0.5
+        elif keyword in author_name:
+          score += 0.5
+  return score
+
+def doc_link(doc):
+  if 'url' in doc['ids']:
+    return doc['ids']['url']
+  elif 'source_url' in doc:
+    return doc['source_url']
+  elif 'source_urls' in doc:
+    return doc['source_urls'][len(doc['source_urls'])-1]
+  elif 'doi' in doc['ids']:
+    return "http://dx.doi.org/%s" % doc['ids']['doi']
+  else:
+    return None
+
 def search(request):
     if 'q' in request.GET:
         queue = Queue.Queue()
@@ -117,12 +150,32 @@ def search(request):
             queue.put((api, request.GET['q']))
 
         queue.join()
+
+        keywords = request.GET['q'].split()
         
         results = itertools.chain(*[api['results'] for api in api_results])
   
         db = couchdb.Server()['store']
         docs = _add_to_store(results, db) 
 
+        docs = sorted(docs, key=lambda doc: score_doc(keywords, doc), reverse=True)
+
+        for doc in docs:
+          doc['docid'] = doc['_id']
+          doc['uri'] = doc_link(doc)
+          print doc['title'], score_doc(keywords, doc)
+
         return render_to_response('search/results.html',
-                                  {'api_results':api_results},
+                                  {'api_results':api_results,
+                                   'docs':docs,
+                                   'search_request': request.GET['q']},
                                   context_instance=RequestContext(request))
+
+def doc(request, id):
+  db = couchdb.Server()['store']
+  doc = db[id]
+
+  return render_to_response('doc/doc.html',
+                            {'doc': doc,},
+                            context_instance=RequestContext(request))
+  
