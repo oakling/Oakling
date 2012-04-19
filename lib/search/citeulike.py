@@ -5,7 +5,7 @@ except ImportError: import json
 
 from utils import change_keys
 
-def search(search_term, page_num=1, per_page=10):
+def search(search_term, page_num=1, per_page=50):
     url = "http://www.citeulike.org/json/search/all?"
     data = {'title':'title',
             'journal':'journal',

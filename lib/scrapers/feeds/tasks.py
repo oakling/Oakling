@@ -30,6 +30,6 @@ def add_feed_items(url):
     feed = feedparser.parse(url)
 
     for item in feed['items']:
-        scrape_journal.delay(feed_scraper.url(item),
-                             feed_scraper.identifier(item))
-                            
+        scrape_journal.delay(feed_scraper.url(item))
+                             #feed_scraper.identifier(item))
+ 

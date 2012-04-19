@@ -3,6 +3,8 @@ import re
 import urlparse
 import sys
 
+from utils import get_response_chain
+
 def resolve_doi(doi):
   try:
     page = urllib2.urlopen("http://dx.doi.org/%s" % doi)
@@ -38,7 +40,6 @@ def build_paper(abstxt):
   abs_values = parse_arxiv_abstxt(abstxt)
 
   paper = {} 
-  paper['type'] = 'paper'
 
   paper['title'] = abs_values['title']
   paper['author_names'] = split_authors(abs_values['authors'])
@@ -58,11 +59,14 @@ def build_paper(abstxt):
   return paper
 
 def scrape(url):
-  abstxt = urllib2.urlopen(url + "?fmt=txt").read()
+  if '?fmt=txt' not in url:
+    url = url + '?fmt=txt'
+  urls, response = get_response_chain(url)
+
+  abstxt = response.read()
 
   paper = build_paper(abstxt)
-  paper['scraper'] = 'arxiv'
-  paper['scraper_source'] = url
+  paper['source_urls'] = [uri for _, uri in urls] + [url.replace('?fmt=txt', '')]
 
   return paper
 

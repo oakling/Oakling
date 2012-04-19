@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"> 
+    <head> 
+        <meta charset="utf-8"> 
+        <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
+        <link rel="stylesheet" href="{{STATIC_URL}}search/css/base.css">
+        <link rel="stylesheet" href="{{STATIC_URL}}grid.css">
+        <title>Akorn {% block pagetitle %}open science{% endblock %}</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+    </head>
+    <body>
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="brand" href="/">
+                        AKORN
+                    </a>
+                    <form class="navbar-search pull-left" action="/search/" method="get">
+                        <input type="text" class="search-query" name="q" placeholder="Search">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container_12">
+           {% block content %}
+           {% endblock %}
+        </div>
+    </body>
+</html>

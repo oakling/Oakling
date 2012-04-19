@@ -7,7 +7,7 @@ from utils import change_keys
 
 from django.conf import settings
 
-def search(search_term, page_num=1, per_page=10):
+def search(search_term, page_num=1, per_page=50):
     url = "http://api.mendeley.com/oapi/documents/search/"
     data = {'title':'title',
             'journal':'publication_outlet',
