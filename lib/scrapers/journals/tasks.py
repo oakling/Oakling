@@ -1,6 +1,6 @@
 import couchdb
 from celery.task import task
-from utils import scrape_and_add, merge
+from utils import scrape_and_add, link
 
 @task
 def scrape_journal(url, identifier=None):
@@ -12,13 +12,13 @@ def scrape_journal(url, identifier=None):
         db = couch['store']
         records = db.view('index/ids', key=identifier, include_docs='true').rows
 
-    # if identifier is already in couchdb:
         if not records:
+            # if identifier is not already in couchdb:
             scrape_and_add(url)
         else:
             if all(['journal' not in record.doc for record in records]):
                 # there is probably no need for asychronous calls here
                 new_id = scrape_and_add(url)
-                merge(new_id, [record.id for record in records])
+                link(new_id, [record.id for record in records])
     else:
         scrape_and_add(url)

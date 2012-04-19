@@ -1,15 +1,22 @@
-from lib.scrapers.journals import scrape_pr
 from lib.utils import save
+import urls
+import re
+
+def scrape(url):
+    for pattern, scraper in urls.urls:
+        if re.search(pattern, url):
+            if not hasattr(scraper, 'scrape'):
+                scraper = __import__(scraper, fromlist=['scrape'])
+            return scraper.scrape(url)
+    # raise an error here
 
 def scrape_and_add(url):
     """Scrape the journal page and add to database."""
 
-    #Find the appropriate scraper
-    #Call it
-    article = scrape_pr.scrape(url)
+    article = scrape(url)
     #Add entry to database
     return save(article)
 
-def merge(new_id, old_ids):
-    """Try to merge the two database entries."""
+def link(new_id, old_ids):
+    """Create links between entries."""
     pass

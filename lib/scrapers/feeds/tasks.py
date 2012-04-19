@@ -29,6 +29,7 @@ def add_feed_items(url):
     # should be smarter here, e.g. use If-Modified-Since
     feed = feedparser.parse(url)
 
+    # FEED may already contain enough information
     for item in feed['items']:
         scrape_journal.delay(feed_scraper.url(item),
                              feed_scraper.identifier(item))
