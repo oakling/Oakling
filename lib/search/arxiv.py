@@ -4,7 +4,7 @@ import feedparser
 
 from utils import change_keys
 
-def search(search_term, start=1, max_results=10):
+def search(search_term, start=1, max_results=50):
     url = "http://export.arxiv.org/api/query?"
     query_args = {'search_query': search_term, 'start':start,
                   'max_results':max_results}

@@ -1,5 +1,9 @@
 {% extends "page.html" %}
 
+{% block pagetitle %}
+results for {{ search_request }}
+{% endblock %}
+
 {% block content %}
 <div class='grid_12 alpha omega'>
   <h1>Results for '{{ search_request }}'</h1>
@@ -23,9 +27,10 @@
                 {% endfor %}
             </small></p>
             {% if doc.ids.doi %}
-              {{ doc.ids.doi }}
+              {{ doc.ids.doi }} - 
             {% endif %}
             <a href='{% url viewdoc id=doc.docid %}'>{{ doc.docid }}</a>
+            - from {{ doc.api.name }}
         </div>
   {% endfor %}
 </div>

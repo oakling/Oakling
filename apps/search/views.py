@@ -30,6 +30,9 @@ class SearchThread(threading.Thread):
 
             results = api['module'].search(query)
 
+            for result in results:
+              result['api'] = api
+            
             self.output.append({'name':api['name'],
                                 'id':api['id'],
                                 'results':results})
@@ -54,9 +57,17 @@ def _check_source(source_url, db):
 def _add_to_store(search_results, db):
   docs = []
   for result in search_results:
+    # Hack for dodgy mendeley result
+    if result['uri'] == 'http://www.mendeley.com/research//':
+      continue
+    
     bare_doc = {'title': result['title'],
-                'author_names': result['authors'],
                 'ids': {},}
+   
+    bare_doc['search_api'] = result['api']['id']
+ 
+    if 'authors' in result and result['authors'] is not None:
+      bare_doc['author_names'] = result['authors']
 
     if 'journal' in result:
       bare_doc['journal'] = result['journal']
@@ -70,10 +81,10 @@ def _add_to_store(search_results, db):
         bare_doc['source_url'] = 'http://dx.doi.org/' + result['doi']
         doc_id, _ = db.save(bare_doc)
         scraping_tasks.scrape_doi.delay(result['doi'], doc_id)
-        docs.append(db[doc_id])
+
+        doc = db[doc_id]
       else:
         print "%s already in db" % result['doi']
-        docs.append(doc)
     else:
       # Check source
       doc = _check_source(result['uri'], db) 
@@ -81,28 +92,63 @@ def _add_to_store(search_results, db):
         bare_doc['source_url'] = result['uri']
         doc_id, _ = db.save(bare_doc)
         scraping_tasks.scrape_journal.delay(result['uri'], doc_id)
-        docs.append(db[doc_id])
+        doc = db[doc_id]
       else:
         print "%s already in db" % result['uri']
-        docs.append(doc)
 
+    doc['api'] = result['api']
+    docs.append(doc)
+    
   return docs
+
+api_weight = {'arxiv': 1.5,
+              'citeulike': 1.0,
+              'mendeley': 1.0,}
 
 def score_doc(keywords, doc):
   # Function to score a doc for ordering. Pretty arbitrary.
   score = 0.0
-  for keyword in keywords:
-    if 'title' in doc and keyword in doc['title']:
-      score += 0.5
-    if 'keyword' in doc and keyword in doc['abstract']:
-      score += 0.5
-    if 'author_names' in doc:
-      for author_name in doc['author_names']:
-        if type(author_name) is dict:
-          if keyword in author_name['surname'] + ' ' + author_name['forename']:
-            score += 0.5
+  if 'title' in doc:
+    all = True
+    
+    for keyword in keywords:
+      if keyword in doc['title']:
+        score += 0.5
+      else:
+        all = False
+
+    if all:
+      score *= 1.5
+
+  if 'keyword' in doc:
+    all = True
+    
+    for keyword in keywords:
+      if keyword in doc['abstract']:
+        score += 0.5
+      else:
+        all = False
+
+    if all:
+      score *= 1.2
+
+  if 'author_names' in doc:
+    for author_name in doc['author_names']:
+      all = True
+      
+      for keyword in keywords:
+        if type(author_name) is dict and keyword in author_name['surname'] + ' ' + author_name['forename']:
+          score += 0.5
         elif keyword in author_name:
           score += 0.5
+        else:
+          all = False
+
+      if all: # Bonus for all keywords being in one author's name
+        score *= 2.0 
+
+  score = score * api_weight[doc['api']['id']]
+
   return score
 
 def doc_link(doc):
@@ -158,12 +204,15 @@ def search(request):
         db = couchdb.Server()['store']
         docs = _add_to_store(results, db) 
 
-        docs = sorted(docs, key=lambda doc: score_doc(keywords, doc), reverse=True)
 
         for doc in docs:
           doc['docid'] = doc['_id']
           doc['uri'] = doc_link(doc)
-          print doc['title'], score_doc(keywords, doc)
+          doc['score'] = score_doc(keywords, doc)
+
+        #docs = [doc for doc in docs if doc['score'] >= 1.7]
+
+        docs = sorted(docs, key=lambda doc: doc['score'], reverse=True)
 
         return render_to_response('search/results.html',
                                   {'api_results':api_results,
