@@ -4,6 +4,8 @@ import re
 import lxml.html
 import urlparse
 import utils
+import datetime
+import time
 
 # The browser identity we'll assume for this run. Possibly not needed.
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
@@ -46,7 +48,8 @@ def scrape(abstract_url):
   urls, page = utils.get_response_chain(req)
 
   # Parse the HTML into a tree we can query
-  tree = lxml.html.fromstring(page.read().decode('utf-8'), base_url=abstract_url)
+  page_text = page.read().decode('utf-8')
+  tree = lxml.html.fromstring(page_text, base_url=abstract_url)
 
   # Make XPATH queries for the first H1 and second H2 for the article title and how to cite it
   title = tree.xpath('//h1')[0].text_content().strip()
@@ -79,6 +82,31 @@ def scrape(abstract_url):
     article['abstract'] = tree.xpath("//div[@class='aps-abstractbox']/p")[0].text_content()
   except:
     pass
+
+  months = {'January':1, 'February':2, 'March':3, 'April':4, 'May':5, 'June':6, 'July':7, 'August':8, 'September':9, 'October':10, 'November':11, 'December':12}
+
+  # Received 21 December 2011; revised 18 February 2012; published  9 April 2012
+
+  date_received = re.findall('Received ([0-9]+) ([A-Za-z]+) ([0-9]+)', page_text)
+  date_revised = re.findall('revised ([0-9]+) ([A-Za-z]+) ([0-9]+)', page_text) 
+  date_published = re.findall('published  ([0-9]+) ([A-Za-z]+) ([0-9]+)', page_text) 
+
+  print date_received
+  print date_revised
+  print date_published
+
+  def make_datestamp(date_tuple):
+    year = int(date_tuple[2])
+    month = months[date_tuple[1]]
+    day = int(date_tuple[0])
+    return time.mktime(datetime.date(year, month, day).timetuple())
+
+  if date_received:
+    article['date_received'] = make_datestamp(date_received[0])
+  if date_revised:
+    article['date_revised'] = make_datestamp(date_revised[0])
+  if date_published:
+    article['date_published'] = make_datestamp(date_published[0])
 
   # Find the <div> with the id 'aps-article-info' and take the respective columns cell contents as the type of id and id.
   article['ids'] = dict(zip([e.text.strip().lower().replace(':','') for e in tree.xpath("//div[@id='aps-article-info']//div[@class='table-cell bold']")],\
