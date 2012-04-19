@@ -3,7 +3,11 @@ import json
 
 db = couchdb.Server()['store']
 
+docs = []
 for id in db:
   if '_design' in id:
-    print json.dumps(db[id])
+    doc = db[id]
+    del doc['_rev']
+    docs.append(doc)
 
+print json.dumps(docs)
