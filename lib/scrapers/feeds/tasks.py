@@ -15,7 +15,10 @@ def add_feed_items(feedhandler, feed_url):
     # should be smarter here, e.g. use If-Modified-Since
     feed = feedparser.parse(feed_url)
 
-    handler = feed_handlers.handlers[feedhandler]
+    if feedhandler in feed_handlers.handlers:
+        handler = feed_handlers.handlers[feedhandler]
+    else:
+        handler = feed_handlers.handlers['default']
 
     for item in feed['items']:
         scrape_journal.delay(handler['url'](item))
