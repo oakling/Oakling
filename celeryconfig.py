@@ -1,4 +1,4 @@
-from datetime import timedelta
+from celery.schedules import crontab
 
 BROKER_URL = "amqplib://akorn:akorn@127.0.0.1/myvhost" #amqplib://akorn:akorn@ip-10-235-51-20:5672/myvhost"
 
@@ -20,7 +20,17 @@ CELERY_TIMEZONE = "Europe/London"
 
 CELERYBEAT_SCHEDULE = {
     "APS_feeds": {
-        "task": "lib.scrapers.feeds.tasks.fetch_APS_feeds",
-        "schedule": timedelta(hours=1),
+        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "schedule": crontab(minute=0, hour="*"),
+        "args":("aps_feed",
+                ["http://feeds.aps.org/rss/recent/prl.xml",
+                 "http://feeds.aps.org/rss/recent/pra.xml",
+                 "http://feeds.aps.org/rss/recent/prb.xml",
+                 "http://feeds.aps.org/rss/recent/prc.xml",
+                 "http://feeds.aps.org/rss/recent/prd.xml",
+                 "http://feeds.aps.org/rss/recent/pre.xml",
+                 "http://feeds.aps.org/rss/recent/prx.xml",
+                ],
+               )
     },
 }
