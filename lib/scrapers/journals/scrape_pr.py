@@ -91,10 +91,6 @@ def scrape(abstract_url):
   date_revised = re.findall('revised\s+([0-9]+)\s+([A-Za-z]+)\s+([0-9]+)', page_text) 
   date_published = re.findall('published\s+([0-9]+)\s+([A-Za-z]+)\s+([0-9]+)', page_text) 
 
-  print date_received
-  print date_revised
-  print date_published
-
   def make_datestamp(date_tuple):
     year = int(date_tuple[2])
     month = months[date_tuple[1]]
