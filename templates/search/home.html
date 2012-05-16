@@ -1,2 +1,18 @@
 {% extends 'page.html' %}
 
+{% block content %}
+  <script>
+    $.get('/api/latest/50', {}, function(data) {
+             for(i in data) {
+               published = Date(data[i].date_published*1000);
+
+               e = $('<li><a href="' + data[i].ids.url + '">' + published + ' '+ data[i]['title'] + '</a></li>');
+
+               $('#latest_articles').append(e);
+             }
+           }, 'json');
+  </script>
+
+  <ul id='latest_articles' class='articles'>
+  </ul>
+{% endblock %}
