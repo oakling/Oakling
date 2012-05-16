@@ -2,11 +2,11 @@
 
 {% block content %}
   <script>
-    $.get('/api/latest/50', {}, function(data) {
+    $.get('/api/latest/100', {}, function(data) {
              for(i in data) {
-               published = Date(data[i].date_published*1000);
-
-               e = $('<li><a href="' + data[i].ids.url + '">' + published + ' '+ data[i]['title'] + '</a></li>');
+               doc = data[i]
+               published = new Date(doc.date_published*1000);
+               e = $('<li><a href="' + doc.ids.url + '">' + doc.citation.journal + ' ' + published.toDateString() + ' '+ doc['title'] + '</a></li>');
 
                $('#latest_articles').append(e);
              }
