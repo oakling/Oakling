@@ -6,7 +6,7 @@
              for(i in data) {
                doc = data[i]
                published = new Date(doc.date_published*1000);
-               e = $('<li><a href="' + doc.ids.url + '">' + doc.citation.journal + ' ' + published.toDateString() + ' '+ doc['title'] + '</a></li>');
+               e = $('<li><a href="' + doc.ids.url + '">' + doc.citation.journal + ': '+ doc['title'] + '</a><br/><small>' + published + '</small></li>');
 
                $('#latest_articles').append(e);
              }
