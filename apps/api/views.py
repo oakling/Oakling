@@ -10,9 +10,11 @@ import threading
 import itertools
 import couchdb
 
-def latest(request):
+def latest(request, num):
   db = couchdb.Server()['store']
 
-  rows = db.view('articles/latest', limit=10, include_docs=True)
+  num = min(int(num), 100)
 
-  return json.dumps([row.doc for row in rows])
+  rows = db.view('articles/latest', limit=num, include_docs=True, descending=True)
+
+  return HttpResponse(json.dumps([row.doc for row in rows]), content_type='application/json')
