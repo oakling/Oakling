@@ -1,5 +1,4 @@
 import sys
-from lib.utils import save
 import urlparse
 import couchdb
 import urllib2
