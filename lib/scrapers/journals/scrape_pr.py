@@ -87,9 +87,9 @@ def scrape(abstract_url):
 
   # Received 21 December 2011; revised 18 February 2012; published  9 April 2012
 
-  date_received = re.findall('Received ([0-9]+) ([A-Za-z]+) ([0-9]+)', page_text)
-  date_revised = re.findall('revised ([0-9]+) ([A-Za-z]+) ([0-9]+)', page_text) 
-  date_published = re.findall('published  ([0-9]+) ([A-Za-z]+) ([0-9]+)', page_text) 
+  date_received = re.findall('Received\s+([0-9]+)\s+([A-Za-z]+)\s+([0-9]+)', page_text)
+  date_revised = re.findall('revised\s+([0-9]+)\s+([A-Za-z]+)\s+([0-9]+)', page_text) 
+  date_published = re.findall('published\s+([0-9]+)\s+([A-Za-z]+)\s+([0-9]+)', page_text) 
 
   print date_received
   print date_revised
