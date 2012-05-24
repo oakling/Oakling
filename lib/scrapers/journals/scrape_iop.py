@@ -3,6 +3,8 @@ import urllib2
 import lxml.html
 import urlparse
 import utils
+import datetime
+import time
 
 #DESCRIPTION:
 # Scrapes an article from IOP Science (Full list: http://iopscience.iop.org/journals)
@@ -18,21 +20,26 @@ import utils
 
 
 def get_tree(response):
-  return lxml.html.parse(response, base_url=response.geturl())
+  return lxml.html.parse(response.read().decode('utf-8'),
+                         base_url=response.geturl())
+
 
 # Scrape the given url
 def scrape(abstract_url):
-  req = urllib2.Request(abstract_url, headers=utils.headers)
-  urls, response = utils.get_response_chain(req)
-  tree = get_tree(response) 
+  req = urllib2.Request(abstract_url)
+  urls, page = utils.get_response_chain(req)
+
+  # Parse the HTML into a tree we can query
+  page_text = page.read().decode('utf-8')
+  tree = lxml.html.fromstring(page_text, base_url=abstract_url)
 
   article = {}
   
   article['source_urls'] = [uri for _, uri in urls]
-  article['title'] = tree.xpath("//meta[@name='dc.Title']/@content")[0]
-  article['author_names'] = [author for author in tree.xpath("//meta[@name='dc.Contributor']/@content")]
-  article['abstract'] = tree.xpath("//div[@id='articleAbsctract']")[0].text_content().strip()
-
+  article['title'] = tree.xpath("//meta[@name='dc.title']/@content")[0]
+  article['author_names'] = [author for author in
+                             tree.xpath("//meta[@name='dc.creator']/@content")]
+  article['abstract'] = tree.xpath("//meta[@name='dc.description']/@content")[0]
   
   article['journal'] = tree.xpath("//meta[@name='citation_journal_title']/@content")[0]
   article['citation'] = {'journal': tree.xpath("//meta[@name='citation_journal_title']/@content")[0],
