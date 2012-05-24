@@ -18,3 +18,10 @@ def latest(request, num):
   rows = db.view('articles/latest', limit=num, include_docs=True, descending=True)
 
   return HttpResponse(json.dumps([row.doc for row in rows]), content_type='application/json')
+
+def journals(request):
+  db = couchdb.Server()['store']
+
+  rows = db.view('index/journals', group=True)
+
+  return HttpResponse(json.dumps([row.key for row in rows]), content_type='application/json')
