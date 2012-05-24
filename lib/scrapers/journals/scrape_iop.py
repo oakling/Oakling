@@ -5,6 +5,7 @@ import urlparse
 import utils
 import datetime
 import time
+import re
 
 #DESCRIPTION:
 # Scrapes an article from IOP Science (Full list: http://iopscience.iop.org/journals)
@@ -34,7 +35,10 @@ def scrape(abstract_url):
   tree = lxml.html.fromstring(page_text, base_url=abstract_url)
 
   article = {}
-  
+
+  # Received 2011 November 7, accepted for publication 2012 April 7
+  # Published 2012 May 23
+
   article['source_urls'] = [uri for _, uri in urls]
   article['title'] = tree.xpath("//meta[@name='dc.title']/@content")[0]
   article['author_names'] = [author for author in
@@ -49,6 +53,16 @@ def scrape(abstract_url):
 
   article['ids'] = dict(zip(['doi'], [tree.xpath("//meta[@name='citation_doi']/@content")[0]]))
   
+  def make_datestamp(date):
+    year = int(date[0])
+    month = int(date[1])
+    day = int(date[2])
+    return time.mktime(datetime.date(year, month, day).timetuple())
+ 
+  pub_date = tree.xpath("//meta[@name='dc.date']/@content")
+  if pub_date:
+    article['date_published'] = make_datestamp(pub_date[0].split('-'))
+
   year = tree.xpath("//meta[@name='citation_date']/@content")
   if year:
     article['citation']['pub_year'] = year[0][:4]
