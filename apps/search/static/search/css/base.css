@@ -1,8 +1,34 @@
+a {
+    text-decoration: underline;
+}
+
 .stream-item {
     margin: 10px;
     padding: 10px;
 }
 
 div.abstract {
-  text-align:justify;
+    text-align:justify;
+}
+
+#latest_articles li {
+    list-style: none;
+    max-width: 700px;
+    margin-bottom: 2em;
+}
+
+#latest_articles li p.abstract {
+    text-align: justify;
+}
+
+#latest_articles li h3 {
+    font-size:120%;
+}
+
+#latest_articles li span.journal {
+    font-style: italic;
+}
+
+#latest_articles li time {
+    font-weight: bold;
 }

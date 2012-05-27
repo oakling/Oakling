@@ -1,18 +1,13 @@
 {% extends 'page.html' %}
 
+{% block scripts %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/jquery.tagsinput.min.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.relative-time.js"></script>
+<script src="{{ STATIC_URL }}js/main.js"></script>
+{% endblock %}
+
 {% block content %}
-  <script>
-    $.get('/api/latest/100', {}, function(data) {
-             for(i in data) {
-               doc = data[i]
-               published = new Date(doc.date_published*1000);
-               e = $('<li><a href="' + doc.ids.url + '">' + doc.citation.journal + ': '+ doc['title'] + '</a><br/><small>' + published + '</small></li>');
-
-               $('#latest_articles').append(e);
-             }
-           }, 'json');
-  </script>
-
-  <ul id='latest_articles' class='articles'>
-  </ul>
+<ul id='latest_articles' class='articles'>
+</ul>
 {% endblock %}

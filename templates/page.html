@@ -6,8 +6,6 @@
         <link rel="stylesheet" href="{{STATIC_URL}}search/css/base.css">
         <link rel="stylesheet" href="{{STATIC_URL}}grid.css">
         <title>Akorn {% block pagetitle %}open science{% endblock %}</title>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
     </head>
     <body>
         <div class="navbar">
@@ -17,7 +15,7 @@
                         AKORN
                     </a>
                     <form class="navbar-search pull-left" action="/search/" method="get">
-                        <input type="text" class="search-query" name="q" placeholder="Search">
+                        <input type="text" class="search-query" name="q" placeholder="Search" id="search">
                     </form>
                 </div>
             </div>
@@ -26,6 +24,10 @@
         <div class="container_12">
            {% block content %}
            {% endblock %}
-        </div>
+       </div>
+    {% block scripts %}
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+    {% endblock %}
     </body>
 </html>
