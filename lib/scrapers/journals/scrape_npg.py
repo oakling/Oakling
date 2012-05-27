@@ -2,6 +2,8 @@ import sys
 import urllib2
 import lxml.html
 import urlparse
+import gzip
+from StringIO import StringIO
 
 import utils
 #DESCRIPTION:
@@ -16,14 +18,25 @@ import utils
 
 #WEBSITES:
 
-def get_tree(response):
-  return lxml.html.parse(response, base_url=response.geturl())
     
 # Scrape the given url
 def scrape(abstract_url):
   req = urllib2.Request(abstract_url, headers=utils.headers)
   urls, response = utils.get_response_chain(req)
-  tree = get_tree(response) 
+
+  print response.headers
+
+  if response.info().get('Content-Encoding') == 'gzip':
+    buf = StringIO( response.read())
+    f = gzip.GzipFile(fileobj=buf)
+    data = f.read()
+  else:
+    data = response.read()
+
+  page_text = data #data.decode('utf-8')
+  tree = lxml.html.parse(page_text, base_url=abstract_url) 
+
+  print page_text
 
   article = {}
   
@@ -39,6 +52,16 @@ def scrape(abstract_url):
   article['page_last'] = tree.xpath("//meta[@name='prism.endingPage']/@content")[0]
   article['ids'] = dict(zip(['doi'], [tree.xpath("//meta[@name='citation_doi']/@content")[0][4:]]))
   
+  def make_datestamp(date):
+    year = int(date[0])
+    month = int(date[1])
+    day = int(date[2])
+    return time.mktime(datetime.date(year, month, day).timetuple())
+ 
+  pub_date = tree.xpath("//meta[@name='dc.date']/@content")
+  if pub_date:
+    article['date_published'] = make_datestamp(pub_date[0].split('-'))
+
   year = tree.xpath("//meta[@name='citation_date']/@content")
   if year:
     article['publication_year'] = year[0][:4]

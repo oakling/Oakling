@@ -10,7 +10,7 @@ var akorn = {
             abstract = ['<p class="abstract">',doc.abstract.substr(0,300),'...</p>'].join('');
         }
         return ['<li><h3><a href="',doc.ids.url,'">',doc['title'],
-        '</a></h3><p><span class="authors">',
+        '</a> [<a href="doc/',doc._id,'">akorn.org</a>]</h3><p><span class="authors">',
         doc.author_names.slice(0,3).join(', '),
         '</span> - <time datetime="',
         published.toISOString(),

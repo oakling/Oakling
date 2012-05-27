@@ -26,7 +26,7 @@ def clean_journal(s):
 
 def journals(request):
   db = couchdb.Server()['store']
-  filter = clean_journal(request.GET.get('filter', None))
+  filter = clean_journal(request.GET.get('term', None))
 
   rows = db.view('index/journals', group=True)
 

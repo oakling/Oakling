@@ -60,7 +60,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/') 
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -154,3 +154,4 @@ LOGGING = {
 #Mendeley consumer key
 MENDELEY_CONSUMER_KEY='c03c2cb64ec7dc1522b71127085747ac04f2d516d'
 
+STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/')

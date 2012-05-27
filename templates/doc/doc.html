@@ -4,7 +4,7 @@
 {% block content %}
   <h1>{{ doc.title }}</h1>
 <div class='grid_8 alpha'>
-  <p><small>
+  <p>
     {% for author in doc.author_names %}
       {% if author.surname %}
         {{ author.forename }} {{ author.surname }}
@@ -13,7 +13,7 @@
       {% endif %}
       {% if not forloop.last %}, {% endif %}
     {% endfor %}
-  </small></p>
+  </p>
 </div>
 <div class='clear'></div>
 <div class='grid_8 alpha'>

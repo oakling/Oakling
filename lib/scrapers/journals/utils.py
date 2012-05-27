@@ -25,10 +25,14 @@ class RedirectHandler(urllib2.HTTPRedirectHandler):
 
     return urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
 
+class Ignore401Handler(urllib2.BaseHandler):
+  def http_error_401(self, req, fp, code, msg, hdrs):
+    return fp
+
 def get_response_chain(req):
   urls = []
   cookiejar = cookielib.CookieJar()
-  opener = urllib2.build_opener(RedirectHandler(urls), urllib2.HTTPCookieProcessor(cookiejar))
+  opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls), urllib2.HTTPCookieProcessor(cookiejar))
 
   response = opener.open(req)
 
