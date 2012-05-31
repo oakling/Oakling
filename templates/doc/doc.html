@@ -4,7 +4,7 @@
 {% block content %}
   <h1>{{ doc.title }}</h1>
 <div class='grid_8 alpha'><div class='box_inner box_date'>
-  published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href='{% url journal id=journal.id %}'>{{ doc.citation.journal }}</a></strong>
+  published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href='{#{% url viewjournal id=journal.id %}#}'>{{ doc.citation.journal }}</a></strong>
 </div></div>
 <div class='clear'></div>
 <div class='grid_8 alpha'><div class='box_inner box_abstract'>
