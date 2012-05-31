@@ -31,7 +31,7 @@ def scrape(abstract_url):
     data = response.read()
 
   page_text = data.decode('utf-8')
-  tree = lxml.html.parse(page_text, base_url=abstract_url) 
+  tree = lxml.html.fromstring(page_text) 
 
   article = {}
   
@@ -41,10 +41,17 @@ def scrape(abstract_url):
   
   article['abstract'] = tree.xpath("//div[@class='content']/p")[0].text_content()
 
-  article['journal'] = tree.xpath("//meta[@name='citation_journal_title']/@content")[0]
-  article['volume'] = tree.xpath("//meta[@name='prism.volume']/@content")[0]
-  article['page_first'] = tree.xpath("//meta[@name='prism.startingPage']/@content")[0]
-  article['page_last'] = tree.xpath("//meta[@name='prism.endingPage']/@content")[0]
+  article['citation'] = {}
+
+  article['citation']['journal'] = tree.xpath("//meta[@name='citation_journal_title']/@content")[0]
+  article['citation']['volume'] = tree.xpath("//meta[@name='prism.volume']/@content")[0]
+  article['citation']['page'] = tree.xpath("//meta[@name='prism.startingPage']/@content")[0]
+  article['citation']['page_last'] = tree.xpath("//meta[@name='prism.endingPage']/@content")[0]
+
+  year = tree.xpath("//meta[@name='citation_date']/@content")
+  if year:
+    article['citation']['year'] = year[0][:4]
+
   article['ids'] = dict(zip(['doi'], [tree.xpath("//meta[@name='citation_doi']/@content")[0][4:]]))
   
   def make_datestamp(date):
@@ -57,13 +64,7 @@ def scrape(abstract_url):
   if pub_date:
     article['date_published'] = make_datestamp(pub_date[0].split('-'))
 
-  year = tree.xpath("//meta[@name='citation_date']/@content")
-  if year:
-    article['publication_year'] = year[0][:4]
-  
-  for e in article:
-	print e, ": ", article[e]
-  
+  return article
   
 if __name__ == "__main__":
   print scrape(sys.argv[1])
