@@ -3,6 +3,8 @@ import urlparse
 import couchdb
 import urllib2
 import cookielib
+import classification
+import re
 
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
 
@@ -86,3 +88,18 @@ def resolve_and_scrape(url):
 def merge(new_id, old_ids):
     """Try to merge the two database entries."""
     pass
+
+def categorize(codes):
+    """Put classification codes into gropus."""
+    categories = {}
+
+    for code in codes:
+        match = False
+        for group in classification.codes:
+            matches = re.findall(group[0], code)
+            if matches:
+                categories.setdefault(group[1], []).extend(matches)
+                match = True
+        if not match:
+            categories.setdefault('unknown', []).append(code)
+    return categories
