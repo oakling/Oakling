@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 
+import datetime
 import json
 
 from django.template import RequestContext
@@ -224,7 +225,11 @@ def doc(request, id):
   db = couchdb.Server()['store']
   doc = db[id]
 
+  date_published = datetime.datetime.fromtimestamp(doc['date_published'])
+
   return render_to_response('doc/doc.html',
-                            {'doc': doc,},
+                            {'doc': doc, 'date_published': date_published},
                             context_instance=RequestContext(request))
-  
+
+def journal(request, id):
+  pass 

@@ -8,7 +8,9 @@ a {
 }
 
 div.abstract {
-    text-align:justify;
+  text-align:left;
+  line-height:1.7em;
+  font-size:1.1em;
 }
 
 #latest_articles li {
@@ -31,4 +33,25 @@ div.abstract {
 
 #latest_articles li time {
     font-weight: bold;
+}
+
+/* /doc/ page */
+.box_inner {
+  padding:5px;
+}
+
+.box_authors .author_name {
+  font-size:1.2em;
+  margin-bottom:0.2em;
+  color:#336;
+}
+
+.box_date {
+  font-size:1.2em;
+  color:#AAA;
+}
+
+.box_date strong {
+  font-weight:normal;
+  color:#333;
 }

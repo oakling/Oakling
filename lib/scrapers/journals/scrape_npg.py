@@ -17,14 +17,11 @@ import utils
 #JOURNALS:
 
 #WEBSITES:
-
     
 # Scrape the given url
 def scrape(abstract_url):
   req = urllib2.Request(abstract_url, headers=utils.headers)
   urls, response = utils.get_response_chain(req)
-
-  print response.headers
 
   if response.info().get('Content-Encoding') == 'gzip':
     buf = StringIO( response.read())
@@ -33,10 +30,8 @@ def scrape(abstract_url):
   else:
     data = response.read()
 
-  page_text = data #data.decode('utf-8')
+  page_text = data.decode('utf-8')
   tree = lxml.html.parse(page_text, base_url=abstract_url) 
-
-  print page_text
 
   article = {}
   
