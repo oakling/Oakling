@@ -21,7 +21,7 @@ CELERY_TIMEZONE = "Europe/London"
 CELERYBEAT_SCHEDULE = {
     "APS_feeds": {
         "task": "lib.scrapers.feeds.tasks.fetch_feed",
-        "schedule": crontab(minute=0, hour="*"),
+        "schedule": crontab(minute=1, hour="15"),
         "args":("aps_feed",
                 ["http://feeds.aps.org/rss/recent/prl.xml",
                  "http://feeds.aps.org/rss/recent/pra.xml",
@@ -91,5 +91,30 @@ CELERYBEAT_SCHEDULE = {
                     "http://iopscience.iop.org/0004-637X/?rss=1",
                 ],
         )
+    },
+    "arxiv_feeds": {
+        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "schedule": crontab(minute=31, hour="0"),
+        "args":("arxiv_feed",
+                ['http://export.arxiv.org/rss/astro-ph',
+                 'http://export.arxiv.org/rss/cond-mat',
+                 'http://export.arxiv.org/rss/cs',
+                 'http://export.arxiv.org/rss/gr-qc',
+                 'http://export.arxiv.org/rss/hep-ex',
+                 'http://export.arxiv.org/rss/hep-lat',
+                 'http://export.arxiv.org/rss/hep-ph',
+                 'http://export.arxiv.org/rss/hep-th',
+                 'http://export.arxiv.org/rss/math',
+                 'http://export.arxiv.org/rss/math-ph',
+                 'http://export.arxiv.org/rss/nlin',
+                 'http://export.arxiv.org/rss/nucl-ex',
+                 'http://export.arxiv.org/rss/nucl-th',
+                 'http://export.arxiv.org/rss/physics',
+                 'http://export.arxiv.org/rss/q-bio',
+                 'http://export.arxiv.org/rss/q-fin',
+                 'http://export.arxiv.org/rss/quant-ph',
+                 'http://export.arxiv.org/rss/stat',
+                ],
+               )
     },
 }
