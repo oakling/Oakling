@@ -224,6 +224,7 @@ def search(request):
 def doc(request, id):
   db = couchdb.Server()['store']
   doc = db[id]
+  doc['docid'] = id
 
   date_published = datetime.datetime.fromtimestamp(doc['date_published'])
 

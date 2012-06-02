@@ -1,20 +1,37 @@
 {% extends 'page.html' %}
 {% load urls %}
 
+{% block canonical %}{{ block.super }}{% url search:viewdoc doc.docid %}{% endblock %}
+
 {% block content %}
-  <h1>{{ doc.title }}</h1>
+<div id="fb-root"></div>
+
+<div itemscope itemtype="http://schema.org/CreativeWork">
+<h1 itemprop="name">{{ doc.title }}</h1>
 <div class='grid_8 alpha'><div class='box_inner box_date'>
   published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href='{#{% url viewjournal id=journal.id %}#}'>{{ doc.citation.journal }}</a></strong>
 </div></div>
 <div class='clear'></div>
-<div class='grid_8 alpha'><div class='box_inner box_abstract'>
+<div class='grid_8 alpha'><div class='box_inner box_abstract' itemprop="description">
   {% if doc.abstract %}
   <div class='abstract'>
     {{ doc.abstract }}
   </div>
   {% endif %}
 </div></div>
-<div class='grid_4 omega'><div class='box_inner box_authors'>
+<div class='grid_4 omega'>
+<div class='box_inner'>
+
+    <div class="g-plusone"></div>
+
+    <div class="tweet">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>
+    </div>
+
+    <div class="fb-like" data-send="false" data-layout="standard" data-width="450" data-show-faces="false" data-action="like" data-colorscheme="light"></div>
+</div>
+
+<div class='box_inner box_authors'>
   <p>
     {% for author in doc.author_names %}
       {% if author.surname %}
@@ -31,4 +48,33 @@
   {% if doc.ids.url %}<strong>link</strong> <a href='{{ doc.ids.url }}'>{{ doc.ids.url|domain }}</a>{% endif %}<br/>
   {% if doc.source_url or doc.source_urls %}<strong>from</strong> <a href='{{ doc|scraped_location }}'>{{ doc|scraped_location }}</a> by {{ doc.scraper_module }}{% endif %}<br/>
 </div></div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+// Google plus button
+window.___gcfg = {lang: 'en-GB'};
+(function() {
+    var po = document.createElement('script'); po.type =
+    'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(po, s);
+    })();
+
+// Tweet link
+!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+// Facebook plugin
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
 {% endblock %}
