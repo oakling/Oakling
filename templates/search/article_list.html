@@ -1,0 +1,16 @@
+{% load humanize %}
+{% for doc in docs %}
+<li>
+<h3><a href="{% url search:viewdoc doc.docid %}">{{ doc.title }}</a></h3>
+<p class="meta"><span class="authors">
+{% for auth in doc.author_names|slice:"0:3" %}
+{{ auth }}{% if not forloop.last %}, {% endif %}
+{% endfor %}
+</span> — <time datetime="{{ doc.date|date:"c" }}">{{ doc.date|naturalday|capfirst }}</time>
+in <span class="journal">{{ doc.citation.journal }}</a></span>
+ — <span class="original"><a href="{{ doc.ids.url }}">{{ doc.ids.url|cut:"http://" }}</a></span></p>
+<p class="abstract">
+{{ doc.abstract|truncatewords:50 }}
+</p>
+</li>
+{% endfor %}

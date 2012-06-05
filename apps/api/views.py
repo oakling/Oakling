@@ -10,15 +10,29 @@ import Queue
 import threading
 import itertools
 import couchdb
+import datetime
 
 def latest(request, num):
-  db = couchdb.Server()['store']
+    db = couchdb.Server()['store']
 
-  num = min(int(num), 100)
+    num = min(int(num), 100)
 
-  rows = db.view('articles/latest', limit=num, include_docs=True, descending=True)
+    rows = db.view('articles/latest', limit=num, include_docs=True, descending=True)
 
-  return HttpResponse(json.dumps([row.doc for row in rows]), content_type='application/json')
+    docs = []
+    for row in rows:
+        d = row.doc
+        # Cannot use _id inside a Django template
+        d['docid'] = d['_id']
+        # Process the timestamp to produce a usable datetime object
+        try:
+            d.date = datetime.datetime.fromtimestamp(row.doc.date_published)
+        except AttributeError:
+            # TODO If no datetime is provided what should we do?
+            d.date = datetime.datetime.now()
+        docs.append(d)
+
+    return render_to_response('search/article_list.html', {'docs': docs})
 
 def clean_journal(s):
   # keep only alphanumeric characters for comparison purposes
