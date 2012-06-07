@@ -9,5 +9,6 @@ def prepare_deploy():
 def deploy():
   with cd('/home/ubuntu/akorn/akorn_search'):
     run('git pull')
+    run('python manage.py collectstatic --noinput')
     run('sudo /etc/init.d/django-akorn restart')
 
