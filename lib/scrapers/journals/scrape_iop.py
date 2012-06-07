@@ -1,18 +1,13 @@
 import sys
-import urllib2
 import lxml.html
-import urlparse
 import utils
-import datetime
-import time
-import re
+from comm import *
 
 #DESCRIPTION:
 # Scrapes an article from IOP Science (Full list: http://iopscience.iop.org/journals)
 
 #TO DO/NOTES:
 # Journal is given by full title rather than abbreviation
-# Doesnt take full abstract if it contains HTML tags
 
 #JOURNALS:
 
@@ -20,54 +15,41 @@ import re
 #WEBSITES:
 
 
-def get_tree(response):
-  return lxml.html.parse(response.read().decode('utf-8'),
-                         base_url=response.geturl())
-
-
-# Scrape the given url
 def scrape(abstract_url):
-  req = urllib2.Request(abstract_url)
-  urls, page = utils.get_response_chain(req)
+  tree, urls, page_text = get_tree(abstract_url) 
 
-  # Parse the HTML into a tree we can query
-  page_text = page.read().decode('utf-8')
-  tree = lxml.html.fromstring(page_text, base_url=abstract_url)
-
-  article = {}
-
-  # Received 2011 November 7, accepted for publication 2012 April 7
-  # Published 2012 May 23
-
+  article = make_blank_article()
+  article['scraper'] = 'iop'
   article['source_urls'] = [uri for _, uri in urls]
-  article['title'] = tree.xpath("//meta[@name='dc.title']/@content")[0]
-  article['author_names'] = [author for author in
-                             tree.xpath("//meta[@name='dc.creator']/@content")]
-  article['abstract'] = tree.xpath("//meta[@name='dc.description']/@content")[0]
-  
-  article['journal'] = tree.xpath("//meta[@name='citation_journal_title']/@content")[0]
-  article['citation'] = {'journal': tree.xpath("//meta[@name='citation_journal_title']/@content")[0],
-                         'volume': tree.xpath("//meta[@name='citation_volume']/@content")[0],
-                         'page_first': tree.xpath("//meta[@name='citation_firstpage']/@content")[0],}
+
+  article['publisher'] = get_meta('citation_publisher', tree)
+
+  article['title'] = get_meta('dc.title', tree)
+  if article['title'] == None:
+    article['title'] = get_meta('dc.Title', tree)
 
 
-  article['ids'] = dict(zip(['doi'], [tree.xpath("//meta[@name='citation_doi']/@content")[0]]))
+  article['author_names'] = get_meta_list('dc.creator', tree)
+  if article['author_names'] == None:
+    article['author_names'] = get_meta_list('dc.contributor', tree)
+
+  article['abstract'] = get_meta('dc.description', tree)
   
-  def make_datestamp(date):
-    year = int(date[0])
-    month = int(date[1])
-    day = int(date[2])
-    return time.mktime(datetime.date(year, month, day).timetuple())
+  article['journal'] = get_meta('citation_journal_title', tree)
+
+  article['citation']['journal'] = get_meta('citation_journal_abbrev', tree)
+  article['citation']['volume'] = get_meta('citation_volume', tree)
+  article['citation']['page'] = get_meta('citation_firstpage', tree)
+
+  article['ids'] = dict(zip(['doi'], [get_meta('citation_doi', tree)]))
  
-  pub_date = tree.xpath("//meta[@name='dc.date']/@content")
+  pub_date = get_meta('citation_publication_date', tree)
   if pub_date:
-    article['date_published'] = make_datestamp(pub_date[0].split('-'))
+    split = pub_date.split('-')
+    article['date_published'] = make_datestamp(split[2], split[1], split[0])
+    article['citation']['year'] = split[0]
 
-  year = tree.xpath("//meta[@name='citation_date']/@content")
-  if year:
-    article['citation']['pub_year'] = year[0][:4]
-  
-  return article  
+  return article 
   
 if __name__ == "__main__":
   print scrape(sys.argv[1])

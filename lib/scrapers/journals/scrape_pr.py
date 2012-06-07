@@ -61,6 +61,7 @@ def scrape(abstract_url):
 
   # Make our article object
   article = {}
+  article['scraper'] = 'pr'
   article['title'] = title
   article['cite'] = cite_as
   
@@ -121,6 +122,7 @@ def scrape(abstract_url):
     article['categories_pacs'] = [c.strip() for c in article['ids']['pacs'].split(',')]
     del article['ids']['pacs']
 
+  
   return article
 
 if __name__ == "__main__":

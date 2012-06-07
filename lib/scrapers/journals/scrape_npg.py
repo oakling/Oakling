@@ -3,6 +3,7 @@ import urllib2
 import lxml.html
 import urlparse
 import gzip
+from comm import *
 from StringIO import StringIO
 
 import utils
@@ -33,36 +34,51 @@ def scrape(abstract_url):
   page_text = data.decode('utf-8')
   tree = lxml.html.fromstring(page_text) 
 
-  article = {}
-  
+  article = make_blank_article()
+  article['scraper'] = 'npg'
   article['source_urls'] = [uri for _, uri in urls]
-  article['title'] = tree.xpath("//meta[@name='DC.title']/@content")[0]
-  article['author_names'] = [author for author in tree.xpath("//meta[@name='DC.creator']/@content")]
+
+  article['title'] = get_meta('DC.title',tree)
+  if article['title'] == None:
+      article['title'] = get_meta('dc.title',tree)
+
+  article['publisher'] = get_meta('DC.publisher',tree)
+  if article['publisher'] == None:
+      article['publisher'] = get_meta('dc.publisher',tree)
+
+  article['author_names'] = get_meta_list('DC.creator',tree)
+  if article['author_names'] == None:
+      article['author_names'] = get_meta_list('dc.creator',tree)
   
-  article['abstract'] = tree.xpath("//div[@class='content']/p")[0].text_content()
+  try:
+      article['abstract'] = tree.xpath("//div[@class='content']/p")[0].text_content()
+  except:
+      pass
+  if article['abstract'] == None:
+      try:
+          article['abstract'] = tree.xpath("//div[@id='abs']/p")[0].text_content()
+      except:
+          pass
 
-  article['citation'] = {}
+  article['citation']['journal'] = get_meta('citation_journal_title', tree)
+  article['citation']['volume'] = get_meta('prism.volume', tree)
+  article['citation']['page'] = get_meta('prism.startingPage', tree)
 
-  article['citation']['journal'] = tree.xpath("//meta[@name='citation_journal_title']/@content")[0]
-  article['citation']['volume'] = tree.xpath("//meta[@name='prism.volume']/@content")[0]
-  article['citation']['page'] = tree.xpath("//meta[@name='prism.startingPage']/@content")[0]
-  article['citation']['page_last'] = tree.xpath("//meta[@name='prism.endingPage']/@content")[0]
+  article['journal'] = get_meta('prism.publicationName', tree)
 
-  year = tree.xpath("//meta[@name='citation_date']/@content")
+  year = get_meta('citation_date', tree)
   if year:
     article['citation']['year'] = year[0][:4]
 
   article['ids'] = dict(zip(['doi'], [tree.xpath("//meta[@name='citation_doi']/@content")[0][4:]]))
-  
-  def make_datestamp(date):
-    year = int(date[0])
-    month = int(date[1])
-    day = int(date[2])
-    return time.mktime(datetime.date(year, month, day).timetuple())
- 
-  pub_date = tree.xpath("//meta[@name='dc.date']/@content")
+
+  pub_date = get_meta('DC.date', tree)
+  if pub_date == None:
+      pub_date = get_meta('dc.date', tree)
+
   if pub_date:
-    article['date_published'] = make_datestamp(pub_date[0].split('-'))
+    split = pub_date.split('-')
+    article['date_published'] = make_datestamp(split[2], split[1], split[0])
 
   return article
   

@@ -1,52 +1,57 @@
 import sys
-import urllib2
 import lxml.html
-import urlparse
-
 import utils
-
-#DESCRIPTION:
-# Scrapes all journal articles from ACS publishing (American Chemical Society) given the URL of the abstract
-
-
-#TO DO:
-# The abstract contained in the meta element is not necessarily complete if it is particularly long. Could take "//div[@id='abstractBox']/p" instead, however this can contain HTML formatting.
-# Deal with escaped unicode characters e.g. '\U011f' in text
-
-
+import re
+from comm import *
 
 #WEBSITES:
 # http://pubs.acs.org/
 
-def get_tree(response):
-  return lxml.html.parse(response, base_url=response.geturl())
-    
-# Scrape the given url
+
 def scrape(abstract_url):
-  req = urllib2.Request(abstract_url, headers=utils.headers)
-  source_urls, response = utils.get_response_chain(req)
+  tree, urls, page_text = get_tree(abstract_url) 
 
-  tree = get_tree(response)  
+  article = make_blank_article()
+  article['scraper'] = 'acs'
+  article['source_urls'] = [uri for _, uri in urls]
 
-  article = {}
-  
-  article['source_urls'] = [url for code, url in source_urls]
-  article['title'] = tree.xpath("//meta[@name='dc.Title']/@content")[0]
-  article['author_names'] = [author for author in tree.xpath("//meta[@name='dc.Creator']/@content")]
-  article['citation'] = {'journal': tree.xpath("//div[@id='citation']/cite")[0].text}
-  article['ids'] = {'doi': tree.xpath("//meta[@name='dc.Identifier']/@content")[0]}
-	
-  # Some old (pre-internet) articles may not have an abstract
-  abstract = tree.xpath("//meta[@name='dc.Description']/@content")
-  if abstract:
-    article['abstract'] = abstract[0]
+  article['title'] = get_meta('dc.Title', tree)
+  article['publisher'] = get_meta('dc.Publisher', tree)
+  article['author_names'] = get_meta_list('dc.Creator', tree)
 
-  # If an article is 'ASAP' (advance web preview) it will not yet have a publication year
-  year = tree.xpath("//span[@class='citation_year']")
-  if year:
-    article['citation']['pub_year'] = year[0].text
+  article['ids'] = dict(zip(['doi'], [get_meta('dc.Identifier', tree)]))
+
+  try:
+      article['journal'] = tree.xpath("//div[@id='journalTop']/div/a/img/@alt")[0]
+  except:
+      pass
+
+  try:
+      article['abstract'] = tree.xpath("//div[@id='abstractBox']/p")[0].text_content()
+  except:
+      pass
+
+  try:
+      article['citation']['journal'] = tree.xpath("//div[@id='citation']/cite")[0].text
+  except:
+      pass
+
+  try:
+      article['citation']['volume'] = tree.xpath("//span[@class='citation_volume']")[0].text
+  except:
+      pass
+
+  page_cite = tree.xpath("//div[@id='citation']")
+  if page_cite:
+      page = re.findall('pp\s([0-9]+)', page_cite[0].text_content())
+      if page:
+          article['citation']['page'] = page[0]
+
+  date = get_meta('dc.Date', tree).split()
+  if date:
+      article['date_published'] = make_datestamp(date[1][:-1], months[date[0]], date[2])
+      article['citation']['year'] = date[2]
+
+
 	
   return article
-
-if __name__ == "__main__":
-  print scrape(sys.argv[1])
