@@ -119,7 +119,8 @@ def scrape(abstract_url):
   # PACS will be recognised as an id, even though its actually a list of categories.
   # Split them out into their own custom field and delete from ids.
   if 'pacs' in article['ids']:
-    article['categories_pacs'] = [c.strip() for c in article['ids']['pacs'].split(',')]
+    article['categories'] = {'PACS':[c.strip() for c in
+                                     article['ids']['pacs'].split(',')]}
     del article['ids']['pacs']
 
   

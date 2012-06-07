@@ -37,6 +37,9 @@ def arxiv_api(ids):
         paper['source_urls'] = [remove_vNumber(result.link)]
 
         paper['categories'] = categorize([tag['term'] for tag in result.tags])
+        paper['journal'] = 'arxiv:' + result.arxiv_primary_category['term']
+        paper['citation'] = {'journal':paper['journal'],
+                             'year':result.published_parsed.tm_year}
         papers.append(paper)
     return papers
 
