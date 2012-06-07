@@ -45,5 +45,5 @@ def journals(request):
   rows = db.view('index/journals', group=True)
 
   return HttpResponse(json.dumps([row.key for row in rows if filter is None or
-                                  filter == clean_journal(row.key)]),
+                                 clean_journal(row.key).startswith(filter)]),
                       content_type='application/json')
