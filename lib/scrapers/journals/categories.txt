@@ -1,0 +1,29 @@
+title - the article title
+
+abstract - the full text of the article abstract
+
+journal - full journal title if available (abbreviated otherwise)
+
+author_names - list of authors names
+
+date_published - publishing date (unix time)
+
+date_received - date article received by journal (unix time)
+
+date_revised - date article revision received by journal (unix time)
+
+categories_pacs - list of pacs codes (where available)
+
+ids - dictionary of ids including doi, etc
+
+source_urls - list of urls leading to the abstract page, as determined by get_response_chain() in utils
+
+citation - dictionary containing 'journal' - the abbreviated journal title,
+			     'volume' - the journal volume number
+                             'page' - the page number of the first page of the paper
+			     'year' - publication year
+
+cite - same as citation but single string (probably unnecessary)
+
+
+scraper - scraper identity
