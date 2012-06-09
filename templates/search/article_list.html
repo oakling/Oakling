@@ -1,8 +1,12 @@
 {% load humanize %}
 {% for doc in docs %}
-<li id="{{ doc.docid }}">
-<h3><a href="{% url search:viewdoc doc.docid %}" title="{{ doc.title }}">{{ doc.title|truncatewords:12 }}</a></h3>
-<p class="meta"><span class="authors">
+<li id="{{ doc.docid }}" itemscope itemtype="http://schema.org/Article">
+<h3 itemprop="name">
+    <a href="{% url search:viewdoc doc.docid %}" title="{{ doc.title }}">{{ doc.title|truncatewords:12 }}</a>
+</h3>
+<p class="meta">
+    <meta itemprop="datePublished" content="{{ doc.date|date:"c" }}">
+    <span class="authors">
     {% with author_count=doc.author_names|length %}
     {% if author_count > 3 %}
         {{ doc.author_names|slice:"2"|join:", " }} &hellip;
@@ -10,7 +14,10 @@
     {% else %}
         {{ doc.author_names|join:", " }}
     {% endif %}
-    {% endwith %}</span> —
-    <span class="journal">{{ doc.citation.journal }}</a></span></p>
+    {% endwith %}</span> 
+    {% if doc.citation.journal %}
+        — <span class="journal">{{ doc.citation.journal }}</a></span>
+    {% endif %}
+    </p>
 </li>
 {% endfor %}

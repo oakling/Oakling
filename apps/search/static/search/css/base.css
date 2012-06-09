@@ -9,14 +9,30 @@ div.abstract {
   font-size:1.1em;
 }
 
+#latest_articles {
+    padding-top:2em;
+    border-left: 0.3em solid silver;
+    border-right: 0.3em solid silver;
+}
+
+#latest_articles h2 {
+    font-size:140%;
+    color:silver;
+    margin:1em 0;
+    padding:0;
+    line-height:1;
+    border-bottom: 0.15em solid silver;
+}
+
 #latest_articles a {
     text-decoration: underline;
 }
 
 #latest_articles li {
+    padding-left: 2em;
     list-style: none;
     max-width: 700px;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
 }
 
 #latest_articles li p.abstract {
@@ -34,10 +50,6 @@ div.abstract {
 
 #latest_articles li span.journal {
     font-style: italic;
-}
-
-#latest_articles li time {
-    font-weight: bold;
 }
 
 /* /doc/ page */

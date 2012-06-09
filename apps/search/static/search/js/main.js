@@ -1,8 +1,15 @@
 // Namespace for akorn js
 var akorn = {
+    // TODO Really!? In this century?
+    month_names: [ "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December" ],
     append_articles: function(data) {
         // Add in one go as fragment
         akorn.articles_container.append(data);
+        // Add date lines
+        if(akorn.prev_article !== undefined) {
+            akorn.add_date_lines();
+        }
         // Once we have finished adding, stop the pause on updates
         // Stick a delay in to mitigate scrollbar glitches
         window.setTimeout('akorn.pause_updates = false', 400);
@@ -19,8 +26,32 @@ var akorn = {
     },
     add_more_articles: function() {
             // Get the id of the last article
-            var last_article = akorn.articles_container.find('li:last-child').attr('id');
-            akorn.get_articles(20, last_article);
+            var last_article = akorn.articles_container.find('li:last-child');
+            // Stash this to use when adding date lines
+            akorn.prev_article = last_article;
+            // Get articles after the current last article
+            akorn.get_articles(20, last_article.attr('id'));
+    },
+    add_date_lines: function() {
+        var prev_article = akorn.prev_article;
+        // Get all the articles that follow the last article before this set
+        var latest_articles = prev_article.nextAll();
+        // Get the date of the previous article
+        var prev_datetime = prev_article.find('meta').attr('content').substr(0,10);
+        // TODO Remove... just for testing
+        prev_datetime = "qfGQGE";
+        for(var i=0, len=latest_articles.length; i<len; i++) {
+            // Get the date of the article
+            var date_str = $(latest_articles[i]).find('p.meta meta').attr('content').substr(0,10);
+            // If the date does not match
+            if(date_str !== prev_datetime) {
+                // Make a date line
+                var date_bits = date_str.split('-');
+                $(['<h2>',date_bits[2],' ',akorn.month_names[parseInt(date_bits[1])-1],'</h2>'].join('')).insertBefore(latest_articles[i]);
+            }
+            // Reset the previous date
+            prev_datetime = date_str;
+        }
     },
     throttle: (function () {
         // Generic throttling function
@@ -37,10 +68,14 @@ var akorn = {
         };
     })(),
     check_position: function() {
+        // Trigger if scroll position is 400 px off the bottom
         if ($(window).scrollTop() >= $(document).height() - $(window).height() - 400) {
+            // Check updating is not paused to wait for previous update
             if (!akorn.pause_updates)
             {
+                // Pause updating
                 akorn.pause_updates = true;
+                // Add a new set of articles
                 akorn.add_more_articles();
             }
             return true;
