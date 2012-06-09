@@ -2,11 +2,15 @@
 
 {% block scripts %}
 {{ block.super }}
-<script src="{{ STATIC_URL }}search/js/jquery.tagsinput.min.js"></script>
+<script src="{{ STATIC_URL }}search/js/tag-it.js"></script>
 <script src="{{ STATIC_URL }}search/js/main.js"></script>
 {% endblock %}
 
+{% block content_class %}search{% endblock %}
 {% block content %}
+<form action="/search/" method="get">
+    <input type="text" name="q" placeholder="Search" id="search">
+</form>
 <ul id='latest_articles' class='articles'>
 </ul>
 {% endblock %}

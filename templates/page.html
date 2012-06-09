@@ -6,25 +6,20 @@
         <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/start/jquery-ui.css">
         <link rel="stylesheet" href="{{STATIC_URL}}search/css/grid.css">
         <link rel="stylesheet" href="{{STATIC_URL}}search/css/base.css">
-        <link rel="stylesheet" href="{{STATIC_URL}}search/css/jquery.tagsinput.css">
+        <link rel="stylesheet" href="{{STATIC_URL}}search/css/jquery.tagit.css">
         <title>Akorn {% block pagetitle %}open science{% endblock %}</title>
         <link rel="canonical" href="{% block canonical %}{% endblock %}">
     </head>
     <body>
         <div class="navbar">
             <div class="navbar-inner">
-                <div class="container">
-                    <a class="brand" href="/">
-                        AKORN
-                    </a>
-                    <form class="navbar-search pull-left" action="/search/" method="get">
-                        <input type="text" class="search-query" name="q" placeholder="Search" id="search">
-                    </form>
-                </div>
+	    <a class="brand" href="/">
+		AKORN
+	    </a>
             </div>
         </div>
 
-        <div class="container_12">
+        <div class="container_12 {% block content_class %}{% endblock %}">
            {% block content %}
            {% endblock %}
        </div>

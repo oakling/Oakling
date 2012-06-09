@@ -9,10 +9,33 @@ div.abstract {
   font-size:1.1em;
 }
 
-#latest_articles {
-    padding-top:2em;
+.navbar {
+    margin-bottom: 0px;
+}
+.navbar-inner {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+.container_12 {
+    margin-top:0;
+    padding-top:1em;
+}
+div.search {
     border-left: 0.3em solid silver;
     border-right: 0.3em solid silver;
+}
+
+.tagit input{box-shadow: none;}
+
+#latest_articles {
+    margin-left:0;
+}
+
+.tagit {
+    width: 80%;
+    margin: 0 auto !important;
 }
 
 #latest_articles h2 {
@@ -31,7 +54,6 @@ div.abstract {
 #latest_articles li {
     padding-left: 2em;
     list-style: none;
-    max-width: 700px;
     margin-bottom: 1em;
 }
 
