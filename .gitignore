@@ -3,3 +3,6 @@
 
 # vim swap files
 *.swp
+
+# The Django collected static files dir
+collectedstatic
