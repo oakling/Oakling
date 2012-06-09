@@ -1,6 +1,6 @@
 {% load humanize %}
 {% for doc in docs %}
-<li>
+<li id="{{ doc.docid }}">
 <h3><a href="{% url search:viewdoc doc.docid %}" title="{{ doc.title }}">{{ doc.title|truncatewords:12 }}</a></h3>
 <p class="meta"><span class="authors">
     {% with author_count=doc.author_names|length %}
