@@ -40,13 +40,13 @@ var akorn = {
         var params = {};
         var callback;
 
-        if(article_id !== undefined) {
+        if(article_id !== undefined && article_id) {
             params['article'] = article_id;
         }
-        if(query !== undefined) {
+        if(query !== undefined && query) {
             params['q'] = query;
         }
-        if(clear !== undefined) {
+        if(clear !== undefined && clear) {
             callback = akorn.replace_articles;
         }
         else {
@@ -133,44 +133,52 @@ var akorn = {
         placeholderText: "Search for journals...",
         // Called when a tag is added
         onTagAdded: function(event, tag) {
-	    akorn.get_articles(20,
-                            undefined,
-                            akorn.search_box.tagit("assignedTags").join('+'),
-                            true);
+            var query = akorn.search_box.tagit("assignedTags").join('+');
+            akorn.query = query;
+	        akorn.get_articles(20,
+                    undefined,
+                    query,
+                    true);
         },
         // Called when a tag is removed
         onTagRemoved: function(event, tag) {
-	    // Get array of assigned tags
-	    var tags_arr = akorn.search_box.tagit("assignedTags");
-	    // Find the removed tag
-	    var tag_idx = $.inArray(tag, tags_arr);
-	    if(tag_idx) {
-                // Remove it
-	        tags_arr.splice(tag_idx, 1);
-	    }
-	    akorn.get_articles(20,
-                            undefined,
-                            tags_arr.join('+'),
-                            true);
+            // Get array of assigned tags
+            var tags_arr = akorn.search_box.tagit("assignedTags");
+            // Find the removed tag
+            var tag_idx = $.inArray(tag, tags_arr);
+            if(tag_idx) {
+                    // Remove it
+                tags_arr.splice(tag_idx, 1);
+            }
+            var query = tags_arr.join('+');
+            akorn.query = query;
+            akorn.get_articles(20,
+                    undefined,
+                    query,
+                    true);
+        },
+        _highlight: function(s, t) {
+            var matcher = new RegExp("("+$.ui.autocomplete.escapeRegex(t)+")", "ig" );
+            return s.replace(matcher, "<strong>$1</strong>");
         },
         // Function to use for auto-completion
         tagSource: function(search, showChoices) {
-                $.ajax({
-                        url: "/api/journals",
-                        data: {'term': search.term},
-                        dateType: "json",
-                        // TODO Copy and paste code, should be possible to improve
-                        success: function(data) {
-                                var assigned = akorn.search_box.tagit("assignedTags");
-                                var filtered = [];
-                                for (var i=0, dlen=data.length; i < dlen; i++) {
-                                        if ($.inArray(data[i], assigned) == -1) {
-                                                filtered.push(data[i]);
-                                        }
-                                }
-                                showChoices(filtered);
+            $.ajax({
+                url: "/api/journals",
+                data: {'term': search.term},
+                dateType: "json",
+                // TODO Copy and paste code, should be possible to improve
+                success: function(data) {
+                    var assigned = akorn.search_box.tagit("assignedTags");
+                    var filtered = [];
+                    for (var i=0, dlen=data.length; i < dlen; i++) {
+                        if ($.inArray(data[i], assigned) == -1) {
+                            filtered.push({label: akorn.search_config._highlight(data[i], search.term), value: data[i]});
                         }
-                });
+                    }
+                    showChoices(filtered);
+                },
+            });
         },
     },
     init: function() {

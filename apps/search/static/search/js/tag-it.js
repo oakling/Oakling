@@ -227,11 +227,18 @@
                         if (that._tagInput.val() === '') {
                             that.removeTag(that._lastTag(), false);
                         }
-                        that.createTag(ui.item.value);
+                        that.createTag(ui.item.value, 'journal');
                         // Preventing the tag input to be updated with the chosen value.
                         return false;
                     }
-                });
+                , minLength: 2})
+                .data("autocomplete")._renderItem = function( ul, item ) {
+                        // only change here was to replace .text() with .html()
+                        return $( "<li></li>" )
+                            .data( "item.autocomplete", item )
+                            .append( $( "<a></a>" ).html(item.label) )
+                            .appendTo( ul );
+                };
             }
         },
 
@@ -383,8 +390,7 @@
             this.tagList.children('.tagit-choice').each(function(index, tag) {
                 that.removeTag(tag, false);
             });
-        }
-
+        },
     });
 
 })(jQuery);
