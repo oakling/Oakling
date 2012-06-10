@@ -25,10 +25,14 @@ def latest(request, num):
         # Cannot use _id inside a Django template
         d['docid'] = d['_id']
         # Process the timestamp to produce a usable datetime object
-        try:
-            d.date = datetime.datetime.fromtimestamp(row.doc.date_published)
-        except AttributeError:
-            # TODO If no datetime is provided what should we do?
+        # TODO Need a reliable property to access for date
+        if d.has_key('date_published'):
+            d.date = datetime.datetime.fromtimestamp(d['date_published'])
+        elif d.has_key('date_revised'):
+            d.date = datetime.datetime.fromtimestamp(d['date_revised'])
+        elif d.has_key('date_received'):
+            d.date = datetime.datetime.fromtimestamp(d['date_received'])
+        else:
             d.date = datetime.datetime.now()
         docs.append(d)
 
