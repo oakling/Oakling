@@ -8,7 +8,8 @@
         <link rel="stylesheet" href="{{STATIC_URL}}search/css/base.css">
         <link rel="stylesheet" href="{{STATIC_URL}}search/css/jquery.tagit.css">
         <title>Akorn {% block pagetitle %}open science{% endblock %}</title>
-        <link rel="canonical" href="{% block canonical %}{% endblock %}">
+        {% block canonical %}{% endblock %}
+        {% block og_meta %}{% endblock %}
     </head>
     <body>
         <div class="navbar">

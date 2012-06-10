@@ -1,7 +1,12 @@
 {% extends 'page.html' %}
 {% load urls %}
 
-{% block canonical %}{{ block.super }}{% url search:viewdoc doc.docid %}{% endblock %}
+{% block canonical %}<link rel="canonical" href="{% url search:viewdoc doc.docid %}">{% endblock %}
+
+{% block og_meta %}
+<meta property="og:title" content="{{ doc.title }}" />
+<meta property="og:description" content="{{ doc.abstract }}" />
+{% endblock %}
 
 {% block content %}
 <div id="fb-root"></div>
