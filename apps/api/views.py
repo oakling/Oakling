@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+import urllib
 
 import re
 import json
@@ -17,10 +18,28 @@ def latest(request, num):
 
     num = min(int(num), 100)
 
-    rows = db.view('articles/latest', limit=num, include_docs=True, descending=True)
+    journals_s = request.GET.get('q')
 
+    if journals_s:
+      journals = journals_s.split('+')
+    else:
+      journals = None
+
+    print journals
+
+    if journals is not None:
+      all_rows = []
+      for journal in journals:
+        rows = db.view('articles/latest_journal', limit=num, include_docs=True, descending=True)
+        rows_journal = rows[[journal,{}]:[journal]]
+        all_rows += rows_journal
+
+      all_rows = sorted(all_rows, key=lambda row: row.doc['date_published'], reverse=True)
+    else:
+      all_rows = db.view('articles/latest', limit=num, include_docs=True, descending=True)
+      
     docs = []
-    for row in rows:
+    for row in all_rows:
         d = row.doc
         # Cannot use _id inside a Django template
         d['docid'] = d['_id']
