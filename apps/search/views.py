@@ -15,8 +15,13 @@ import lib.scrapers.journals.tasks as scraping_tasks
 import lib.scrapers.journals.utils as scraping_utils
 
 def home(request):
+    # Get their last visit
+    last_visit = request.session.get('last_visit', None)
+    # Update last visit
+    request.session['last_visit'] = datetime.datetime.now()
     return render_to_response('search/home.html',
-                              context_instance=RequestContext(request))
+            {'last_visit':last_visit},
+            context_instance=RequestContext(request))
 
 class SearchThread(threading.Thread):
     """Threaded access to search api."""

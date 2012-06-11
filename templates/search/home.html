@@ -4,6 +4,12 @@
 {{ block.super }}
 <script src="{{ STATIC_URL }}search/js/tag-it.js"></script>
 <script src="{{ STATIC_URL }}search/js/main.js"></script>
+{% if last_visit %}
+<script type="text/javascript">
+// TODO There is probably a better way to do this
+akorn.last_visit = "{{ last_visit|date:"c" }}";
+</script>
+{% endif %}
 {% endblock %}
 
 {% block content_class %}search{% endblock %}

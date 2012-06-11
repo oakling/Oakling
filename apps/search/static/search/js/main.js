@@ -66,35 +66,81 @@ var akorn = {
             akorn.get_articles(20, last_article.attr('id'), query);
     },
     // Cycle through the articles marking date changes
+    // Also mark the users last visit
+    // TODO Refactor this method
     add_date_lines: function() {
-        var prev_article = akorn.prev_article;
+        var latest_articles, prev_datetime, prev_datetime_full, latest_article;
+        var i, date_str, date_bits, last_visit_date, last_visit_obj, date_obj;
+        var ak = akorn; // Cache local ref
+        var prev_article = ak.prev_article;
+        var add_last_visit = false;
+        var last_visit = ak.last_visit; // Get the users last visit
+
         if(prev_article === undefined) {
             // If it is not set then take the first in the whole list
-            prev_article = akorn.articles_container.find('li:first');
+            prev_article = ak.articles_container.find('li:first');
         }
         // Get all the articles that follow the last article before this set
-        var latest_articles = prev_article.nextAll();
+        latest_articles = prev_article.nextAll();
         // Get the date of the previous article
-        var prev_datetime = prev_article
+        prev_datetime_full = prev_article
                 .find('meta')
-                .attr('content')
-                .substr(0,10);
-        for(var i=0, len=latest_articles.length; i<len; i++) {
+                .attr('content');
+        prev_datetime = prev_datetime_full.substr(0,10);
+        // If a last visit is set then add a line
+        if(last_visit !== undefined) {
+            last_visit = '2012-06-07T18:00';
+            last_visit_date = last_visit.substr(0,10);
+            last_visit_obj = new Date(last_visit);
+            // Check against the first article
+            prev_datetime_obj = new Date(prev_datetime_full);
+            if(last_visit_obj > prev_datetime_obj) {
+                // TODO Do something if there are no new articles
+                console.warn('There are no new articles');
+                // Unset last_visit to prevent further checking
+                akorn.last_visit = undefined;
+            }
+            else{
+                add_last_visit = true;
+            }
+        }
+        for(i=0, len=latest_articles.length; i<len; i++) {
+            var date_added = false;
+            latest_article = $(latest_articles[i]);
             // Get the date of the article
-            var date_str = $(latest_articles[i])
-                    .find('p.meta meta')
-                    .attr('content')
-                    .substr(0,10);
+            datetime_str = latest_article
+                .find('p.meta meta')
+                .attr('content');
+            date_str = datetime_str.substr(0,10);
             // If the date does not match
             if(date_str !== prev_datetime) {
                 // Make a date line
-                var date_bits = date_str.split('-');
-                $(['<h2>',date_bits[2],
+                date_bits = date_str.split('-');
+                date_added = $(['<h2>',date_bits[2],
                                 ' ',
-                                akorn.month_names[parseInt(date_bits[1])-1],
+                                ak.month_names[parseInt(date_bits[1])-1],
                                 '</h2>']
-                                .join(''))
-                        .insertBefore(latest_articles[i]);
+                                .join(''));
+                date_added.insertBefore(latest_article);
+            }
+            // Check if last visit date matches
+            if(add_last_visit) {
+                // Make a date object for finer comparison
+                date_obj = new Date(datetime_str);
+                // Check if line should go before this datetime?
+                if(last_visit_obj > date_obj) {
+                    // Add a last visit line
+                    if(date_added) {
+                        date_added.attr('id','last_visit').append(' — Your previous visit');
+                    }
+                    else {
+                        $('<h2 id="last_visit">Your previous visit</h2>').insertBefore(latest_article);
+                    }
+                    // Unset last_visit to prevent further checking
+                    akorn.last_visit = undefined;
+                    // Turn off last visit checking
+                    add_last_visit = false;
+                }
             }
             // Reset the previous date
             prev_datetime = date_str;
