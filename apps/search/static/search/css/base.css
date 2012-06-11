@@ -85,7 +85,7 @@ div.search {
 }
 
 .box_authors .author_name {
-  font-size:1.2em;
+  font-size:1.3em;
   margin-bottom:0.2em;
   color:#336;
 }
@@ -98,4 +98,8 @@ div.search {
 .box_date strong {
   font-weight:normal;
   color:#333;
+}
+
+.share-button {
+  display:inline;
 }

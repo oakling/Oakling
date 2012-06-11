@@ -12,11 +12,27 @@
 <div id="fb-root"></div>
 
 <div itemscope itemtype="http://schema.org/CreativeWork">
-<h1 itemprop="name">{{ doc.title }}</h1>
+
+<div class='grid_8 alpha'>
+  <h1 itemprop="name">{{ doc.title }}</h1>
+</div>
+
+<div class='grid_4 omega'><div class='box_inner'>
+  <div class="share-button g-plusone"></div>
+
+  <div class="share-button tweet">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>
+  </div>
+
+  <div class="share-button fb-like" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false" data-action="like" data-colorscheme="light"></div>
+</div></div>
+
 <div class='grid_8 alpha'><div class='box_inner box_date'>
   published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href='{#{% url viewjournal id=journal.id %}#}'>{{ doc.citation.journal }}</a></strong>
 </div></div>
+
 <div class='clear'></div>
+
 <div class='grid_8 alpha'><div class='box_inner box_abstract' itemprop="description">
   {% if doc.abstract %}
   <div class='abstract'>
@@ -25,27 +41,29 @@
   {% endif %}
 </div></div>
 <div class='grid_4 omega'>
-<div class='box_inner'>
-
-    <div class="g-plusone"></div>
-
-    <div class="tweet">
-        <a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>
-    </div>
-
-    <div class="fb-like" data-send="false" data-layout="standard" data-width="450" data-show-faces="false" data-action="like" data-colorscheme="light"></div>
-</div>
 
 <div class='box_inner box_authors'>
-  <p>
-    {% for author in doc.author_names %}
-      {% if author.surname %}
-        <div class='author_name'>{{ author.forename }} {{ author.surname }}</div>
-      {% else %}
-        <div class='author_name'>{{ author }}</div>
-      {% endif %}
-    {% endfor %}
-  </p>
+    {% if doc.author_names|length > 10 %}
+      {% for author in doc.author_names %}
+        {% if forloop.counter <= 10 %}
+          {% if author.surname %}
+            <div class='author_name'>{{ author.forename }} {{ author.surname }}</div>
+          {% else %}
+            <div class='author_name'>{{ author }}</div>
+          {% endif %}
+        {% elif forloop.counter == 11 %}
+          <a href=''>see all {{ doc.author_names|length }}</a>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% for author in doc.author_names %}
+        {% if author.surname %}
+          <div class='author_name'>{{ author.forename }} {{ author.surname }}</div>
+        {% else %}
+          <div class='author_name'>{{ author }}</div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
 </div></div>
 <div class='clear'></div>
 <div class='grid_4 omega'><div class='box_inner box_meta'>
