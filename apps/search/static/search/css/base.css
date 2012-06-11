@@ -74,6 +74,11 @@ div.search {
     font-style: italic;
 }
 
+#last_visit {
+    border-color: #aa0000 !important;
+    color:#aa0000 !important;
+}
+
 /* /doc/ page */
 .box_inner {
   padding:5px;

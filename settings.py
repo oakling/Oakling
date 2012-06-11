@@ -121,8 +121,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Adding 'human touch' filters
-    'django.contrib.humanize',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -157,3 +155,5 @@ LOGGING = {
 MENDELEY_CONSUMER_KEY='c03c2cb64ec7dc1522b71127085747ac04f2d516d'
 
 STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/')
+
+SESSION_ENGINE = "django.contrib.sessions.backends.file"
