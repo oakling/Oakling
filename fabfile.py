@@ -1,4 +1,4 @@
-from fabric.api import local, run, cd
+from fabric.api import local, run, cd, sudo
 
 def hello():
     print("Hello world!")
@@ -10,5 +10,5 @@ def deploy():
   with cd('/home/ubuntu/akorn/akorn_search'):
     run('git pull')
     run('python manage.py collectstatic --noinput')
-    run('sudo /etc/init.d/django-akorn restart')
+    sudo('/etc/init.d/django-akorn restart')
 
