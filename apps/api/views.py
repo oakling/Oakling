@@ -53,6 +53,12 @@ def latest(request, num):
             d.date = datetime.datetime.fromtimestamp(d['date_received'])
         else:
             d.date = datetime.datetime.now()
+
+        if 'citation' in d and 'journal' in d['citation']:
+          d.journal = d['citation']['journal']
+        elif 'categories' in d and 'arxiv' in d['categories']:
+          d.journal = d['categories']['arxiv'][0]
+
         docs.append(d)
 
     return render_to_response('search/article_list.html', {'docs': docs})
