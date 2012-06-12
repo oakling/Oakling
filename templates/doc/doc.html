@@ -51,8 +51,10 @@
           {% else %}
             <div class='author_name'>{{ author }}</div>
           {% endif %}
-        {% elif forloop.counter == 11 %}
-          <a href=''>see all {{ doc.author_names|length }}</a>
+        {% else %}
+          {% if forloop.counter == 11 %}
+            <a href=''>see all {{ doc.author_names|length }}</a>
+          {% endif %}
         {% endif %}
       {% endfor %}
     {% else %}
