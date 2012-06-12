@@ -5,7 +5,13 @@
 
 {% block og_meta %}
 <meta property="og:title" content="{{ doc.title }}" />
+<meta property="og:type" content="article" />
 <meta property="og:description" content="{{ doc.abstract }}" />
+<meta property="og:image" content="{{ STATIC_URL}}search/img/article.jpg" />
+<meta property="og:url" content="{% url search:viewdoc doc.docid %}" />
+<meta property="og:site_name" content="Akorn.org" />
+<!-- Facebook ID of Craig Loftus -->
+<meta property="fb:admins" content="506422046" />
 {% endblock %}
 
 {% block content %}
