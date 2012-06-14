@@ -12,3 +12,11 @@ def deploy():
     run('python manage.py collectstatic --noinput')
     sudo('/etc/init.d/django-akorn restart')
 
+def celery_restart():
+    sudo('/etc/init.d/celeryd restart')
+
+def celerybeat_restart():
+    sudo('/etc/init.d/celerybeat restart')
+
+def rabbitmq_restart():
+    sudo('/etc/init.d/rabbitmq-server restart')
