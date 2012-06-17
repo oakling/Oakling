@@ -69,8 +69,8 @@ var akorn = {
     // Also mark the users last visit
     // TODO Refactor this method
     add_date_lines: function() {
-        var latest_articles, prev_datetime, prev_datetime_full, latest_article;
-        var i, date_str, date_bits, last_visit_date, last_visit_obj, date_obj;
+        var latest_articles, prev_date, prev_datetime, latest_article;
+        var i, date_str, date_bits, last_visit_obj, date_obj, date_added;
         var ak = akorn; // Cache local ref
         var prev_article = ak.prev_article;
         var add_last_visit = false;
@@ -83,37 +83,37 @@ var akorn = {
         // Get all the articles that follow the last article before this set
         latest_articles = prev_article.nextAll();
         // Get the date of the previous article
-        prev_datetime_full = prev_article
+        prev_datetime = prev_article
                 .find('meta')
                 .attr('content');
-        prev_datetime = prev_datetime_full.substr(0,10);
+        prev_date = prev_datetime.substr(0,10);
         // If a last visit is set then add a line
         if(last_visit !== undefined) {
-            last_visit = '2012-06-07T18:00';
-            last_visit_date = last_visit.substr(0,10);
             last_visit_obj = new Date(last_visit);
             // Check against the first article
-            prev_datetime_obj = new Date(prev_datetime_full);
+            prev_datetime_obj = new Date(prev_datetime);
             if(last_visit_obj > prev_datetime_obj) {
                 // TODO Do something if there are no new articles
                 console.warn('There are no new articles');
                 // Unset last_visit to prevent further checking
                 akorn.last_visit = undefined;
             }
-            else{
+            else {
                 add_last_visit = true;
             }
         }
+
         for(i=0, len=latest_articles.length; i<len; i++) {
-            var date_added = false;
+            date_added = false;
             latest_article = $(latest_articles[i]);
             // Get the date of the article
             datetime_str = latest_article
                 .find('p.meta meta')
                 .attr('content');
+            // Get just the date
             date_str = datetime_str.substr(0,10);
             // If the date does not match
-            if(date_str !== prev_datetime) {
+            if(date_str !== prev_date) {
                 // Make a date line
                 date_bits = date_str.split('-');
                 date_added = $(['<h2>',date_bits[2],
@@ -123,18 +123,20 @@ var akorn = {
                                 .join(''));
                 date_added.insertBefore(latest_article);
             }
-            // Check if last visit date matches
+            // Are we looking for a last visit
             if(add_last_visit) {
-                // Make a date object for finer comparison
+                // Make a date object for fine comparison
                 date_obj = new Date(datetime_str);
                 // Check if line should go before this datetime?
                 if(last_visit_obj > date_obj) {
                     // Add a last visit line
                     if(date_added) {
-                        date_added.attr('id','last_visit').append(' — Your previous visit');
+                        date_added.attr('id','last_visit')
+                            .append(' — Your previous visit');
                     }
                     else {
-                        $('<h2 id="last_visit">Your previous visit</h2>').insertBefore(latest_article);
+                        $('<h2 id="last_visit">Your previous visit</h2>')
+                            .insertBefore(latest_article);
                     }
                     // Unset last_visit to prevent further checking
                     akorn.last_visit = undefined;
@@ -143,7 +145,7 @@ var akorn = {
                 }
             }
             // Reset the previous date
-            prev_datetime = date_str;
+            prev_date = date_str;
         }
     },
     // Generic throttling function
