@@ -35,7 +35,7 @@ def latest(request, num):
       for journal in journals:
         if journal in last_ids:
           print journal, last_ids[journal]
-          rows = db.view('articles/latest_journal', limit=num, include_docs=True, startkey=last_ids[journal][0], endkey=[journal], skip=1, descending=True)
+          rows = db.view('articles/latest_journal', limit=num, include_docs=True, startkey=last_ids[journal][0], startkey_docid=last_ids[journal][1], endkey=[journal], skip=1, descending=True)
         else:
           rows = db.view('articles/latest_journal', limit=num, include_docs=True, endkey=[journal], startkey=[journal,{}], descending=True)
 
@@ -48,11 +48,11 @@ def latest(request, num):
       #all_rows = sorted(all_rows, key=lambda row: row.doc['date_published'], reverse=True)
     else:
       if 'all' in last_ids:
-        all_rows = list(db.view('articles/latest', limit=num, include_docs=True, endkey_docid=last_ids['all'], descending=True))
+        all_rows = list(db.view('articles/latest', limit=num, include_docs=True, startkey=last_ids['all'][0], startkey_docid=last_ids['all'][1], skip=1, descending=True))
       else:
         all_rows = list(db.view('articles/latest', limit=num, include_docs=True, descending=True))
 
-      last_ids_json = {'all': (all_rows[-1].key, all_rows[-1].doc['_id'])}
+      last_ids_json = json.dumps({'all': (all_rows[-1].key, all_rows[-1].doc['_id'])})
       
     docs = []
     for row in all_rows:
