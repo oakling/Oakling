@@ -14,6 +14,9 @@ import couchdb
 import lib.scrapers.journals.tasks as scraping_tasks
 import lib.scrapers.journals.utils as scraping_utils
 
+# /api/save_search?user_id=<user_id>
+# /api/get_searches?user_id=<user_id>
+
 def home(request):
     # Get their last visit
     last_visit = request.session.get('last_visit', None)
@@ -243,4 +246,12 @@ def doc(request, id):
                             context_instance=RequestContext(request))
 
 def journal(request, id):
-  pass 
+  db = couchdb.Server()['store']
+
+  # Check the journal exists
+  records = db.view('index/journals', key=id)
+  if len(records.rows) == 0:
+    return # Can't find journal
+  
+  return render_to_response('search/journal.html', {'journal': id,}, context_instance=RequestContext(request))
+
