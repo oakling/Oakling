@@ -1,0 +1,21 @@
+{% extends 'page.html' %}
+
+{% block scripts %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content_class %}journal_page{% endblock %}
+{% block content %}
+
+<div class='grid_8 alpha'>
+  <h1>{{ journal }}</h1>
+</div>
+
+<div class='grid_12 alpha omega'>
+  <h3>Latest articles</h3>
+  <ul id='latest_articles' class='articles'>
+  </ul>
+</div>
+
+{% endblock %}
