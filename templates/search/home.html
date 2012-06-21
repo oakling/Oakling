@@ -14,9 +14,15 @@ akorn.last_visit = "{{ last_visit|date:"c" }}";
 
 {% block content_class %}search{% endblock %}
 {% block content %}
-<form action="/search/" method="get">
-    <input type="text" name="q" placeholder="Search" id="search">
+<form action="/search/" method="get" class="form-inline">
+    <input type="text" name="q" placeholder="Search" id="search"><button id="save_search" class="btn btn-primary" disabled="disabled" title="Save this search"><i class="icon-leaf icon-white"></i></button>
 </form>
-<ul id='latest_articles' class='articles'>
+<ul id="latest_articles" class="articles">
+</ul>
+
+<ul id="saved_searches">
+        {% for search in saved_searches %}
+        <li><a href="{{ search }}">{{ search }}</a>
+        {% endfor %}
 </ul>
 {% endblock %}

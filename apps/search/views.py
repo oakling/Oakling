@@ -14,13 +14,21 @@ import couchdb
 import lib.scrapers.journals.tasks as scraping_tasks
 import lib.scrapers.journals.utils as scraping_utils
 
+# /api/save_search?user_id=<user_id>
+# /api/get_searches?user_id=<user_id>
+
 def home(request):
     # Get their last visit
     last_visit = request.session.get('last_visit', None)
     # Update last visit
     request.session['last_visit'] = datetime.datetime.now()
+    # Get their saved search (default to empty list)
+    saved_searches = request.session.get('saved_searches', [])
     return render_to_response('search/home.html',
-            {'last_visit':last_visit},
+            {
+                'last_visit': last_visit,
+                'saved_searches': saved_searches,
+            },
             context_instance=RequestContext(request))
 
 class SearchThread(threading.Thread):
