@@ -13,6 +13,23 @@ import itertools
 import couchdb
 import datetime
 
+def save_search(request):
+    """
+    Stores searches the user explicitly requests to be saved
+    """
+    query = request.GET.get('q')
+    if not query:
+        # Without a query to save this is a bad request
+        return HttpResponse(status=400)
+    # Check the user has a saved search list
+    if not request.session.get('saved_searches'):
+        # Make an empty list
+        request.session['saved_searches'] = []
+    # Add the query to the users saved_search list
+    request.session['saved_searches'].append(query)
+    # Success but no response to give
+    return HttpResponse(status=204)
+
 def latest(request, num):
     db = couchdb.Server()['store']
 
@@ -24,20 +41,41 @@ def latest(request, num):
       journals = journals_s.split('+')
     else:
       journals = None
-
-    print journals
+   
+    if 'last_ids' in request.GET: 
+      last_ids = json.loads(request.GET['last_ids'])
+    else:
+      last_ids = {}
 
     if journals is not None:
       all_rows = []
       for journal in journals:
-        rows = db.view('articles/latest_journal', limit=num, include_docs=True, descending=True)
-        rows_journal = rows[[journal,{}]:[journal]]
+        if journal in last_ids:
+          print journal, last_ids[journal]
+          rows = db.view('articles/latest_journal', limit=num, include_docs=True, startkey=last_ids[journal][0], startkey_docid=last_ids[journal][1], endkey=[journal], skip=1, descending=True)
+        else:
+          rows = db.view('articles/latest_journal', limit=num, include_docs=True, endkey=[journal], startkey=[journal,{}], descending=True)
+
+        rows_journal = rows.rows # list(rows[[journal,{}]:[journal]])
+        #last_ids[journal] = (rows_journal[-1].key, rows_journal[-1].doc['_id'])
         all_rows += rows_journal
 
-      all_rows = sorted(all_rows, key=lambda row: row.doc['date_published'], reverse=True)
-    else:
-      all_rows = db.view('articles/latest', limit=num, include_docs=True, descending=True)
+      all_rows = sorted(all_rows, key=lambda row: row.doc['date_published'], reverse=True)[:num]
+
+      for row in all_rows:
+        last_ids[row.key[0]] = (row.key, row.doc['_id'])
       
+      last_ids_json = json.dumps(last_ids)
+    else:
+      if 'all' in last_ids:
+        all_rows = list(db.view('articles/latest', limit=num, include_docs=True, startkey=last_ids['all'][0], startkey_docid=last_ids['all'][1], skip=1, descending=True))
+      else:
+        all_rows = list(db.view('articles/latest', limit=num, include_docs=True, descending=True))
+
+      last_ids_json = json.dumps({'all': (all_rows[-1].key, all_rows[-1].doc['_id'])})
+      
+      all_rows = sorted(all_rows, key=lambda row: row.doc['date_published'], reverse=True)
+
     docs = []
     for row in all_rows:
         d = row.doc
@@ -61,7 +99,9 @@ def latest(request, num):
 
         docs.append(d)
 
-    return render_to_response('search/article_list.html', {'docs': docs})
+    print last_ids_json
+
+    return render_to_response('search/article_list.html', {'docs': docs, 'last_ids_json': last_ids_json})
 
 def clean_journal(s):
   # keep only alphanumeric characters for comparison purposes

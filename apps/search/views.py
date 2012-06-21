@@ -22,8 +22,13 @@ def home(request):
     last_visit = request.session.get('last_visit', None)
     # Update last visit
     request.session['last_visit'] = datetime.datetime.now()
+    # Get their saved search (default to empty list)
+    saved_searches = request.session.get('saved_searches', [])
     return render_to_response('search/home.html',
-            {'last_visit':last_visit},
+            {
+                'last_visit': last_visit,
+                'saved_searches': saved_searches,
+            },
             context_instance=RequestContext(request))
 
 class SearchThread(threading.Thread):
