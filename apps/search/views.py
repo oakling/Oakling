@@ -14,6 +14,9 @@ import couchdb
 import lib.scrapers.journals.tasks as scraping_tasks
 import lib.scrapers.journals.utils as scraping_utils
 
+# /api/save_search?user_id=<user_id>
+# /api/get_searches?user_id=<user_id>
+
 def home(request):
     # Get their last visit
     last_visit = request.session.get('last_visit', None)

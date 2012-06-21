@@ -57,7 +57,7 @@ def latest(request, num):
         if 'citation' in d and 'journal' in d['citation']:
           d.journal = d['citation']['journal']
         elif 'categories' in d and 'arxiv' in d['categories']:
-          d.journal = d['categories']['arxiv'][0]
+          d.journal = d['categories']['arxiv'][0] + " (arxiv)"
 
         docs.append(d)
 
