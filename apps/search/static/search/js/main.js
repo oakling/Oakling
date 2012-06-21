@@ -242,7 +242,22 @@ var akorn = {
             });
         },
     },
+    saved_search_handler: function(e) {
+    // Handles clicks on the individual saved search queries
+        var ak = akorn;
+        // Get the saved query from the target link
+        var query = $(e.currentTarget).attr('href');
+        akorn.query = query;
+        // Do a new query
+        akorn.get_articles(20,
+                    undefined,
+                    query,
+                    true);
+        // Stop the event from propagating
+        return false;
+    },
     save_search_handler: function(e) {
+    // Handles clicks on the save this query button
         var ak = akorn
         // Check if button is disabled
         if(ak.save_search.attr('disabled') === 'disabled') {
@@ -251,7 +266,7 @@ var akorn = {
         // Get the search terms
         var query = ak.query;
         // Add to list of saved searches
-        ak.saved_searches.append(['<li>', query, '</li>'].join(''));
+        ak.saved_searches.append(['<li><a href="',query,'">', query, '</a></li>'].join(''));
         // TODO Make get query to save search
         $.get(['/api/save_search/?q=',query].join(''),
             function(){
@@ -280,9 +295,12 @@ var akorn = {
         ak.search_box = $('#search');
         ak.search_box.tagit(ak.search_config);
         // Add handler for save search button
-        ak.saved_searches = $('#saved_searches');
         var save_search = $('#save_search');
         save_search.on('click', ak.save_search_handler);
+        // Add handler for saved search links
+        saved_searches = $('#saved_searches');
+        saved_searches.on('click','li a', ak.saved_search_handler);
+        ak.saved_searches = saved_searches;
         ak.save_search = save_search;
         // Listen to window scroll events
         // Reduce spurious calls by adding a 250 ms delay between triggers
