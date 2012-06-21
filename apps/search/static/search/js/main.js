@@ -41,7 +41,7 @@ var akorn = {
         var callback;
 
         if(article_id !== undefined && article_id) {
-            params['article'] = article_id;
+            params['last_ids'] = article_id;
         }
         if(query !== undefined && query) {
             params['q'] = query;
@@ -56,14 +56,18 @@ var akorn = {
     },
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
-            // Get the id of the last article
-            var last_article = akorn.articles_container.find('li:last-child');
-            // Stash this to use when adding date lines
-            akorn.prev_article = last_article;
+            var ak = akorn;
+            // Get the ids of the last articles of each journal
+            var last_article = ak.articles_container
+                    .find('meta[itemprop="last_ids"]:last')
+                    .attr("content");
+            // Get the last article for use later
+            ak.prev_article = ak.articles_container
+                    .find('li:last-child');
             // Get the current query, if set
-            var query = akorn.query;
+            var query = ak.query;
             // Get articles after the current last article
-            akorn.get_articles(20, last_article.attr('id'), query);
+            ak.get_articles(20, last_article, query);
     },
     // Cycle through the articles marking date changes
     // Also mark the users last visit
@@ -81,7 +85,7 @@ var akorn = {
             prev_article = ak.articles_container.find('li:first');
         }
         // Get all the articles that follow the last article before this set
-        latest_articles = prev_article.nextAll();
+        latest_articles = prev_article.nextAll('li');
         // Get the date of the previous article
         prev_datetime = prev_article
                 .find('meta')
@@ -108,9 +112,12 @@ var akorn = {
             latest_article = $(latest_articles[i]);
             // Get the date of the article
             datetime_str = latest_article
-                .find('p.meta meta')
+                .find('meta')
                 .attr('content');
             // Get just the date
+            if(datetime_str === undefined) {
+                console.log(latest_article);
+            }
             date_str = datetime_str.substr(0,10);
             // If the date does not match
             if(date_str !== prev_date) {
@@ -183,24 +190,30 @@ var akorn = {
         onTagAdded: function(event, tag) {
             var query = akorn.search_box.tagit("assignedTags").join('+');
             akorn.query = query;
-	        akorn.get_articles(20,
+            akorn.save_search.removeAttr('disabled');
+	    akorn.get_articles(20,
                     undefined,
                     query,
                     true);
         },
         // Called when a tag is removed
         onTagRemoved: function(event, tag) {
+            var ak = akorn;
             // Get array of assigned tags
-            var tags_arr = akorn.search_box.tagit("assignedTags");
+            var tags_arr = ak.search_box.tagit("assignedTags");
             // Find the removed tag
             var tag_idx = $.inArray(tag, tags_arr);
             if(tag_idx) {
                     // Remove it
                 tags_arr.splice(tag_idx, 1);
             }
+            // If no tags present then disable the button
+            if(tags_arr.length === 0) {
+                ak.save_search.attr('disabled','disabled');
+            }
             var query = tags_arr.join('+');
-            akorn.query = query;
-            akorn.get_articles(20,
+            ak.query = query;
+            ak.get_articles(20,
                     undefined,
                     query,
                     true);
@@ -229,20 +242,52 @@ var akorn = {
             });
         },
     },
+    save_search_handler: function(e) {
+        var ak = akorn
+        // Check if button is disabled
+        if(ak.save_search.attr('disabled') === 'disabled') {
+            return true;
+        }
+        // Get the search terms
+        var query = ak.query;
+        // Add to list of saved searches
+        ak.saved_searches.append(['<li>', query, '</li>'].join(''));
+        // TODO Make get query to save search
+        $.get(['/api/save_search/?q=',query].join(''),
+            function(){
+                ak.save_search
+                    .removeClass('btn-primary')
+                    .addClass('btn-success');
+                console.info('Query saved successfully');
+            })
+            .error(function(){
+                ak.save_search
+                    .removeClass('btn-primary')
+                    .addClass('btn-danger');
+                console.error('Failed to save');
+            });
+        return false;
+    },
     init: function() {
+        var ak = akorn;
         // Get the place to stick articles
         // Set it as a static property to be accessible across instances
-        akorn.articles_container = $('#latest_articles');
+        ak.articles_container = $('#latest_articles');
         // Get initial articles
-        akorn.get_articles(20);
+        ak.get_articles(20);
         // TODO Search input should be hidden before this point
         // Activate the search box
-        akorn.search_box = $('#search');
-        akorn.search_box.tagit(akorn.search_config);
+        ak.search_box = $('#search');
+        ak.search_box.tagit(ak.search_config);
+        // Add handler for save search button
+        ak.saved_searches = $('#saved_searches');
+        var save_search = $('#save_search');
+        save_search.on('click', ak.save_search_handler);
+        ak.save_search = save_search;
         // Listen to window scroll events
         // Reduce spurious calls by adding a 250 ms delay between triggers
-        $(window).scroll(akorn.throttle(function() {
-            akorn.check_position();
+        $(window).scroll(ak.throttle(function() {
+            ak.check_position();
         }, 250));
     },
 };

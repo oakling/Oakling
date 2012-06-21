@@ -13,6 +13,23 @@ import itertools
 import couchdb
 import datetime
 
+def save_search(request):
+    """
+    Stores searches the user explicitly requests to be saved
+    """
+    query = request.GET.get('q')
+    if not query:
+        # Without a query to save this is a bad request
+        return HttpResponse(status=400)
+    # Check the user has a saved search list
+    if not request.session.get('saved_searches'):
+        # Make an empty list
+        request.session['saved_searches'] = []
+    # Add the query to the users saved_search list
+    request.session['saved_searches'].append(query)
+    # Success but no response to give
+    return HttpResponse(status=204)
+
 def latest(request, num):
     db = couchdb.Server()['store']
 

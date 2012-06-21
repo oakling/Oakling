@@ -27,7 +27,19 @@ div.search {
     border-right: 0.3em solid silver;
 }
 
-.tagit input{box-shadow: none;}
+.search ul.tagit{
+    float:left;
+    margin-left: 5% !important;
+}
+
+.tagit input { 
+    box-shadow: none;
+}
+
+#save_search {
+    margin-left: 1em;
+    margin-top: 0.2em;
+}
 
 #latest_articles {
     margin-left:0;
