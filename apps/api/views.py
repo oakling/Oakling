@@ -27,6 +27,8 @@ def save_search(request):
         request.session['saved_searches'] = []
     # Add the query to the users saved_search list
     request.session['saved_searches'].append(query)
+    # Make sure sessions is saved
+    request.session.modified = True
     # Success but no response to give
     return HttpResponse(status=204)
 
