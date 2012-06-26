@@ -23,8 +23,17 @@ div.abstract {
     padding-top:1em;
 }
 div.search {
+    padding-top: 2em;
     border-left: 0.3em solid silver;
     border-right: 0.3em solid silver;
+}
+
+#saved_searches {
+    margin-top: 2em;
+}
+
+#content {
+    margin: 0 auto;
 }
 
 .search ul.tagit{
@@ -42,7 +51,7 @@ div.search {
 }
 
 #latest_articles {
-    margin-left:0;
+    margin-left: 0;
 }
 
 .tagit {

@@ -6,23 +6,25 @@ var akorn = {
         "July", "August", "September", "October", "November", "December" ],
     // Append a given HTML Fragment to the articles list
     append_articles: function(data) {
+        var ak = akorn;
         // Add in one go as fragment
-        akorn.articles_container.append(data);
+        ak.articles_container.append(data);
         // Add date lines
-        akorn.add_date_lines();
+        ak.add_date_lines();
         // Once we have finished adding, stop the pause on updates
-        akorn.unpause_updates();
+        ak.unpause_updates();
     },
     // Replaces the articles with a new set, rather than appending
     replace_articles: function(data) {
+        var ak = akorn;
         // Remove prev article state
-        akorn.prev_article = undefined;
+        ak.prev_article = undefined;
         // Replace the current articles with new ones
-        akorn.articles_container.html(data);
+        ak.articles_container.html(data);
         // Add date lines
-        akorn.add_date_lines();
+        ak.add_date_lines();
         // Once we have finished adding, stop the pause on updates
-        akorn.unpause_updates();
+        ak.unpause_updates();
     },
     // Stop the scroll updates
     unpause_updates: function() {
@@ -100,7 +102,7 @@ var akorn = {
                 // TODO Do something if there are no new articles
                 console.warn('There are no new articles');
                 // Unset last_visit to prevent further checking
-                akorn.last_visit = undefined;
+                ak.last_visit = undefined;
             }
             else {
                 add_last_visit = true;
@@ -146,7 +148,7 @@ var akorn = {
                             .insertBefore(latest_article);
                     }
                     // Unset last_visit to prevent further checking
-                    akorn.last_visit = undefined;
+                    ak.last_visit = undefined;
                     // Turn off last visit checking
                     add_last_visit = false;
                 }
@@ -172,13 +174,14 @@ var akorn = {
     check_position: function() {
         // Trigger if scroll position is 400 px off the bottom
         if ($(window).scrollTop() >= $(document).height() - $(window).height() - 400) {
+            var ak = akorn;
             // Check updating is not paused to wait for previous update
-            if (!akorn.pause_updates)
+            if (!ak.pause_updates)
             {
                 // Pause updating
-                akorn.pause_updates = true;
+                ak.pause_updates = true;
                 // Add a new set of articles
-                akorn.add_more_articles();
+                ak.add_more_articles();
             }
             return true;
         }
@@ -188,13 +191,14 @@ var akorn = {
         placeholderText: "Search for journals...",
         // Called when a tag is added
         onTagAdded: function(event, tag) {
-            var query = akorn.search_box.tagit("assignedTags").join('+');
-            akorn.query = query;
-            akorn.save_search.removeAttr('disabled');
-	    akorn.get_articles(20,
-                    undefined,
-                    query,
-                    true);
+            var ak = akorn;
+            var query = ak.search_box.tagit("assignedTags").join('+');
+            ak.query = query;
+            ak.save_search.removeAttr('disabled');
+	    ak.get_articles(20,
+                undefined,
+                query,
+                true);
         },
         // Called when a tag is removed
         onTagRemoved: function(event, tag) {
@@ -219,7 +223,8 @@ var akorn = {
                     true);
         },
         _highlight: function(s, t) {
-            var matcher = new RegExp("("+$.ui.autocomplete.escapeRegex(t)+")", "ig" );
+            var matcher = new RegExp("("+$.ui.autocomplete
+                .escapeRegex(t)+")", "ig" );
             return s.replace(matcher, "<strong>$1</strong>");
         },
         // Function to use for auto-completion
@@ -230,11 +235,14 @@ var akorn = {
                 dateType: "json",
                 // TODO Copy and paste code, should be possible to improve
                 success: function(data) {
-                    var assigned = akorn.search_box.tagit("assignedTags");
+                    var ak = akorn;
+                    var assigned = ak.search_box.tagit("assignedTags");
                     var filtered = [];
                     for (var i=0, dlen=data.length; i < dlen; i++) {
                         if ($.inArray(data[i], assigned) == -1) {
-                            filtered.push({label: akorn.search_config._highlight(data[i], search.term), value: data[i]});
+                            filtered.push({label: ak.search_config
+                                ._highlight(data[i], search.term),
+                                value: data[i]});
                         }
                     }
                     showChoices(filtered);
@@ -247,14 +255,34 @@ var akorn = {
         var ak = akorn;
         // Get the saved query from the target link
         var query = $(e.currentTarget).attr('href');
-        akorn.query = query;
+        ak.query = query;
+        // TODO Change tags displayed in search box
         // Do a new query
-        akorn.get_articles(20,
+        ak.get_articles(20,
                     undefined,
                     query,
                     true);
         // Stop the event from propagating
         return false;
+    },
+    shorten_query: function(query) {
+    // Takes a query string and produces a pretty HTML rendering of it
+        var i, len, output, bits;
+        output = [];
+        // Split the query into each journal
+        bits = query.split('+');
+        for(i=0, len=bits.length; i<len; i+=1) {
+            b = bits[i];
+            // Check if the journal name is longer than we want
+            if(b.length <= 42) {
+                output.push(b);
+            }
+            else {
+                output.push(['<span title="',b,'">',
+                    b.substr(0,40),'&hellip;</span>'].join(''));
+            }
+        }
+        return output.join(' +<br />');
     },
     save_search_handler: function(e) {
     // Handles clicks on the save this query button
@@ -266,9 +294,10 @@ var akorn = {
         // Get the search terms
         var query = ak.query;
         // Add to list of saved searches
-        ak.saved_searches.append(['<li><a href="',query,'">', query, '</a></li>'].join(''));
+        ak.saved_searches.append(['<li><a href="',query,'">',
+            ak.shorten_query(query), '</a></li>'].join(''));
         // TODO Make get query to save search
-        $.get(['/api/save_search/?q=',query].join(''),
+        $.get('/api/save_search/', {'q':query},
             function(){
                 ak.save_search
                     .removeClass('btn-primary')
@@ -290,10 +319,6 @@ var akorn = {
         ak.articles_container = $('#latest_articles');
         // Get initial articles
         ak.get_articles(20);
-        // TODO Search input should be hidden before this point
-        // Activate the search box
-        ak.search_box = $('#search');
-        ak.search_box.tagit(ak.search_config);
         // Add handler for save search button
         var save_search = $('#save_search');
         save_search.on('click', ak.save_search_handler);
@@ -302,6 +327,10 @@ var akorn = {
         saved_searches.on('click','li a', ak.saved_search_handler);
         ak.saved_searches = saved_searches;
         ak.save_search = save_search;
+        // TODO Search input should be hidden before this point
+        // Activate the search box
+        ak.search_box = $('#search');
+        ak.search_box.tagit(ak.search_config);
         // Listen to window scroll events
         // Reduce spurious calls by adding a 250 ms delay between triggers
         $(window).scroll(ak.throttle(function() {

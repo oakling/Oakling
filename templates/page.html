@@ -14,16 +14,16 @@
     <body>
         <div class="navbar">
             <div class="navbar-inner">
-	    <a class="brand" href="/">
-		AKORN
-	    </a>
+	    <a class="brand" href="/">AKORN</a>
             </div>
         </div>
 
-        <div class="{% block content_class %}{% endblock %}">
-           {% block content %}
-           {% endblock %}
-       </div>
+        <div id="content" class="container-fluid">
+            <div class="row-fluid">
+            {% block content %}
+            {% endblock %}
+            </div>
+        </div>
     {% block scripts %}
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>

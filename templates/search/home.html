@@ -1,4 +1,5 @@
 {% extends 'page.html' %}
+{% load search_filters %}
 
 {% block scripts %}
 {{ block.super }}
@@ -12,9 +13,8 @@ akorn.last_visit = "{{ last_visit|date:"c" }}";
 {% endif %}
 {% endblock %}
 
-{% block content_class %}search{% endblock %}
 {% block content %}
-<div class="span8">
+<div class="span9 search">
 <form action="/search/" method="get" class="form-inline">
     <input type="text" name="q" placeholder="Search" id="search"><button id="save_search" class="btn btn-primary" disabled="disabled" title="Save this search"><i class="icon-leaf icon-white"></i></button>
 </form>
@@ -23,9 +23,11 @@ akorn.last_visit = "{{ last_visit|date:"c" }}";
 </div>
 
 <div class="span3">
-<ul id="saved_searches">
+<ul id="saved_searches" class="nav nav-tabs nav-stacked">
         {% for search in saved_searches %}
-        <li><a href="{{ search }}">{{ search }}</a></li>
+        {% spaceless %}
+        <li><a href="{{ search }}">{{ search|short_query }}</a></li>
+        {% endspaceless %}
         {% endfor %}
 </ul>
 </div>
