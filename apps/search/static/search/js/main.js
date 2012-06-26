@@ -205,7 +205,7 @@ var akorn = {
             // Find the removed tag
             var tag_idx = $.inArray(tag, tags_arr);
             if(tag_idx) {
-                    // Remove it
+                // Remove it
                 tags_arr.splice(tag_idx, 1);
             }
             // If no tags present then disable the button
@@ -311,9 +311,6 @@ var akorn = {
         // TODO Make get query to save search
         $.get('/api/save_search/', {'q':query},
             function(){
-                ak.save_search
-                    .removeClass('btn-primary')
-                    .addClass('btn-success');
                 console.info('Query saved successfully');
             })
             .error(function(){
