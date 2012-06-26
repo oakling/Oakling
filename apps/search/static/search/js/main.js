@@ -242,6 +242,7 @@ var akorn = {
                                 value: data[i]});
                         }
                     }
+                    akorn.choices = filtered;
                     showChoices(filtered);
                 },
             });
