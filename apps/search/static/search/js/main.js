@@ -117,9 +117,6 @@ var akorn = {
                 .find('meta')
                 .attr('content');
             // Get just the date
-            if(datetime_str === undefined) {
-                console.log(latest_article);
-            }
             date_str = datetime_str.substr(0,10);
             // If the date does not match
             if(date_str !== prev_date) {
@@ -250,6 +247,19 @@ var akorn = {
             });
         },
     },
+    populate_search_from_query: function(query) {
+        var aks = akorn.search_box;
+        // Clean the search box
+        aks.tagit('removeAll', false);
+        // Get the tags within the query
+        var tags = query.split('+');
+        // Create each in order
+        for(var i=0, l = tags.length; i<l; i++) {
+            // Add journal class, turn off the completion check and events
+            aks.tagit('createTag', $.trim(tags[i]), 'journal', false);
+        }
+        return this;
+    },
     saved_search_handler: function(e) {
     // Handles clicks on the individual saved search queries
         var ak = akorn;
@@ -257,6 +267,7 @@ var akorn = {
         var query = $(e.currentTarget).attr('href');
         ak.query = query;
         // TODO Change tags displayed in search box
+        ak.populate_search_from_query(query);
         // Do a new query
         ak.get_articles(20,
                     undefined,

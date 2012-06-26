@@ -41,7 +41,7 @@
             allowSpaces: false,
 
             // Whether to animate tag removals or not.
-            animate: true,
+            animate: false,
 
             // The below options are for using a single field instead of several
             // for our form values.
@@ -227,7 +227,8 @@
                         if (that._tagInput.val() === '') {
                             that.removeTag(that._lastTag(), false);
                         }
-                        that.createTag(ui.item.value, 'journal');
+
+                        that.createTag(ui.item.value, 'journal', true);
                         // Preventing the tag input to be updated with the chosen value.
                         return false;
                     }
@@ -311,8 +312,34 @@
             return $.trim(str.toLowerCase());
         },
 
-        createTag: function(value, additionalClass) {
+        createTag: function(value, additionalClass, trigger) {
             var that = this;
+
+            if(trigger === undefined || trigger === true) {
+                    // ##### CRAIGS HACK to disable non-completed tags
+                    // TODO Do this without global lookup and loop
+                    // Get choices
+                    var chosen = false;
+                    // Get the latest set of choices
+                    var choices = akorn.choices;
+                    // If no choices then cannot be autocompleted
+                    if(choices !== undefined) {
+                        var i = choices.length;
+                        // Reverse loop over the choices
+                        while(i--) {
+                            if(value === choices[i].value) {
+                                chosen = true;
+                                // Break on match
+                                break;
+                            }
+                        }
+                    }
+                    // If the tag is not marked as having come from autocompletion
+                    if(!chosen) {
+                        return false;
+                    }
+                    //##### END of hack
+            }
             // Automatically trims the value of leading and trailing whitespace.
             value = $.trim(value);
 
@@ -350,7 +377,9 @@
                 tag.append('<input type="hidden" style="display:none;" value="' + escapedValue + '" name="' + this.options.itemName + '[' + this.options.fieldName + '][]" />');
             }
 
-            this._trigger('onTagAdded', null, tag);
+            if(trigger === undefined || trigger === true) {
+                this._trigger('onTagAdded', null, tag);
+            }
 
             // Cleaning the input.
             this._tagInput.val('');
@@ -359,12 +388,14 @@
             this._tagInput.parent().before(tag);
         },
         
-        removeTag: function(tag, animate) {
+        removeTag: function(tag, animate, trigger) {
             animate = animate || this.options.animate;
 
             tag = $(tag);
 
-            this._trigger('onTagRemoved', null, tag);
+            if(trigger === undefined || trigger === true) {
+                this._trigger('onTagRemoved', null, tag);
+            }
 
             if (this.options.singleField) {
                 var tags = this.assignedTags();
@@ -384,11 +415,11 @@
             }
         },
 
-        removeAll: function() {
+        removeAll: function(trigger) {
             // Removes all tags.
             var that = this;
             this.tagList.children('.tagit-choice').each(function(index, tag) {
-                that.removeTag(tag, false);
+                that.removeTag(tag, false, trigger);
             });
         },
     });
