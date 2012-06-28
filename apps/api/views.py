@@ -107,7 +107,10 @@ def latest(request, num):
 
 def clean_journal(s):
   # keep only alphanumeric characters for comparison purposes
-  return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
+  try:
+    return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
+  except:
+    return None
 
 def journals(request):
   db = couchdb.Server()['store']
@@ -122,3 +125,30 @@ def journals(request):
   return HttpResponse(json.dumps([row.key for row in rows if filter is None or
                                   filter in clean_journal(row.key)]),
                       content_type='application/json')
+
+def journals_new(request):
+  db = couchdb.Server()['journals']
+
+  if 'term' in request.GET:
+    filter = clean_journal(request.GET['term'])
+  else:
+    filter = None
+
+  journals = []
+
+  for doc_id in db:
+    doc = db[doc_id]
+
+    if 'name' not in doc:
+      continue
+
+    for alias in sorted(doc['aliases'], key=lambda a: len(a), reverse=True):
+      if filter is not None and filter in clean_journal(alias):
+        journals.append((doc['name'], alias))
+        break
+      elif filter is None:
+        journals.append((doc['name'], alias))
+        break
+
+  return HttpResponse(json.dumps(journals))
+
