@@ -9,6 +9,10 @@ handlers = {
         "identifier": lambda item: 'doi:' + item['prism_doi'],
         "url": lambda item: item['link'],
     },
+    "acs_feed": {
+        "identifier": None,
+        "url": lambda item: item['feedburner_origlink'],
+    },
     "iop_feed": {
         "identifier": None,
         "url": lambda item: item['link'],

@@ -51,6 +51,15 @@ def resolve_doi(doi):
 
   return response.geturl()
 
+def resolve_url(url):
+  cookiejar = cookielib.CookieJar()
+  req = urllib2.Request(url, headers=headers)
+  urls = []
+  opener = urllib2.build_opener(RedirectHandler(urls), urllib2.HTTPCookieProcessor(cookiejar))
+  response = opener.open(req)
+
+  return response.geturl()
+
 def resolve_scraper(url):
   # Do it by domain for now. This might not always work, a full url prefix might be needed, but this is cheaper.
 
@@ -75,7 +84,11 @@ def resolve_and_scrape(url):
     scraper_doc = resolve_scraper(url)
 
     if scraper_doc is None:
-      raise ScraperNotFound(url)
+      url = resolve_url(url)
+      scraper_doc = resolve_scraper(url)
+   
+      if scraper_doc is None: 
+        raise ScraperNotFound(url)
       
     scraper_module = load_module(scraper_doc['module'])
 

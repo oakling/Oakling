@@ -13,7 +13,7 @@ def add_feed_items(feedhandler, feed_url):
     """Add feed items to database.."""
 
     # should be smarter here, e.g. use If-Modified-Since
-    feed = feedparser.parse(feed_url)
+    feed = feedparser.parse(feed_url, agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50')
 
     if feedhandler in feed_handlers.handlers:
         handler = feed_handlers.handlers[feedhandler]

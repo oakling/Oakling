@@ -33,6 +33,13 @@ CELERYBEAT_SCHEDULE = {
                 ],
                )
     },
+    "ACS_feeds": {
+         "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "schedule": crontab(minute=1, hour="15"),
+        "args":("acs_feed",
+                ["http://feeds.feedburner.com/acs/jacsat"],
+               )
+    },
     "IOP_feeds":{
         "task": "lib.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=5, hour="12"),
