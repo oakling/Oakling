@@ -50,10 +50,12 @@ def scrape(abstract_url):
   if article['author_names'] == None:
       article['author_names'] = get_meta_list('dc.creator',tree)
   
-  try:
-      article['abstract'] = tree.xpath("//div[@class='content']/p")[0].text_content()
-  except:
-      pass
+  article['abstract'] = get_meta('description', tree)
+  if article['abstract'] == None:
+      try:
+          article['abstract'] = tree.xpath("//div[@class='content']/p")[0].text_content()
+      except:
+          pass
   if article['abstract'] == None:
       try:
           article['abstract'] = tree.xpath("//div[@id='abs']/p")[0].text_content()
