@@ -19,11 +19,11 @@
 
 <div itemscope itemtype="http://schema.org/CreativeWork">
 
-<div class='grid_8 alpha'>
+<div class='span8 alpha'>
   <h1 itemprop="name">{{ doc.title }}</h1>
 </div>
 
-<div class='grid_4 omega'><div class='box_inner'>
+<div class='span4 omega'><div class='box_inner'>
   <div class="share-button g-plusone"></div>
 
   <div class="share-button tweet">
@@ -33,20 +33,20 @@
   <div class="share-button fb-like" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false" data-action="like" data-colorscheme="light"></div>
 </div></div>
 
-<div class='grid_8 alpha'><div class='box_inner box_date'>
+<div class='span8 alpha'><div class='box_inner box_date'>
   published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href='/journals/{{ doc.citation.journal }}'>{{ doc.citation.journal }}</a></strong>
 </div></div>
 
 <div class='clear'></div>
 
-<div class='grid_8 alpha'><div class='box_inner box_abstract' itemprop="description">
+<div class='span8 alpha'><div class='box_inner box_abstract' itemprop="description">
   {% if doc.abstract %}
   <div class='abstract'>
     {{ doc.abstract }}
   </div>
   {% endif %}
 </div></div>
-<div class='grid_4 omega'>
+<div class='span4 omega'>
 
 <div class='box_inner box_authors'>
     {% if doc.author_names|length > 10 %}

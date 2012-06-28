@@ -55,3 +55,7 @@ def scrape(abstract_url):
 
 	
   return article
+
+if __name__ == "__main__":
+  print scrape(sys.argv[1])
+
