@@ -34,7 +34,8 @@ class Ignore401Handler(urllib2.BaseHandler):
 def get_response_chain(req):
   urls = []
   cookiejar = cookielib.CookieJar()
-  opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls), urllib2.HTTPCookieProcessor(cookiejar))
+  opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls),
+                                urllib2.HTTPCookieProcessor(cookiejar))
 
   response = opener.open(req)
 
@@ -46,7 +47,8 @@ def resolve_doi(doi):
   cookiejar = cookielib.CookieJar()
   req = urllib2.Request('http://dx.doi.org/' + doi, headers=headers)
   urls = []
-  opener = urllib2.build_opener(RedirectHandler(urls), urllib2.HTTPCookieProcessor(cookiejar))
+  opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls),
+                                urllib2.HTTPCookieProcessor(cookiejar))
   response = opener.open(req)
 
   return response.geturl()
@@ -55,7 +57,8 @@ def resolve_url(url):
   cookiejar = cookielib.CookieJar()
   req = urllib2.Request(url, headers=headers)
   urls = []
-  opener = urllib2.build_opener(RedirectHandler(urls), urllib2.HTTPCookieProcessor(cookiejar))
+  opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls),
+                                urllib2.HTTPCookieProcessor(cookiejar))
   response = opener.open(req)
 
   return response.geturl()

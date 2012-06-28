@@ -21,15 +21,42 @@ def save_search(request):
     if not query:
         # Without a query to save this is a bad request
         return HttpResponse(status=400)
+    saved_searches = request.session['saved_searches']
     # Check the user has a saved search list
-    if not request.session.get('saved_searches'):
+    if not saved_searches is None:
         # Make an empty list
         request.session['saved_searches'] = []
     # Add the query to the users saved_search list
-    request.session['saved_searches'].append(query)
-    # Make sure sessions is saved
-    request.session.modified = True
+    if not query in saved_searches:
+        request.session['saved_searches'].append(query)
+        # Make sure sessions is saved
+        request.session.modified = True
+    else:
+        return HttpResponse(status=202)
     # Success but no response to give
+    return HttpResponse(status=204)
+
+def del_saved_search(request):
+    """
+    Removes a users stored search
+    """
+    query = request.GET.get('q')
+    if not query:
+        # Without a query this is a bad request
+        return HttpResponse(status=400)
+    # Get the list of searches
+    saved_searches = request.session.get('saved_searches')
+    if not saved_searches:
+        raise HttpResponse(status=404)
+    # Rip out the query if it exists
+    try:
+        request.session['saved_searches'].remove(query)
+        # Raises a ValueError if item does not exist
+    except ValueError:
+        return HttpResponse(status=404)
+    # Make sure session is saved
+    request.session.modified = True
+    # Success but no content
     return HttpResponse(status=204)
 
 def latest(request, num):

@@ -21,6 +21,10 @@ handlers = {
         "identifier": lambda item: "arxiv:" + arxiv_id(item['link']),
         "url": lambda item: item['link'],
     },
+    "nature_feed": {
+        "identifier": lambda item: "doi:" + item['prism_doi'],
+        "url": lambda item: item['prism_url'],
+    },
 }
 
 # helper functions for arxiv
