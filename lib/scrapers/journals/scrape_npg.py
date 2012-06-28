@@ -51,16 +51,17 @@ def scrape(abstract_url):
       article['author_names'] = get_meta_list('dc.creator',tree)
   
   article['abstract'] = get_meta('description', tree)
-  if article['abstract'] == None:
+  if not article['abstract']: 
       try:
           article['abstract'] = tree.xpath("//div[@class='content']/p")[0].text_content()
       except:
           pass
-  if article['abstract'] == None:
+  if not article['abstract']: 
       try:
           article['abstract'] = tree.xpath("//div[@id='abs']/p")[0].text_content()
       except:
           pass
+
 
   article['citation']['journal'] = get_meta('citation_journal_title', tree)
   article['citation']['volume'] = get_meta('prism.volume', tree)
@@ -79,10 +80,10 @@ def scrape(abstract_url):
       pub_date = get_meta('dc.date', tree)
 
   if pub_date:
-    split = pub_date.split('-')
-    article['date_published'] = make_datestamp(split[2], split[1], split[0])
+      split = pub_date.split('-')
+      article['date_published'] = make_datestamp(split[2], split[1], split[0])
 
   return article
-  
+
 if __name__ == "__main__":
-  print scrape(sys.argv[1])
+    print scrape(sys.argv[1])
