@@ -34,7 +34,7 @@ CELERYBEAT_SCHEDULE = {
                )
     },
     "ACS_feeds": {
-         "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "task": "lib.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=1, hour="15"),
         "args":("acs_feed",
                 ["http://feeds.feedburner.com/acs/jacsat"],
@@ -101,7 +101,7 @@ CELERYBEAT_SCHEDULE = {
     },
     "arxiv_feeds": {
         "task": "lib.scrapers.feeds.tasks.fetch_feed",
-        "schedule": crontab(minute=31, hour="0"),
+        "schedule": crontab(minute=10, hour="0"),
         "args":("arxiv_feed",
                 ['http://export.arxiv.org/rss/astro-ph',
                  'http://export.arxiv.org/rss/cond-mat',
@@ -122,6 +122,13 @@ CELERYBEAT_SCHEDULE = {
                  'http://export.arxiv.org/rss/quant-ph',
                  'http://export.arxiv.org/rss/stat',
                 ],
+               )
+    },
+    "Nature_feeds": {
+        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "schedule": crontab(minute=1, hour="*"),
+        "args":("nature_feed",
+                ["http://feeds.nature.com/NatureLatestResearch"],
                )
     },
 }
