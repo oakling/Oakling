@@ -111,10 +111,14 @@ def clean_journal(s):
 
 def journals(request):
   db = couchdb.Server()['store']
-  filter = clean_journal(request.GET.get('term', None))
-
+  
   rows = db.view('index/journals', group=True)
 
+  if 'term' in request.GET:
+    filter = clean_journal(request.GET['term'])
+  else:
+    filter = None
+
   return HttpResponse(json.dumps([row.key for row in rows if filter is None or
-                                 filter in clean_journal(row.key)]),
+                                  filter in clean_journal(row.key)]),
                       content_type='application/json')
