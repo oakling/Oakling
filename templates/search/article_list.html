@@ -6,6 +6,7 @@
 </h3>
 <p class="meta">
     <meta itemprop="datePublished" content="{{ doc.date|date:"c" }}">
+    {% if doc.author_names %}
     <span class="authors">
     {% with author_count=doc.author_names|length %}
     {% if author_count > 3 %}
@@ -14,7 +15,8 @@
     {% else %}
         {{ doc.author_names|join:", " }}
     {% endif %}
-    {% endwith %}</span> 
+    {% endwith %}</span>
+    {% endif %}
     {% if doc.journal %}
         — <span class="journal">{{ doc.journal }}</a></span>
     {% endif %}

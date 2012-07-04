@@ -12,7 +12,8 @@ db2 = couchdb.Server()['journals']
 
 for row in db1.view('index/journals', group=True).rows:
   if db2.view('index/citations', key=row.key).rows:
-    print "%s already exists" % row.key
+    #print "%s already exists" % row.key
+    pass
   else:
     print row.key
     journal_doc = {'citation': row.key,
