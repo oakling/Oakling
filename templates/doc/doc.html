@@ -33,19 +33,16 @@
 
 <div class='span12 box_authors alpha'><div class='box_inner'>
       {% for author in doc.author_names %}
-        {% if forloop.counter <= 10 %}
-          <div class='author_name'>
+          <div class='author_name {% if forloop.counter > 10 %}author_name_hidden{% endif %}'>
           {% if author.surname %}
             {{ author.forename }} {{ author.surname }}{% if not forloop.last %},{% endif %}
           {% else %}
            {{ author }}{% if not forloop.last %},{% endif %}
           {% endif %}
           </div>
-        {% else %}
           {% if forloop.counter == 11 %}
-            <a href=''>see all {{ doc.author_names|length }}</a>
+            <div class='author_name author_name_show_link'><a onclick="$('.author_name_hidden').show();$(this).hide();">see all {{ doc.author_names|length }}</a></div>
           {% endif %}
-        {% endif %}
       {% endfor %}
   </div></div>
 

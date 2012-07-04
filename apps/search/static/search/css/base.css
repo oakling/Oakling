@@ -115,6 +115,14 @@ div.search {
   margin-right:0.5em;
 }
 
+.box_authors .author_name_hidden {
+  display:none;
+}
+
+.box_authors .author_name_show_link {
+  cursor:pointer;
+}
+
 .box_abstract .abstract {
   text-align:justify;
   font-size:1.1em;
