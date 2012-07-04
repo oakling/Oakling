@@ -31,31 +31,23 @@
 
 <div class='clear'></div>
 
-<div class='span4 box_authors'><div class='box_inner'>
-    {% if doc.author_names|length > 10 %}
+<div class='span12 box_authors alpha'><div class='box_inner'>
       {% for author in doc.author_names %}
         {% if forloop.counter <= 10 %}
+          <div class='author_name'>
           {% if author.surname %}
-            <div class='author_name'>{{ author.forename }} {{ author.surname }}</div>
+            {{ author.forename }} {{ author.surname }}{% if not forloop.last %},{% endif %}
           {% else %}
-            <div class='author_name'>{{ author }}</div>
+           {{ author }}{% if not forloop.last %},{% endif %}
           {% endif %}
+          </div>
         {% else %}
           {% if forloop.counter == 11 %}
             <a href=''>see all {{ doc.author_names|length }}</a>
           {% endif %}
         {% endif %}
       {% endfor %}
-    {% else %}
-      {% for author in doc.author_names %}
-        {% if author.surname %}
-          <div class='author_name'>{{ author.forename }} {{ author.surname }}</div>
-        {% else %}
-          <div class='author_name'>{{ author }}</div>
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-</div></div>
+  </div></div>
 
 <div class='clear'></div>
 

@@ -111,6 +111,8 @@ div.search {
 .box_authors .author_name {
   font-size:1.3em;
   color:#336;
+  float:left;
+  margin-right:0.5em;
 }
 
 .box_abstract .abstract {
