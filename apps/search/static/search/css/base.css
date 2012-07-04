@@ -95,6 +95,7 @@ div.search {
 }
 
 /* /doc/ page */
+
 .box_inner {
   padding-left:15px;
   padding-top:5px;
@@ -127,6 +128,15 @@ div.search {
   text-align:justify;
   font-size:1.1em;
   line-height:1.3em;
+  padding:10px;
+  border:1px solid #eee;
+  border-radius:5px;
+}
+
+.box_abstract .abstract h3 {
+  line-height:1em;
+  margin:0;
+  padding:0;
 }
 
 .box_date {
