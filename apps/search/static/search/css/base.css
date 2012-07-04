@@ -3,12 +3,6 @@
     padding: 10px;
 }
 
-div.abstract {
-  text-align:justify;
-  line-height:1.7em;
-  font-size:1.1em;
-}
-
 .navbar {
     margin-bottom: 0px;
 }
@@ -102,13 +96,27 @@ div.search {
 
 /* /doc/ page */
 .box_inner {
-  padding:5px;
+  padding-left:15px;
+  padding-top:5px;
+}
+
+.alpha .box_inner {
+  padding-left:0;
+}
+
+.box_title h1 a {
+  color:#006;
 }
 
 .box_authors .author_name {
   font-size:1.3em;
-  margin-bottom:0.2em;
   color:#336;
+}
+
+.box_abstract .abstract {
+  text-align:justify;
+  font-size:1.1em;
+  line-height:1.3em;
 }
 
 .box_date {
@@ -123,4 +131,12 @@ div.search {
 
 .share-button {
   display:inline;
+}
+
+.row-fluid [class*="span"] {
+  margin-left:0;
+}
+
+.row-fluid .box_inner h1 {
+  margin:0;
 }

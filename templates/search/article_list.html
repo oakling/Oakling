@@ -18,7 +18,7 @@
     {% endwith %}</span>
     {% endif %}
     {% if doc.journal %}
-        — <span class="journal">{{ doc.journal }}</a></span>
+        — <span class="journal"><a href='{{ doc.source_urls.0 }}'>{{ doc.journal }}</a></span>
     {% endif %}
     </p>
 </li>
