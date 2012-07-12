@@ -246,12 +246,13 @@ def doc(request, id):
                             context_instance=RequestContext(request))
 
 def journal(request, id):
-  db = couchdb.Server()['store']
+  db = couchdb.Server()['journals']
 
   # Check the journal exists
-  records = db.view('index/journals', key=id)
-  if len(records.rows) == 0:
-    return # Can't find journal
-  
-  return render_to_response('search/journal.html', {'journal': id,}, context_instance=RequestContext(request))
+  if id not in db:
+    return
+  else:
+    journal_doc = db[id]
+
+  return render_to_response('search/journal.html', {'journal': journal_doc,}, context_instance=RequestContext(request))
 
