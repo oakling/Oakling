@@ -21,11 +21,12 @@ $(document).ready(function() {
 {% block content_class %}journal_page{% endblock %}
 {% block content %}
 
-<div class='grid_8 alpha'>
-  <h1>{{ journal }}</h1>
+<div class='span12'>
+  <h1>{{ journal.name }}</h1>
+  Also known as: {% for alias in journal.aliases %}{{ alias }}{% if not forloop.last %}, {% endif %}{% endfor %}
 </div>
 
-<div class='grid_12 alpha omega'>
+<div class='span8'>
   <h3>Latest articles</h3>
   <ul id='latest_articles' class='articles'>
   </ul>

@@ -185,9 +185,9 @@ def journals_new(request):
 
     for alias in doc['sorted_aliases']:
       if filter is not None and filter in alias[0]:
-        journals.append((doc['name'], alias[1]))
+        journals.append((doc['name'], alias[1], doc.id))
         break
       elif filter is None:
-        journals.append((doc['name'], alias[1]))
+        journals.append((doc['name'], alias[1], doc.id))
         break
   return HttpResponse(json.dumps(journals), content_type='application/json')
