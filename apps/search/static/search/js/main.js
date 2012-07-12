@@ -240,12 +240,13 @@ var akorn = {
                     var assigned = ak.search_box.tagit("assignedTags");
                     var filtered = [];
                     for (var i=0, dlen=data.length; i < dlen; i++) {
-                        val = data[i][1];
                         full = data[i][0];
+                        val = data[i][1];
+                        query_val = data[i][2];
                         if ($.inArray(val, assigned) == -1) {
                             filtered.push({label: ak.search_config
                                 .make_label(val, search.term, full),
-                                value: full});
+                                value: query_val});
                         }
                     }
                     akorn.choices = filtered;
