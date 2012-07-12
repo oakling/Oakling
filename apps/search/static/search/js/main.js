@@ -224,10 +224,14 @@ var akorn = {
                 .escapeRegex(t)+")", "ig" );
             return s.replace(matcher, "<strong>$1</strong>");
         },
+        make_label: function(value, search, full) {
+            var label = this._highlight(value, search);
+            return [label,' <span class="full">', full, '</span>'].join('');
+        }
         // Function to use for auto-completion
         tagSource: function(search, showChoices) {
             $.ajax({
-                url: "/api/journals",
+                url: "/api/journals_new",
                 data: {'term': search.term},
                 dateType: "json",
                 // TODO Copy and paste code, should be possible to improve
@@ -236,10 +240,12 @@ var akorn = {
                     var assigned = ak.search_box.tagit("assignedTags");
                     var filtered = [];
                     for (var i=0, dlen=data.length; i < dlen; i++) {
-                        if ($.inArray(data[i], assigned) == -1) {
+                        val = data[i][1];
+                        full = data[i][0];
+                        if ($.inArray(val, assigned) == -1) {
                             filtered.push({label: ak.search_config
-                                ._highlight(data[i], search.term),
-                                value: data[i]});
+                                .make_label(val, search.term, full),
+                                value: val});
                         }
                     }
                     akorn.choices = filtered;
