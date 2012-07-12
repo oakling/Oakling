@@ -247,11 +247,12 @@ def doc(request, id):
 
 def journal(request, id):
   db = couchdb.Server()['store']
-
+  # Get their last visit
+  last_visit = request.session.get('last_visit', None)
   # Check the journal exists
   records = db.view('index/journals', key=id)
   if len(records.rows) == 0:
     return # Can't find journal
   
-  return render_to_response('search/journal.html', {'journal': id,}, context_instance=RequestContext(request))
+  return render_to_response('search/journal.html', {'journal': id, 'last_visit': last_visit}, context_instance=RequestContext(request))
 

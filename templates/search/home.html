@@ -9,6 +9,8 @@
 <script type="text/javascript">
 // TODO There is probably a better way to do this
 akorn.last_visit = "{{ last_visit|date:"c" }}";
+// When the document has loaded start the show
+$(document).ready(akorn.init);
 </script>
 {% endif %}
 {% endblock %}

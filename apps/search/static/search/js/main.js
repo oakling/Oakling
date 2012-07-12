@@ -327,13 +327,8 @@ var akorn = {
             });
         return false;
     },
-    init: function() {
+    activate_search_box: function() {
         var ak = akorn;
-        // Get the place to stick articles
-        // Set it as a static property to be accessible across instances
-        ak.articles_container = $('#latest_articles');
-        // Get initial articles
-        ak.get_articles(20);
         // Add handler for save search button
         var save_search = $('#save_search');
         save_search.on('click', ak.save_search_handler);
@@ -346,13 +341,20 @@ var akorn = {
         // Activate the search box
         ak.search_box = $('#search');
         ak.search_box.tagit(ak.search_config);
+    },
+    init: function() {
+        var ak = akorn;
+        // Get the place to stick articles
+        // Set it as a static property to be accessible across instances
+        ak.articles_container = $('#latest_articles');
+        // Get initial articles
+        ak.get_articles(20);
+        // Activate search box
+        ak.activate_search_box();
         // Listen to window scroll events
         // Reduce spurious calls by adding a 250 ms delay between triggers
         $(window).scroll(ak.throttle(function() {
             ak.check_position();
         }, 250));
-    },
+    }
 };
-
-// When the document has loaded start the show
-$(document).ready(akorn.init);
