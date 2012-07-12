@@ -176,6 +176,4 @@ def journals_new(request):
       elif filter is None:
         journals.append((doc['name'], alias))
         break
-
-  return HttpResponse(json.dumps(journals))
-
+  return HttpResponse(json.dumps(journals), content_type='application/json')
