@@ -7,7 +7,7 @@
 // When the document has loaded start the show
 $(document).ready(function() {
         var ak = akorn;
-        var query = "{{ journal }}";
+        var query = "{{ journal.id }}";
         ak.query = query;
         ak.articles_container = $('#latest_articles');
         ak.get_articles(20, undefined, query, true);
