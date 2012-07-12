@@ -245,7 +245,7 @@ var akorn = {
                         if ($.inArray(val, assigned) == -1) {
                             filtered.push({label: ak.search_config
                                 .make_label(val, search.term, full),
-                                value: val});
+                                value: full});
                         }
                     }
                     akorn.choices = filtered;
