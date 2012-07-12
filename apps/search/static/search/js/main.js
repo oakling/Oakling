@@ -227,7 +227,7 @@ var akorn = {
         make_label: function(value, search, full) {
             var label = this._highlight(value, search);
             return [label,' <span class="full">', full, '</span>'].join('');
-        }
+        },
         // Function to use for auto-completion
         tagSource: function(search, showChoices) {
             $.ajax({
