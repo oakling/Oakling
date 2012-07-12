@@ -153,8 +153,24 @@ def journals(request):
                                   filter in clean_journal(row.key)]),
                       content_type='application/json')
 
+def get_journal_docs(db=None):
+  if db is None:
+    db = couchdb.Server()['journals']
+
+  journal_docs = list([db[doc_id] for doc_id in db])
+
+  for doc in journal_docs:
+    if 'aliases' in doc:
+      doc['sorted_aliases'] = sorted([(clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
+    else:
+      doc['sorted_aliases'] = []
+
+  return journal_docs
+
+journal_doc_cache = get_journal_docs()
+
 def journals_new(request):
-  db = couchdb.Server()['journals']
+  #db = couchdb.Server()['journals']
 
   if 'term' in request.GET:
     filter = clean_journal(request.GET['term'])
@@ -163,17 +179,15 @@ def journals_new(request):
 
   journals = []
 
-  for doc_id in db:
-    doc = db[doc_id]
-
+  for doc in journal_doc_cache:
     if 'name' not in doc:
       continue
 
-    for alias in sorted(doc['aliases'], key=lambda a: len(a), reverse=True):
-      if filter is not None and filter in clean_journal(alias):
-        journals.append((doc['name'], alias))
+    for alias in doc['sorted_aliases']:
+      if filter is not None and filter in alias[0]:
+        journals.append((doc['name'], alias[1]))
         break
       elif filter is None:
-        journals.append((doc['name'], alias))
+        journals.append((doc['name'], alias[1]))
         break
   return HttpResponse(json.dumps(journals), content_type='application/json')
