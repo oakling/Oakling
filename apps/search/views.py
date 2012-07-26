@@ -259,3 +259,14 @@ def journal(request, id):
 
   return render_to_response('search/journal.html', {'last_visit': last_visit, 'journal': journal_doc,}, context_instance=RequestContext(request))
 
+def backend_journals(request):
+  db = couchdb.Server()['journals']
+  
+  journals = [db[doc_id] for doc_id in db if '_design' not in doc_id]
+
+  journals = sorted(journals, key=lambda doc: doc['name'])
+
+  return render_to_response('backend/journals.html', {'journals': journals,})
+
+
+

@@ -2,6 +2,7 @@ from django.conf.urls.defaults import patterns, include, url
 import views
 
 urlpatterns = patterns('',
+    url(r'^backend/journals$', views.backend_journals, name='backend_journals'),
     url(r'^search/$', views.search, name='search'),
     url(r'^doc/(?P<id>[A-Za-z0-9]+)$', views.doc, name='viewdoc'),
     url(r'^journals/(?P<id>.*)$', views.journal, name='viewjournal'),
