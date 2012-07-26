@@ -11,12 +11,12 @@ db2 = couchdb.Server()['journals']
 #    db2.delete(doc)
 
 for row in db1.view('index/journals', group=True).rows:
-  if db2.view('index/citations', key=row.key).rows:
+  if db2.view('index/aliases', key=row.key).rows:
     #print "%s already exists" % row.key
     pass
   else:
     print row.key
-    journal_doc = {'citation': row.key,
+    journal_doc = {'name': row.key,
                    'aliases': [row.key],}
-    db2.save(journal_doc)
+    #db2.save(journal_doc)
 

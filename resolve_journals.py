@@ -6,24 +6,45 @@ db_journals = server['journals']
 
 count = 0
 
-for doc_id in db_store:
-  doc = db_store[doc_id]
+cache = {}
+
+rows = db_store.view('errors/nojournalid', include_docs=True).rows
+
+print "%d docs to match journal id for" % len(rows)
+
+for row in rows:
+  doc = row.doc
+
+  if 'journal_id' in doc:
+    continue
 
   if 'journal' in doc:
-    journal_name = db_store[doc_id]['journal']
+    journal_name = doc['journal']
   elif 'citation' in doc and 'journal' in doc['citation']['journal']:
-    journal_name = db_store[doc_id]['citation']['journal']
+    journal_name = doc['citation']['journal']
   elif 'categories' in doc and 'arxiv' in doc['categories']:
-    journal_name = 'arxiv:' + db_store[doc_id]['categories']['arxiv'][0]
+    journal_name = 'arxiv:' + doc['categories']['arxiv'][0]
   else:
     continue
 
-  matches = db_journals.view('index/aliases', key=journal_name).rows
+  if journal_name in cache:
+    journal_id = cache[journal_name]
+  else:
+    matches = db_journals.view('index/aliases', key=journal_name).rows
 
-  if matches:
-    match = matches[0]
-    doc['journal_id'] = match.id
+    if matches:
+      journal_id = matches[0].id
+      cache[journal_name] = journal_id
+    else:
+      journal_id = None
+
+  if journal_id:
+    doc['journal_id'] = journal_id
     db_store.save(doc)
+    pass
+    #print journal_name, journal_id
+  else:
+    print "Can't find", journal_name
 
   if count % 100 == 0:
     print count
