@@ -1,0 +1,36 @@
+{% extends 'page.html' %}
+{% load search_filters %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}search/js/tag-it.js"></script>
+<script src="{{ STATIC_URL }}search/js/main.js"></script>
+{% if last_visit %}
+<script type="text/javascript">
+// TODO There is probably a better way to do this
+//akorn.last_visit = "{{ last_visit|date:"c" }}";
+// When the document has loaded start the show
+//$(document).ready(akorn.init);
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="span9 search">
+  <ul>
+  {% for journal in journals %}
+    <li>{{ journal.name }}<br/>
+      <ul>
+        {% for alias in journal.aliases %}
+        <li>{{ alias }}</li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+  </ul>
+</div>
+
+<div class="span3">
+
+</div>
+{% endblock %}
