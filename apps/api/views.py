@@ -212,4 +212,4 @@ def num_new(request):
 
       result[journal_id] = len(rows)
 
-    return HttpResponse(len(rows))
+    return HttpResponse(json.dumps(result))
