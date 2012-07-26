@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 import urllib
+import time
 
 import re
 import json
@@ -191,3 +192,24 @@ def journals_new(request):
         journals.append((doc['name'], alias[1], doc.id))
         break
   return HttpResponse(json.dumps(journals), content_type='application/json')
+
+def num_new(request):
+    db = couchdb.Server()['store']
+    journals_s = request.GET.get('q', None)
+
+    if journals_s:
+      journals = journals_s.split('+')
+    else:
+      journals = None
+
+    #time = request.GET.get('time', 0)
+    t = time.mktime(datetime.date.today().timetuple())
+
+    result = {}
+
+    for journal_id in journals:
+      rows = db.view('articles/latest_journal', include_docs=True, startkey=[journal_id,t],endkey=[journal_id,{}], descending=False)
+
+      result[journal_id] = len(rows)
+
+    return HttpResponse(len(rows))
