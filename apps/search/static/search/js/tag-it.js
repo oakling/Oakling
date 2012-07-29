@@ -72,7 +72,6 @@
             // created for tag-it.
             tabIndex: null,
 
-
             // Event callbacks.
             onTagAdded  : null,
             onTagRemoved: null,
@@ -269,6 +268,24 @@
             return tags;
         },
 
+        assignedSearches: function() {
+            var opts = this.options;
+            try {
+                var searches = $(opts.singleFieldNode).data('search_string').split(opts.singleFieldDelimiter);
+            }
+            catch (ex) {
+                if (ex instanceof TypeError) {
+                    searches = []
+                }
+            }
+            return searches;
+        },
+
+        _updateSingleTagsSearches: function(searches) {
+            var opts = this.options;
+            $(opts.singleFieldNode).data('search_string', searches.join(opts.singleFieldDelimiter));
+        },
+
         _updateSingleTagsField: function(tags) {
             // Takes a list of tag string values, updates this.options.singleFieldNode.val to the tags delimited by this.options.singleFieldDelimiter
             $(this.options.singleFieldNode).val(tags.join(this.options.singleFieldDelimiter));
@@ -314,7 +331,6 @@
 
         createTag: function(value, additionalClass, trigger) {
             var that = this;
-
             if(trigger === undefined || trigger === true) {
                     // ##### CRAIGS HACK to disable non-completed tags
                     // TODO Do this without global lookup and loop
@@ -349,10 +365,13 @@
 
             var label = $(this.options.onTagClicked ? '<a class="tagit-label"></a>' : '<span class="tagit-label"></span>').text(value);
 
+            var search_string = that._tagInput.data("search_string");
+
             // Create tag.
             var tag = $('<li></li>')
                 .addClass('tagit-choice ui-widget-content ui-state-default ui-corner-all')
                 .addClass(additionalClass)
+                .data("search_string", search_string)
                 .append(label);
 
             // Button for removing the tag.
@@ -372,6 +391,10 @@
                 var tags = this.assignedTags();
                 tags.push(value);
                 this._updateSingleTagsField(tags);
+                // Making sure searches are saved
+                var searches = this.assignedSearches();
+                searches.push(search_string);
+                this._updateSingleTagsSearches(searches);
             } else {
                 var escapedValue = label.html();
                 tag.append('<input type="hidden" style="display:none;" value="' + escapedValue + '" name="' + this.options.itemName + '[' + this.options.fieldName + '][]" />');
@@ -404,6 +427,14 @@
                     return el != removedTagLabel;
                 });
                 this._updateSingleTagsField(tags);
+
+                // Make sure searches are removed on tag deletion
+                var searches = this.assignedSearches();
+                var removedSearch = tag.data('search_string');
+                searches = $.grep(searches, function(el) {
+                    return el != removedSearch;
+                });
+                this._updateSingleTagsSearches(searches);
             }
             // Animate the removal.
             if (animate) {
