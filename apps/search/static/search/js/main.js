@@ -92,6 +92,11 @@ var akorn = {
         prev_datetime = prev_article
                 .find('meta')
                 .attr('content');
+
+        if(prev_datetime === undefined) {
+            return;
+        }
+
         prev_date = prev_datetime.substr(0,10);
         // If a last visit is set then add a line
         if(last_visit !== undefined) {
@@ -189,7 +194,7 @@ var akorn = {
         // Called when a tag is added
         onTagAdded: function(event, tag) {
             var ak = akorn;
-            var query = ak.search_box.tagit("assignedTags").join('+');
+            var query = ak.search_box.tagit("assignedSearches").join('+');
             ak.query = query;
             ak.save_search.removeAttr('disabled');
 	    ak.get_articles(20,
@@ -201,13 +206,9 @@ var akorn = {
         onTagRemoved: function(event, tag) {
             var ak = akorn;
             // Get array of assigned tags
-            var tags_arr = ak.search_box.tagit("assignedTags");
-            // Find the removed tag
-            var tag_idx = $.inArray(tag, tags_arr);
-            if(tag_idx) {
-                // Remove it
-                tags_arr.splice(tag_idx, 1);
-            }
+            var tags_arr = ak.search_box.tagit("assignedSearches");
+            // Find and remove the removed tag
+            tags_arr.splice( $.inArray(tag.data('search_string'), tags_arr), 1);
             // If no tags present then disable the button
             if(tags_arr.length === 0) {
                 ak.save_search.attr('disabled','disabled');
@@ -246,7 +247,8 @@ var akorn = {
                         if ($.inArray(val, assigned) == -1) {
                             filtered.push({label: ak.search_config
                                 .make_label(val, search.term, full),
-                                value: val});
+                                value: val,
+                                search: query_val});
                         }
                     }
                     akorn.choices = filtered;
