@@ -21,15 +21,20 @@ $(document).ready(function() {
 {% block content_class %}journal_page{% endblock %}
 {% block content %}
 
-<div class='span12'>
+<div class='span12 box_title alpha'><div class='box_inner'>
   <h1>{{ journal.name }}</h1>
-  Also known as: {% for alias in journal.aliases %}{{ alias }}{% if not forloop.last %}, {% endif %}{% endfor %}
-</div>
+</div></div>
 
-<div class='span8'>
+<div class='clear'></div>
+
+<div class='span8 box_date alpha'><div class='box_inner'>
+  Also known as: {% for alias in journal.aliases %}{{ alias }}{% if not forloop.last %}, {% endif %}{% endfor %}
+</div></div>
+
+<div class='span8 box_articles alpha'><div class='box_inner'>
   <h3>Latest articles</h3>
   <ul id='latest_articles' class='articles'>
   </ul>
-</div>
+</div></div>
 
 {% endblock %}
