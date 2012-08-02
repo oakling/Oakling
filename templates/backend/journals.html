@@ -19,7 +19,7 @@
 <div class="span9 search">
   <ul>
   {% for journal in journals %}
-    <li>{{ journal.name }}<br/>
+    <li><input type='checkbox' value='{{ journal.id }}'/> <a href='/journals/{{ journal.id }}'>{{ journal.name }}</a><br/>
       <ul>
         {% for alias in journal.aliases %}
         <li>{{ alias }}</li>
