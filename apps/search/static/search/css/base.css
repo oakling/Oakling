@@ -105,8 +105,12 @@ div.search {
   padding-left:0;
 }
 
+.box_title {
+  margin-top:1em;
+}
+
 .box_title h1 a {
-  color:#006;
+  color:#08C;
 }
 
 .box_authors .author_name {
