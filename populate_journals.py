@@ -18,5 +18,5 @@ for row in db1.view('index/journals', group=True).rows:
     print row.key
     journal_doc = {'name': row.key,
                    'aliases': [row.key],}
-    #db2.save(journal_doc)
+    db2.save(journal_doc)
 

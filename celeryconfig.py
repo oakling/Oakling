@@ -10,6 +10,9 @@ BROKER_URL = "amqplib://akorn:akorn@127.0.0.1/myvhost" #amqplib://akorn:akorn@ip
 
 CELERY_RESULT_BACKEND = "amqp"
 
+#BROKER_URL = "couchdb://127.0.0.1:5984/celery"
+#CELERY_RESULT_BACKEND = 'couchdb'
+
 CELERY_IMPORTS = (
     "lib.scrapers.journals.tasks",
     "lib.scrapers.feeds.tasks",

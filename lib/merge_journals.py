@@ -18,8 +18,8 @@ count1 = journal_article_count(id1)
 count2 = journal_article_count(id2)
 
 # Merge into larger journal
-if count2 > count1:
-  id1, id2 = id2, id1
+#if count2 < count1:
+id1, id2 = id2, id1
 
 doc1 = db[id1]
 doc2 = db[id2]
@@ -37,6 +37,7 @@ print doc1['name']
 if not dryrun:
   doc1['aliases'] = list(aliases)
   db.save(doc1)
+  db.delete(doc2)
 
   print doc1
 
