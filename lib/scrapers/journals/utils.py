@@ -8,6 +8,8 @@ import re
 
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
 
+server = couchdb.Server()
+
 class ScraperNotFound(Exception):
   pass
 
@@ -63,13 +65,26 @@ def resolve_url(url):
 
   return response.geturl()
 
+def resolve_journal(alias):
+  db_journals = server['journals']
+
+  matches = db_journals.view('index/aliases', key=alias).rows
+
+  if matches:
+    journal_id = matches[0].id
+    #cache[journal_name] = journal_id
+  else:
+    journal_id = None
+
+  return journal_id
+
 def resolve_scraper(url):
   # Do it by domain for now. This might not always work, a full url prefix might be needed, but this is cheaper.
 
   url_parsed = urlparse.urlparse(url)
   domain = url_parsed.netloc
 
-  db = couchdb.Server()['scrapers']
+  db = server['scrapers']
   records = db.view('index/domain', key=domain, include_docs='true').rows
 
   if not records:
@@ -98,6 +113,21 @@ def resolve_and_scrape(url):
     article = scraper_module.scrape(url)
     
     article['scraper_module'] = scraper_doc['module']
+
+    if 'journal' in article:
+      journal_name = article['journal']
+    elif 'citation' in article and 'journal' in article['citation']['journal']:
+      journal_name = article['citation']['journal']
+    elif 'categories' in article and 'arxiv' in article['categories']:
+      journal_name = 'arxiv:' + article['categories']['arxiv'][0]
+    else:
+      journal_name = None
+
+    if journal_name:
+      journal_id = resolve_journal(journal_name)
+
+      if journal_id:
+        article['journal_id'] = journal_id
 
     return article
 
