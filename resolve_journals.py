@@ -18,10 +18,10 @@ for row in rows:
   if 'journal_id' in doc:
     continue
 
-  if 'journal' in doc:
-    journal_name = doc['journal']
-  elif 'citation' in doc and 'journal' in doc['citation']['journal']:
+  if 'citation' in doc and 'journal' in doc['citation']['journal']:
     journal_name = doc['citation']['journal']
+  elif 'journal' in doc:
+    journal_name = doc['journal']
   elif 'categories' in doc and 'arxiv' in doc['categories']:
     journal_name = 'arxiv:' + doc['categories']['arxiv'][0]
   else:
