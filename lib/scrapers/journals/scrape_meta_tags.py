@@ -2,8 +2,11 @@ import sys
 import comm
 import time
 from dateutil.parser import parse as parse_date
+from utils import ScraperNotFound
 
 #TODO bepress
+
+NECESSARY_FIELDS = ['title','author_names', 'journal']
 
 title = ['citation_title', 'eprints.title', 'bepress_citation_title',
          'prism.title', 'DC.title', 'DC.Title', 'dc.title', 'dc.Title']
@@ -39,6 +42,14 @@ language = ['citation_language', 'DC.language', 'DC.Language', 'dc.language',
 # Need to check for doi: scheme (eliminate http: results)
 doi = ['citation_doi', 'DC.identifier', 'DC.Identifier', 'dc.identifier',
        'dc.Identifier']
+
+def missingfields(article, necessaryfields):
+    missing = []
+    for field in necessaryfields:
+        if field not in article or not article[field]:
+            missing.append(field)
+    return missing
+
 
 def get_meta_list(names, tree):
     for name in names:
@@ -86,6 +97,9 @@ def scrape(abstract_url):
         article['date_published'] = time.mktime(date.timetuple())
         article['citation']['year'] = date.year
 
+    for field in NECESSARY_FIELDS:
+        if field not in article or not article[field]:
+            raise ScraperNotFound
     return article
 
 
