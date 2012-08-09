@@ -2,6 +2,8 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape as esc
 
+import json
+
 register = template.Library()
 
 @register.filter
@@ -9,11 +11,16 @@ def split(str,splitter):
     return str.split(splitter)
 
 @register.filter
-def short_query(str):
+def to_json(query_obj):
+    return mark_safe(json.dumps(query_obj))
+
+@register.filter
+def short_label(query_obj):
     # Collect the output
     output = []
     # Split the query into each journal
-    for b in str.split('+'):
+    for query in query_obj.itervalues():
+        b = query.get('label','')
         # Check if the journal name is longer than we want
         if len(b) <= 42:
                 output.append(esc(b))

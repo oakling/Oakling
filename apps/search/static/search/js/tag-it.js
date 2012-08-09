@@ -329,7 +329,7 @@
             return $.trim(str.toLowerCase());
         },
 
-        createTag: function(value, additionalClass, trigger) {
+        createTag: function(value, additionalClass, trigger, search_string) {
             var that = this;
             if(trigger === undefined || trigger === true) {
                     // ##### CRAIGS HACK to disable non-completed tags
@@ -365,7 +365,9 @@
 
             var label = $(this.options.onTagClicked ? '<a class="tagit-label"></a>' : '<span class="tagit-label"></span>').text(value);
 
-            var search_string = that._tagInput.data("search_string");
+            if (search_string === undefined) {
+                var search_string = that._tagInput.data("search_string");
+            }
 
             // Create tag.
             var tag = $('<li></li>')

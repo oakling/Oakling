@@ -1,60 +1,66 @@
-from django.http import HttpResponse
-from django.shortcuts import render_to_response
 import urllib
 import time
-
+import uuid
 import re
 import json
-
-from django.template import RequestContext
-from lib.search import citeulike, mendeley, arxiv
 import Queue
 import threading
 import itertools
 import couchdb
 import datetime
 
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
+
+from lib.search import citeulike, mendeley, arxiv
+
+@csrf_exempt
 def save_search(request):
     """
-    Stores searches the user explicitly requests to be saved
+    Stores searches that the user explicitly requests to be saved
     """
-    query = request.GET.get('q')
-    if not query:
-        # Without a query to save this is a bad request
+    query_str = request.POST.get('query')
+
+    if not query_str:
+        # Without a query to save, this is a bad request
         return HttpResponse(status=400)
-    saved_searches = request.session['saved_searches']
+
+    query = json.loads(query_str)
+
+    saved_searches = request.session.get('saved_searches', None)
     # Check the user has a saved search list
-    if not saved_searches is None:
+    if not saved_searches:
         # Make an empty list
-        request.session['saved_searches'] = []
+        request.session['saved_searches'] = {}
+    # Make an ID for this query
+    query_id = uuid.uuid4()
     # Add the query to the users saved_search list
-    if not query in saved_searches:
-        request.session['saved_searches'].append(query)
-        # Make sure sessions is saved
-        request.session.modified = True
-    else:
-        return HttpResponse(status=202)
-    # Success but no response to give
-    return HttpResponse(status=204)
+    request.session['saved_searches'][query_id] = query
+    # Make sure sessions is saved
+    request.session.modified = True
+    # Success, and return the saved query's id
+    return HttpResponse(json.dumps({'query_id': str(query_id)}), mimetype="application/json", status=200)
 
 def del_saved_search(request):
     """
     Removes a users stored search
     """
-    query = request.GET.get('q')
-    if not query:
+    query = request.GET.get('query_id')
+    if not query_id:
         # Without a query this is a bad request
         return HttpResponse(status=400)
     # Get the list of searches
     saved_searches = request.session.get('saved_searches')
     if not saved_searches:
-        raise HttpResponse(status=404)
+        return HttpResponse(status=404)
     # Rip out the query if it exists
     try:
-        request.session['saved_searches'].remove(query)
+        del request.session['saved_searches'][query_id]
         # Raises a ValueError if item does not exist
-    except ValueError:
-        return HttpResponse(status=404)
+    except KeyError:
+        return HttpResponse(status=400)
     # Make sure session is saved
     request.session.modified = True
     # Success but no content
