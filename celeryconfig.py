@@ -16,12 +16,17 @@ CELERY_RESULT_BACKEND = "amqp"
 CELERY_IMPORTS = (
     "lib.scrapers.journals.tasks",
     "lib.scrapers.feeds.tasks",
+    "lib.debug",
 )
 
 CELERY_ENABLE_UTN = True
 CELERY_TIMEZONE = "Europe/London"
 
 CELERYBEAT_SCHEDULE = {
+    "debug": {
+       "task": "lib.debug.rabbit_beat",
+       "schedule": crontab(minute=1),
+    },
     "APS_feeds": {
         "task": "lib.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=1, hour="15"),
