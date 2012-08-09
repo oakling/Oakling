@@ -208,8 +208,7 @@ def num_new(request):
     else:
       journals = None
 
-    #time = request.GET.get('time', 0)
-    t = time.mktime(datetime.date.today().timetuple())
+    t = int(request.GET.get('time', time.mktime(datetime.date.today().timetuple())))
 
     result = {}
 
