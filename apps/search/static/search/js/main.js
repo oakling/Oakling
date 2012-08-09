@@ -315,11 +315,14 @@ var akorn = {
         return false;
     },
     delete_saved_search_handler: function(e) {
+        var query_id = $(e.currentTarget).parent('a').attr('id');
+        var params = {};
+        params['query_id'] = query_id;
         // TODO Make removal and deletion async and enable undoing
-        $.get('/api/remove_search',{query_id: query_id},
+        $.get('/api/remove_search', params,
             function(data) {
-                $(['#',query_id].join('')).remove();
-            });
+                $(['#',query_id].join('')).parent('li').remove();
+            }, 'html');
         return false;
     },
     shorten_query: function(query_obj) {
@@ -344,7 +347,9 @@ var akorn = {
         var ak = akorn;
         // Make item element
         var el = $(['<li><a id="',query_id,'">',
-                        ak.shorten_query(query), '</a></li>'].join(''));
+                        ak.shorten_query(query),
+                        '</a> <span class="badge badge-important">6</span>',
+                        '<i class="delete icon-trash"></li>'].join(''));
         el.children('a').data('query', $.extend(true, {}, query));
         // Add to list of saved searches
         ak.saved_searches.append(el);
@@ -375,7 +380,11 @@ var akorn = {
         save_search.on('click', ak.save_search_handler);
         // Add handler for saved search links
         saved_searches = $('#saved_searches');
-        saved_searches.on('click','li a', ak.saved_search_handler);
+        saved_searches.on('click', 'li a',
+            ak.saved_search_handler);
+        // Add handler for deleted saved search links
+        saved_searches.on('click', 'li a i.delete',
+            ak.delete_saved_search_handler);
         ak.saved_searches = saved_searches;
         ak.save_search = save_search;
         // TODO Search input should be hidden before this point

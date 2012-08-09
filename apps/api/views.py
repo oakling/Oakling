@@ -35,19 +35,19 @@ def save_search(request):
         # Make an empty list
         request.session['saved_searches'] = {}
     # Make an ID for this query
-    query_id = uuid.uuid4()
+    query_id = str(uuid.uuid4())
     # Add the query to the users saved_search list
     request.session['saved_searches'][query_id] = query
     # Make sure sessions is saved
     request.session.modified = True
     # Success, and return the saved query's id
-    return HttpResponse(json.dumps({'query_id': str(query_id)}), mimetype="application/json", status=200)
+    return HttpResponse(json.dumps({'query_id': query_id}), mimetype="application/json", status=200)
 
 def del_saved_search(request):
     """
     Removes a users stored search
     """
-    query = request.GET.get('query_id')
+    query_id = request.GET.get('query_id')
     if not query_id:
         # Without a query this is a bad request
         return HttpResponse(status=400)
@@ -58,7 +58,7 @@ def del_saved_search(request):
     # Rip out the query if it exists
     try:
         del request.session['saved_searches'][query_id]
-        # Raises a ValueError if item does not exist
+        # Raises a KeyError if item does not exist
     except KeyError:
         return HttpResponse(status=400)
     # Make sure session is saved

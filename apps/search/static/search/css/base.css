@@ -171,3 +171,9 @@ span.full {
   font-style: italic;
   margin-left: 0.5em;
 }
+#saved_searches {
+    margin-left: 1em;
+}
+#saved_searches li a i.delete {
+    float: right;
+}
