@@ -1,5 +1,6 @@
 // Namespace for akorn js
 var akorn = {
+    query: {},
     // Storing set nice names for months
     // TODO Really!? In this century?
     month_names: [ "January", "February", "March", "April", "May", "June",
@@ -31,6 +32,14 @@ var akorn = {
         // Stick a delay in to mitigate scrollbar glitches
         window.setTimeout('akorn.pause_updates = false', 400);
     },
+    make_query_string: function(query_obj) {
+    // Take a query object and return a string for use in get_articles
+        queries = [];
+        for(q in query_obj) {
+            queries.push(q);
+        }
+        return queries.join('+');
+    },
     // Get a specified number of articles
     get_articles: function(num, article_id, query, clear) {
         // Optionally pass an article id as the 2nd argument
@@ -46,7 +55,7 @@ var akorn = {
             params['last_ids'] = article_id;
         }
         if(query !== undefined && query) {
-            params['q'] = query;
+            params['q'] = akorn.make_query_string(query);
         }
         if(clear !== undefined && clear) {
             callback = akorn.replace_articles;
@@ -194,30 +203,33 @@ var akorn = {
         // Called when a tag is added
         onTagAdded: function(event, tag) {
             var ak = akorn;
-            var query = ak.search_box.tagit("assignedSearches").join('+');
-            ak.query = query;
+            var tag = $(tag[0]);
+            // Journal ID
+            var search = tag.data('search_string');
+            var search_obj = {};
+            search_obj['label'] = tag.find('span.tagit-label').text();
+            search_obj['query'] = search;
+            // Save search
+            ak.query[search] = search_obj;
+            // Enable save search button
             ak.save_search.removeAttr('disabled');
+            // Refresh the list
 	    ak.get_articles(20,
                 undefined,
-                query,
+                ak.query,
                 true);
         },
         // Called when a tag is removed
         onTagRemoved: function(event, tag) {
             var ak = akorn;
-            // Get array of assigned tags
-            var tags_arr = ak.search_box.tagit("assignedSearches");
-            // Find and remove the removed tag
-            tags_arr.splice( $.inArray(tag.data('search_string'), tags_arr), 1);
-            // If no tags present then disable the button
-            if(tags_arr.length === 0) {
-                ak.save_search.attr('disabled','disabled');
-            }
-            var query = tags_arr.join('+');
-            ak.query = query;
+            // Find the journal id
+            var search = $(tag[0]).data('search_string');
+            // Remove from stored query
+            delete ak.query[search];
+            // Refresh the articles list
             ak.get_articles(20,
                     undefined,
-                    query,
+                    ak.query,
                     true);
         },
         _highlight: function(s, t) {
@@ -257,26 +269,42 @@ var akorn = {
             });
         },
     },
-    populate_search_from_query: function(query) {
+    populate_search_from_query: function(query_obj) {
         var aks = akorn.search_box;
         // Clean the search box
         aks.tagit('removeAll', false);
-        // Get the tags within the query
-        var tags = query.split('+');
         // Create each in order
-        for(var i=0, l = tags.length; i<l; i++) {
+        for(keyword in query_obj) {
             // Add journal class, turn off the completion check and events
-            aks.tagit('createTag', $.trim(tags[i]), 'journal', false);
+            aks.tagit('createTag',
+                $.trim(query_obj[keyword]['label']),
+                'journal',
+                false,
+                $.trim(query_obj[keyword]['query']));
         }
         return this;
+    },
+    decode_unicode: function(encoded_str) {
+    // Used to decode strings encoded with django filter escapejs
+        // TODO Replace with compiled regex
+        var regx = /\\u([\d\w]{4})/gi;
+        var decoded_str = encoded_str.replace(regx, function(match, grp) {
+            return String.fromCharCode(parseInt(grp, 16));
+        });
+        return decoded_str;
     },
     saved_search_handler: function(e) {
     // Handles clicks on the individual saved search queries
         var ak = akorn;
         // Get the saved query from the target link
-        var query = $(e.currentTarget).attr('href');
+        var target = $(e.currentTarget);
+        var query = target.data('query');
+        // TODO Check for way to avoid decoding
+        if($.type(query) === "string") {
+            query = JSON.parse(ak.decode_unicode(query));
+        }
         ak.query = query;
-        // TODO Change tags displayed in search box
+        // Change tags displayed in search box
         ak.populate_search_from_query(query);
         // Do a new query
         ak.get_articles(20,
@@ -286,14 +314,21 @@ var akorn = {
         // Stop the event from propagating
         return false;
     },
-    shorten_query: function(query) {
+    delete_saved_search_handler: function(e) {
+        // TODO Make removal and deletion async and enable undoing
+        $.get('/api/remove_search',{query_id: query_id},
+            function(data) {
+                $(['#',query_id].join('')).remove();
+            });
+        return false;
+    },
+    shorten_query: function(query_obj) {
     // Takes a query string and produces a pretty HTML rendering of it
-        var i, len, output, bits;
-        output = [];
+        var b;
+        var output = [];
         // Split the query into each journal
-        bits = query.split('+');
-        for(i=0, len=bits.length; i<len; i+=1) {
-            b = bits[i];
+        for(keyword in query_obj) {
+            b = query_obj[keyword]['label'];
             // Check if the journal name is longer than we want
             if(b.length <= 42) {
                 output.push(b);
@@ -305,29 +340,32 @@ var akorn = {
         }
         return output.join(' +<br />');
     },
+    add_saved_search: function(query, query_id) {
+        var ak = akorn;
+        // Make item element
+        var el = $(['<li><a id="',query_id,'">',
+                        ak.shorten_query(query), '</a></li>'].join(''));
+        el.children('a').data('query', query);
+        // Add to list of saved searches
+        ak.saved_searches.append(el);
+    },
+    post_saved_search: function(query) {
+    // Take a given query and save it to the server
+        $.post('/api/save_search', {query: JSON.stringify(query)},
+            function(data){
+                console.log('Query saved successfully');
+                akorn.add_saved_search(query, data['query_id']);
+            }, 'json');
+    },
     save_search_handler: function(e) {
     // Handles clicks on the save this query button
-        var ak = akorn
+        var ak = akorn;
         // Check if button is disabled
         if(ak.save_search.attr('disabled') === 'disabled') {
             return true;
         }
         // Get the search terms
-        var query = ak.query;
-        // Add to list of saved searches
-        ak.saved_searches.append(['<li><a href="',query,'">',
-            ak.shorten_query(query), '</a></li>'].join(''));
-        // TODO Make get query to save search
-        $.get('/api/save_search/', {'q':query},
-            function(){
-                console.info('Query saved successfully');
-            })
-            .error(function(){
-                ak.save_search
-                    .removeClass('btn-primary')
-                    .addClass('btn-danger');
-                console.error('Failed to save');
-            });
+        ak.post_saved_search(ak.query);
         return false;
     },
     activate_search_box: function() {
@@ -361,3 +399,40 @@ var akorn = {
         }, 250));
     }
 };
+
+jQuery(document).ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function sameOrigin(url) {
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    function safeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    }
+});

@@ -3,6 +3,7 @@
 
 {% block scripts %}
 {{ block.super }}
+<script src="{{ STATIC_URL }}search/js/json2.js"></script>
 <script src="{{ STATIC_URL }}search/js/tag-it.js"></script>
 <script src="{{ STATIC_URL }}search/js/main.js"></script>
 {% if last_visit %}
@@ -26,11 +27,13 @@ $(document).ready(akorn.init);
 
 <div class="span3">
 <ul id="saved_searches" class="nav nav-tabs nav-stacked">
-        {% for search in saved_searches %}
+    {% for q_id, q in saved_searches.items %}
         {% spaceless %}
-        <li><a href="{{ search }}">{{ search|short_query }}</a></li>
+        <li>
+        <a id="{{ q_id }}" data-query="{{ q|to_json|escapejs }}">{{ q|short_label }}</a>
+        </li>
         {% endspaceless %}
-        {% endfor %}
+    {% endfor %}
 </ul>
 </div>
 {% endblock %}
