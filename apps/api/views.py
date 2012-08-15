@@ -215,6 +215,27 @@ class JSONResponseMixin(object):
         # TODO Add support for objects that cannot be serialized directly
         return json.dumps(context)
 
+def articles_since(journals, timestamp=None):
+    """
+    Returns a dict of journal IDs and article counts
+    Takes a list of journal IDs and a timestamp to count from
+    """
+    db = couchdb.Server()['store']
+    output = {}
+
+    if not timestamp:
+        timestamp = time.mktime(datetime.date.today().timetuple())
+
+    # TODO Do this with one couch query?
+    for journal_id in journals:
+        rows = db.view('articles/latest_journal',
+            include_docs=True,
+            startkey=[journal_id, timestamp],
+            endkey=[journal_id, {}],
+            descending=False)
+        output[journal_id] = len(rows)
+
+    return output
 
 class ArticleCountView(JSONResponseMixin, View):
     def articles_since(self, journals, timestamp=None):
@@ -222,28 +243,14 @@ class ArticleCountView(JSONResponseMixin, View):
         Returns as JSON a dict of journal IDs and article counts
         Takes a list of journal IDs and a timestamp to count from
         """
-        db = couchdb.Server()['store']
-        output = {}
-
-        if not timestamp:
-            timestamp = time.mktime(datetime.date.today().timetuple())
-        else:
+        if timestamp:
             try:
                 # TODO Should probably validate user supplied timestamp
                 timestamp = int(timestamp)
             except ValueError:
                 # TODO Should be doing this with exceptions
                 return HttpResponse(status=400)
-
-        # TODO Do this with one couch query?
-        for journal_id in journals:
-            rows = db.view('articles/latest_journal',
-                include_docs=True,
-                startkey=[journal_id, timestamp],
-                endkey=[journal_id, {}],
-                descending=False)
-            output[journal_id] = len(rows)
-        return self.render_to_response(output)
+        return self.render_to_response(articles_since(journals, timestamp))
 
     def get(self, *args, **kwargs):
         """
