@@ -13,6 +13,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
 
 from lib.search import citeulike, mendeley, arxiv
 
@@ -199,22 +200,70 @@ def journals_new(request):
         break
   return HttpResponse(json.dumps(journals), content_type='application/json')
 
-def num_new(request):
-    db = couchdb.Server()['store']
-    journals_s = request.GET.get('q', None)
 
-    if journals_s:
-      journals = journals_s.split('+')
-    else:
-      journals = None
+class JSONResponseMixin(object):
+    response_class = HttpResponse
 
-    t = int(request.GET.get('time', time.mktime(datetime.date.today().timetuple())))
+    def render_to_response(self, context, **response_kwargs):
+        response_kwargs['content_type'] = 'application/json'
+        return self.response_class(
+            self.convert_context_to_json(context),
+            **response_kwargs
+        )
 
-    result = {}
+    def convert_context_to_json(self, context):
+        # TODO Add support for objects that cannot be serialized directly
+        return json.dumps(context)
 
-    for journal_id in journals:
-      rows = db.view('articles/latest_journal', include_docs=True, startkey=[journal_id,t],endkey=[journal_id,{}], descending=False)
 
-      result[journal_id] = len(rows)
+class ArticleCountView(JSONResponseMixin, View):
+    def articles_since(self, journals, timestamp=None):
+        """
+        Returns as JSON a dict of journal IDs and article counts
+        Takes a list of journal IDs and a timestamp to count from
+        """
+        db = couchdb.Server()['store']
+        output = {}
 
-    return HttpResponse(json.dumps(result))
+        if not timestamp:
+            timestamp = time.mktime(datetime.date.today().timetuple())
+        else:
+            try:
+                # TODO Should probably validate user supplied timestamp
+                timestamp = int(timestamp)
+            except ValueError:
+                # TODO Should be doing this with exceptions
+                return HttpResponse(status=400)
+
+        # TODO Do this with one couch query?
+        for journal_id in journals:
+            rows = db.view('articles/latest_journal',
+                include_docs=True,
+                startkey=[journal_id, timestamp],
+                endkey=[journal_id, {}],
+                descending=False)
+            output[journal_id] = len(rows)
+        return self.render_to_response(output)
+
+    def get(self, *args, **kwargs):
+        """
+        Returns as JSON a dict of journal IDs and article counts
+        Takes a + separated string of journal IDs and a UNIX timestamp in s:
+        If no timestamp is provided it gives count of articles published today
+        """
+        journals_s = self.request.GET.get('q')
+        time_s = self.request.GET.get('time')
+        if not journals_s:
+            return HttpResponse(status=400)
+        return self.articles_since(journals_s.split('+'), time_s)
+
+    def post(self, *args, **kwargs):
+        """
+        Returns as JSON a dict of journal IDs and article counts
+        Takes a JSON serialize query object and a UNIX timestamp in s
+        """
+        query = self.request.POST.get('q')
+        time_s = self.request.POST.get('time')
+        if not query:
+            return HttpResponse(status=400)
+        return self.articles_since(json.loads(query.keys()), time_s)
