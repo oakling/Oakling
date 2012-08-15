@@ -348,8 +348,8 @@ var akorn = {
         // Make item element
         var el = $(['<li><a id="',query_id,'">',
                         ak.shorten_query(query),
-                        '</a> <span class="badge badge-important">6</span>',
-                        '<i class="delete icon-trash"></li>'].join(''));
+                        ' <span class="badge badge-important">6</span>',
+                        '<i class="delete icon-trash"></a></li>'].join(''));
         el.children('a').data('query', $.extend(true, {}, query));
         // Add to list of saved searches
         ak.saved_searches.append(el);
