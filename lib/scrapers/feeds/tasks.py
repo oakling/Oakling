@@ -21,5 +21,8 @@ def add_feed_items(feedhandler, feed_url):
         handler = feed_handlers.handlers['default']
 
     for item in feed['items']:
-        scrape_journal.delay(handler['url'](item))
+        if "abstract" in handler:
+            base_article = {'abstract':handler['abstract'](item)}
+
+        scrape_journal.delay(handler['url'](item), base_article)
                              #handler['identifier'](item))
