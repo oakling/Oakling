@@ -3,7 +3,8 @@ import re
 handlers = {
     "default": {
         "identifier": lambda item: 'doi:' + item['doi'],
-        "url": lambda item: item['url'],
+        "url": lambda item: item['link'],
+        "abstract": lambda item: item['description'],
     },
     "aps_feed": {
         "identifier": lambda item: 'doi:' + item['prism_doi'],
