@@ -107,7 +107,7 @@ def resolve_and_scrape(url):
    
       if scraper_doc is None: 
           # default to meta tags
-          scraper_doc = {'module': 'scrape_meta_tags'}
+          scraper_doc = {'module': 'lib.scrapers.journals.scrape_meta_tags'}
 
     scraper_module = load_module(scraper_doc['module'])
       
