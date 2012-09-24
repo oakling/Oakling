@@ -69,7 +69,7 @@ def scrape_doi(doi, doc_id=None):
     return doc_id
 
 @task
-def scrape_journal(url, doc_id=None):
+def scrape_journal(url, doc_id=None, base_article={}):
     """Find the paper in the database and then add or merge as necessary."""
 
     # check the store for this source url
@@ -78,6 +78,7 @@ def scrape_journal(url, doc_id=None):
     records = db.view('index/sources', key=url, include_docs='true').rows
 
     error = None
+
 
     if doc_id is not None or not records:
         # source url isn't in db
@@ -92,6 +93,7 @@ def scrape_journal(url, doc_id=None):
 
           # If we haven't excepted at this point, clear the current article and save it
           article.clear()
+          article.update(base_article)
           article.update(scraped_article)
 
           # Add the id and revision back in since we just cleared the doc. Awkward.
