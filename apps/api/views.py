@@ -136,8 +136,6 @@ def latest(request, num):
 
         docs.append(d)
 
-    print last_ids_json
-
     return render_to_response('search/article_list.html', {'docs': docs, 'last_ids_json': last_ids_json})
 
 def clean_journal(s):
