@@ -2,7 +2,6 @@
 var akorn = {
     query: {},
     // Storing set nice names for months
-    // TODO Really!? In this century?
     month_names: [ "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December" ],
     // Append a given HTML Fragment to the articles list
@@ -387,7 +386,6 @@ var akorn = {
             ak.delete_saved_search_handler);
         ak.saved_searches = saved_searches;
         ak.save_search = save_search;
-        // TODO Search input should be hidden before this point
         // Activate the search box
         ak.search_box = $('#search');
         ak.search_box.tagit(ak.search_config);
