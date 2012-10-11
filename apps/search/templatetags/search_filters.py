@@ -19,7 +19,7 @@ def short_label(query_obj):
     # Collect the output
     output = []
     # Split the query into each journal
-    for query in query_obj.itervalues():
+    for query in query_obj['queries'].itervalues():
         b = query.get('label','')
         # Check if the journal name is longer than we want
         if len(b) <= 42:

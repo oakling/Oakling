@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 
-import datetime
+import datetime, time
 import json
 
 from django.template import RequestContext
@@ -13,6 +13,7 @@ import couchdb
 
 import lib.scrapers.journals.tasks as scraping_tasks
 import lib.scrapers.journals.utils as scraping_utils
+import apps.api.views
 
 # /api/save_search?user_id=<user_id>
 # /api/get_searches?user_id=<user_id>
@@ -23,11 +24,19 @@ def home(request):
     # Update last visit
     request.session['last_visit'] = datetime.datetime.now()
     # Get their saved search (default to empty list)
-    saved_searches = request.session.get('saved_searches', [])
+    saved_searches = request.session.get('saved_searches', {})
+    # Check journals in each saved search for number of recent articles
+    query_objs = {}
+    for query_id, search in saved_searches.items():
+        article_counts = apps.api.views.articles_since(search.keys(),
+            time.mktime(last_visit.timetuple()))
+        query_objs[query_id] = {'count':sum(article_counts.values()),
+            'queries': search}
+
     return render_to_response('search/home.html',
             {
                 'last_visit': last_visit,
-                'saved_searches': saved_searches,
+                'saved_searches': query_objs,
             },
             context_instance=RequestContext(request))
 
@@ -267,6 +276,3 @@ def backend_journals(request):
   journals = sorted(journals, key=lambda doc: doc['name'])
 
   return render_to_response('backend/journals.html', {'journals': journals,})
-
-
-
