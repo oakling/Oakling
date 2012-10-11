@@ -345,10 +345,11 @@ var akorn = {
     add_saved_search: function(query, query_id) {
         var ak = akorn;
         // Make item element
-        var el = $(['<li><a id="',query_id,'">',
-                        ak.shorten_query(query),
-                        ' <span class="badge badge-important">6</span>',
-                        '<i class="delete icon-trash"></i></a></li>'].join(''));
+        var el = $(['<li><div class="tools">',
+                    '<i class="delete icon-trash"></i></div>',
+                    '<a id="',query_id,'">',
+                    ak.shorten_query(query),
+                    '</a></li>'].join(''));
         el.children('a').data('query', $.extend(true, {}, query));
         // Add to list of saved searches
         ak.saved_searches.append(el);
