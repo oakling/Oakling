@@ -314,7 +314,7 @@ var akorn = {
         return false;
     },
     delete_saved_search_handler: function(e) {
-        var query_id = $(e.currentTarget).parent('a').attr('id');
+        var query_id = $(e.currentTarget).attr('data-queryid');
         var params = {};
         params['query_id'] = query_id;
         // TODO Make removal and deletion async and enable undoing
@@ -382,7 +382,7 @@ var akorn = {
         saved_searches.on('click', 'li a',
             ak.saved_search_handler);
         // Add handler for deleted saved search links
-        saved_searches.on('click', 'li a i.delete',
+        saved_searches.on('click', '.tools i.delete',
             ak.delete_saved_search_handler);
         ak.saved_searches = saved_searches;
         ak.save_search = save_search;

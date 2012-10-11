@@ -32,7 +32,7 @@ $(document).ready(akorn.init);
         <li>
         <div class="tools">
             <span class="badge badge-important">{{ q.count }}</span>
-            <i class="delete icon-trash"></i>
+            <i data-queryid="{{ q_id }}" class="delete icon-trash"></i>
         </div>
         <a id="{{ q_id }}" data-query="{{ q.queries|to_json|escapejs }}">{{ q|short_label }}</a>
         </li>
