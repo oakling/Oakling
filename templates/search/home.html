@@ -30,7 +30,11 @@ $(document).ready(akorn.init);
     {% for q_id, q in saved_searches.items %}
         {% spaceless %}
         <li>
-        <a id="{{ q_id }}" data-query="{{ q|to_json|escapejs }}">{{ q|short_label }} <span class="badge badge-important">6</span> <i class="delete icon-trash"></i></a>
+        <div class="tools">
+            <span class="badge badge-important">{{ q.count }}</span>
+            <i class="delete icon-trash"></i>
+        </div>
+        <a id="{{ q_id }}" data-query="{{ q.queries|to_json|escapejs }}">{{ q|short_label }}</a>
         </li>
         {% endspaceless %}
     {% endfor %}
