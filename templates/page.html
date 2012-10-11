@@ -2,11 +2,11 @@
 <html lang="en"> 
     <head> 
         <meta charset="utf-8"> 
-        <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
-        <link rel="stylesheet" href="{{STATIC_URL }}search/css/ui-lightness/jquery-ui-1.8.22.custom.css">
-        <link rel="stylesheet" href="{{STATIC_URL}}search/css/grid.css">
-        <link rel="stylesheet" href="{{STATIC_URL}}search/css/base.css">
-        <link rel="stylesheet" href="{{STATIC_URL}}search/css/jquery.tagit.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/bootstrap.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/ui-lightness/jquery-ui-1.8.22.custom.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/grid.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/base.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/jquery.tagit.css">
         <title>Akorn {% block pagetitle %}open science{% endblock %}</title>
         {% block canonical %}{% endblock %}
         {% block og_meta %}{% endblock %}
@@ -25,8 +25,8 @@
             </div>
         </div>
     {% block scripts %}
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+    <script src="{{ STATIC_URL }}search/js/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}search/js/bootstrap-tab.js"></script>
     <script src="{{ STATIC_URL }}search/js/jquery-ui-1.8.22.custom.js"></script>
     {% endblock %}
     </body>
