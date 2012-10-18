@@ -28,8 +28,9 @@ def home(request):
     # Check journals in each saved search for number of recent articles
     query_objs = {}
     for query_id, search in saved_searches.items():
-        article_counts = apps.api.views.articles_since(search.keys(),
-            time.mktime(last_visit.timetuple()))
+        article_counts = apps.api.views.articles_since(search.keys())
+           #time.mktime(last_visit.timetuple()))
+
         query_objs[query_id] = {'count':sum(article_counts.values()),
             'queries': search}
 

@@ -19,7 +19,7 @@ class Journal:
   def get_num_new(self, since_time=None):
     rows = db.view('articles/latest_journal',
             include_docs=True,
-            startkey=[self.doc._id, timestamp],
+            startkey=[self.doc._id, since_time],
             endkey=[self.doc._id, {}],
             descending=False)
 

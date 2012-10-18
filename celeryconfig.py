@@ -25,7 +25,7 @@ CELERY_TIMEZONE = "Europe/London"
 CELERYBEAT_SCHEDULE = {
     "debug": {
        "task": "lib.debug.rabbit_beat",
-       "schedule": crontab(minute=1),
+       "schedule": crontab(minute="*/15"),
     },
     "APS_feeds": {
         "task": "lib.scrapers.feeds.tasks.fetch_feed",
