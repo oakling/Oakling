@@ -221,8 +221,8 @@ def articles_since(journals, timestamp=None):
     db = couchdb.Server()['store']
     output = {}
 
-    if timestamp is not None:
-        timestamp = time.mktime(datetime.date.today().timetuple())
+    #if timestamp is not None:
+    timestamp = time.mktime(datetime.date.today().timetuple())
 
     # TODO Do this with one couch query?
     for journal_id in journals:
@@ -248,6 +248,7 @@ class ArticleCountView(JSONResponseMixin, View):
             except ValueError:
                 # TODO Should be doing this with exceptions
                 return HttpResponse(status=400)
+
         return self.render_to_response(articles_since(journals, timestamp))
 
     def get(self, *args, **kwargs):
