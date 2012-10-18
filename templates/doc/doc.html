@@ -75,10 +75,21 @@
 
 
 </div>
+
+<div id="pane">
+
+</div>
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
+<script src="{{ STATIC_URL }}search/js/main.js"></script>
+
+<script type="text/javascript">
+// When the document has loaded start the show
+$(document).ready(akorn.add_pane('related', 'arxiv:math_0001043'));
+</script>
+
 <script type="text/javascript">
 // Google plus button
 window.___gcfg = {lang: 'en-GB'};
@@ -91,7 +102,6 @@ window.___gcfg = {lang: 'en-GB'};
     })();
 
 // Tweet link
-!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 
 // Facebook plugin
 (function(d, s, id) {
