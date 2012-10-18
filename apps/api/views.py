@@ -227,7 +227,7 @@ def articles_since(journals, timestamp=None):
     # TODO Do this with one couch query?
     for journal_id in journals:
         rows = db.view('articles/latest_journal',
-            include_docs=True,
+            include_docs=False,
             startkey=[journal_id, timestamp],
             endkey=[journal_id, {}],
             descending=False)
