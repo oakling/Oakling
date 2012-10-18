@@ -221,7 +221,7 @@ def articles_since(journals, timestamp=None):
     db = couchdb.Server()['store']
     output = {}
 
-    if not timestamp:
+    if timestamp is not None:
         timestamp = time.mktime(datetime.date.today().timetuple())
 
     # TODO Do this with one couch query?
@@ -257,7 +257,7 @@ class ArticleCountView(JSONResponseMixin, View):
         If no timestamp is provided it gives count of articles published today
         """
         journals_s = self.request.GET.get('q')
-        time_s = self.request.GET.get('time')
+        time_s = self.request.GET.get('time', None)
         if not journals_s:
             return HttpResponse(status=400)
         return self.articles_since(journals_s.split('+'), time_s)
