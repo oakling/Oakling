@@ -31,7 +31,9 @@ $(document).ready(akorn.init);
         {% spaceless %}
         <li>
         <div class="tools">
+            {% if q.count > 0 %}
             <span class="badge badge-important">{{ q.count }}</span>
+            {% endif %}
             <i data-queryid="{{ q_id }}" class="delete icon-trash"></i>
         </div>
         <a id="{{ q_id }}" data-query="{{ q.queries|to_json|escapejs }}">{{ q|short_label }}</a>
