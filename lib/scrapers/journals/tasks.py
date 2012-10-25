@@ -28,11 +28,13 @@ def rescrape_articles():
 @task
 def scrape_doi(doi, doc_id=None):
     db = couchdb.Server()['store']
-    records = db.view('index/ids', key='doi:' + doi, include_docs='true').rows
+
+    records_doi = db.view('index/ids', key='doi:' + doi, include_docs='true').rows
 
     url = resolve_doi(doi)
+    records_source = db.view('index/sources', key=url, include_docs='true').rows
     
-    if doc_id is not None or not records:
+    if doc_id is not None or not (records_doi and records_source):
         # source url isn't in db
         if doc_id:
           article = db[doc_id]
