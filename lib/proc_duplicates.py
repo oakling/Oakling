@@ -3,36 +3,24 @@ import sys
 
 db = couchdb.Server()['store']
 
-f = open('duplicates.txt')
+f = open('duplicates_sources.txt')
 
 duplicates = set()
 
-for duplicate_id in f:
-  duplicate_id = duplicate_id.strip()
+for duplicate_source in f:
+  duplicate_source = duplicate_source.strip()
 
-  duplicates.add(duplicate_id)
+  duplicates.add(duplicate_source)
 
-print >>sys.stderr, len(duplicates), "duplicated ids"
+print >>sys.stderr, len(duplicates), "duplicated sources"
 
 dupes = set()
 
-for duplicate_id in duplicates:
-  duplicate_docs = db.view('index/ids', key=duplicate_id, include_docs=True)
+for duplicate_source in duplicates:
+  duplicate_docs = db.view('index/sources', key=duplicate_source, include_docs=True).rows
 
-  print >>sys.stderr, duplicate_id
-  same_source = {}
-  for doc in duplicate_docs[1:]:
-    final_source = doc.doc['source_urls'][-1]
-    
-    if final_source in same_source:
-      same_source[final_source].add(doc.id)
-    else:
-      same_source[final_source] = set([doc.id])
+  print >>sys.stderr, duplicate_source
 
-    for key, ids in same_source.items():
-      for doc_id in list(ids)[1:]:
-        dupes.add(doc.id)
-
-for doc_id in dupes:
-  print doc_id
+  for row in duplicate_docs[1:]:
+    db.delete(row.doc)
 
