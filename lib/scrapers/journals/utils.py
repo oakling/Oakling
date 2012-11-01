@@ -118,7 +118,7 @@ def resolve_and_scrape(url):
 
     if 'journal' in article:
       journal_name = article['journal']
-    elif 'citation' in article and 'journal' in article['citation']['journal']:
+    elif 'citation' in article and 'journal' in article['citation']:
       journal_name = article['citation']['journal']
     elif 'categories' in article and 'arxiv' in article['categories']:
       journal_name = 'arxiv:' + article['categories']['arxiv'][0]

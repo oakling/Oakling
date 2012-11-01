@@ -18,7 +18,7 @@ for row in rows:
   if 'journal_id' in doc:
     continue
 
-  if 'citation' in doc and 'journal' in doc['citation']['journal']:
+  if 'citation' in doc and 'journal' in doc['citation']:
     journal_name = doc['citation']['journal']
   elif 'journal' in doc:
     journal_name = doc['journal']
