@@ -47,28 +47,22 @@ $(document).ready(akorn.init);
 
 {% block content %}
 <div class="span9 search">
-  <h2>Journals summary</h2>
-  <table class='journals_table'>
-  <thead>
-  <tr>
-    <th></th><th>Name</th><th>Aliases</th><th>Num docs</th>
-  </tr>
-  </thead>
-  {% for journal in journals %}
-    <tr class="table-row table-row-{{ forloop.counter0|divisibleby:'2' }}">
-      <td><input type='checkbox' value='{{ journal.id }}'/></td>
-      <td><a href='{% url search:backend_journal journal_id=journal.id %}'>{{ journal.name }}</a></td>
-      <td>
-        <ul>
-          {% for alias in journal.aliases %}
-          <li>{{ alias }}</li>
-          {% endfor %}
-        </ul>
-      </td>
-      <td>{{ journal.num_docs }}</td>
-    </tr>
+  <h2>{{ journal.name }}</h3>
+  <ul>
+  {% for alias in journal.aliases %}
+    <li>{{ alias }}</li>
   {% endfor %}
-  </table>
+  </ul>
+  <p>Total number of docs: {{ docs|length }}</p>
+  <p>Number to rescrape: {{ num_rescrape }}</p>
+  <p>Scrapers used:
+    <ul>
+      {{ scraper_journals }}
+      {% for scraper in scraper_modules %}
+        <li>{{ scraper }}</li>
+      {% endfor %}
+    </ul>
+  </p>
 </div>
 
 <div class="span3">
