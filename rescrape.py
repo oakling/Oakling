@@ -5,11 +5,14 @@ import couchdb
 if len(sys.argv) == 2:
   db = couchdb.Server()['store']
   rows = db.view('rescrape/scraper', key=sys.argv[1], include_docs=True).rows
-  print rows
+
+  print len(rows)
+
   for row in rows:
     print row.doc['title']
     row.doc['rescrape'] = True
     db.save(row.doc)
+
     #lib.scrapers.journals.tasks.scrape_journal.delay(row.doc['source_url'], row.doc.id)
     if 'source_url' in row.doc:
       lib.scrapers.journals.tasks.scrape_journal.delay(row.doc['source_url'], row.doc.id)

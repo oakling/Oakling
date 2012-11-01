@@ -31,5 +31,5 @@ for missing_journal in missing_journals:
   journal_doc = {'name': missing_journal,
                  'aliases': [missing_journal,],}
 
-  #db2.save(journal_doc)
+  db2.save(journal_doc)
 
