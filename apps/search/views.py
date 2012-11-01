@@ -273,7 +273,7 @@ def backend_journals(request):
   db_journals = couchdb.Server()['journals']
   db_docs = couchdb.Server()['store']
   
-  journals = [db_journals[doc_id] for doc_id in db if '_design' not in doc_id]
+  journals = [db_journals[doc_id] for doc_id in db_journals if '_design' not in doc_id]
 
   journals = sorted(journals, key=lambda doc: doc['name'])
 
