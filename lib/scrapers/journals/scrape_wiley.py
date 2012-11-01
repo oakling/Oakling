@@ -48,10 +48,10 @@ def scrape(abstract_url):
   except:
     article['abstract'] = tree.xpath("//div[@id='graphicalAbstract']/div/p")[0].text_content()
     
-  try:
-    x = get_meta('citation_publication_date', tree)
-  except:
-    pass
+  x = get_meta('citation_publication_date', tree)
+  if x is None:
+    x = get_meta('citation_online_date', tree)
+  
 
   year, month, day = x.split('/')   
   year = int(year); month = int(month); day = int(day)
@@ -83,3 +83,6 @@ def scrape(abstract_url):
 if __name__=="__main__":
     print scrape(sys.argv[1])
 
+  
+
+  
