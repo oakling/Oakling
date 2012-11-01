@@ -32,6 +32,6 @@ def add_feed_items(feedhandler, feed_url):
         item_url = handler['url'](item)
 
         if not db.view('index/sources', key=item_url, include_docs='false').rows:
-	  scrape_journal.delay(item_url, base_article=base_article)
+          scrape_journal.delay(item_url, base_article=base_article)
                              #handler['identifier'](item))
 

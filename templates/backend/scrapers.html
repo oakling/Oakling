@@ -16,11 +16,11 @@ $(document).ready(akorn.init);
 {% endif %}
 
 <style>
-  table.journals_table {
+  table.scrapers_table {
 
   }
 
-  table.journals_table thead tr {
+  table.scrapers_table thead tr {
     text-align:center;
     border-bottom:1px solid #666;
   }
@@ -47,25 +47,19 @@ $(document).ready(akorn.init);
 
 {% block content %}
 <div class="span9 search">
-  <h2>Journals summary</h2>
-  <table class='journals_table'>
+  <h2>Scraper summary</h2>
+  <table class='scrapers_table'>
   <thead>
   <tr>
-    <th></th><th>Name</th><th>Aliases</th><th>Num docs</th>
+    <th>Module</th><th>Domain</th><th>Num docs</th><th>Num to rescrape</th>
   </tr>
   </thead>
-  {% for journal in journals %}
+  {% for scraper in scrapers %}
     <tr class="table-row table-row-{{ forloop.counter0|divisibleby:'2' }}">
-      <td><input type='checkbox' value='{{ journal.id }}'/></td>
-      <td><a href='{% url search:backend_journal journal_id=journal.id %}'>{{ journal.name }}</a></td>
-      <td>
-        <ul>
-          {% for alias in journal.aliases %}
-          <li>{{ alias }}</li>
-          {% endfor %}
-        </ul>
-      </td>
-      <td>{{ journal.num_docs }}</td>
+      <td>{{ scraper.module }}</td>
+      <td>{{ scraper.domain }}</td>
+      <td>{{ scraper.num_docs }}</td>
+      <td>{{ scraper.num_rescrape }}</td>
     </tr>
   {% endfor %}
   </table>
