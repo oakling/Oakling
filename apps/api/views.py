@@ -120,11 +120,11 @@ def latest(request, num):
         d['docid'] = d['_id']
         # Process the timestamp to produce a usable datetime object
         # TODO Need a reliable property to access for date
-        if d.has_key('date_published'):
+        if d.has_key('date_published') and d['date_published'] is not None:
             d.date = datetime.datetime.fromtimestamp(d['date_published'])
-        elif d.has_key('date_revised'):
+        elif d.has_key('date_revised') and d['date_revised'] is not None:
             d.date = datetime.datetime.fromtimestamp(d['date_revised'])
-        elif d.has_key('date_received'):
+        elif d.has_key('date_received') and d['date_received'] is not None:
             d.date = datetime.datetime.fromtimestamp(d['date_received'])
         else:
             d.date = datetime.datetime.now()
