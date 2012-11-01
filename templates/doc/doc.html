@@ -26,7 +26,11 @@
 <div class='clear'></div>
 
 <div class='span8 box_date alpha'><div class='box_inner'>
-  published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href='/journals/{{ doc.journal_id }}'>{{ doc.citation.journal }}</a></strong>
+  {% if date_published %}
+    published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href='/journals/{{ doc.journal_id }}'>{{ doc.citation.journal }}</a></strong>
+  {% else %}
+    published on <strong>{{ date_published }}</strong> in <strong><a href='/journals/{{ doc.journal_id }}'>{{ doc.citation.journal }}</a></strong>
+  {% endif %}
 </div></div>
 
 <div class='clear'></div>

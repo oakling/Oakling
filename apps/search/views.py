@@ -249,7 +249,10 @@ def doc(request, id):
   doc = db[id]
   doc['docid'] = id
 
-  date_published = datetime.datetime.fromtimestamp(doc['date_published'])
+  try:
+    date_published = datetime.datetime.fromtimestamp(doc['date_published'])
+  except:
+    date_published = None
 
   return render_to_response('doc/doc.html',
                             {'doc': doc, 'date_published': date_published},
