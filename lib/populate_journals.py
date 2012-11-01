@@ -4,19 +4,32 @@ import sys
 db1 = couchdb.Server()['store']
 db2 = couchdb.Server()['journals']
 
-#for docid in db2:
-#  doc = db2[docid]
-#  if '_design' not in docid:
-#    #print docid
-#    db2.delete(doc)
+missing_journals = set()
 
-for row in db1.view('index/journals', group=True).rows:
-  if db2.view('index/aliases', key=row.key).rows:
-    #print "%s already exists" % row.key
-    pass
+for row in db1.view('errors/nojournalid', include_docs=True).rows:
+  doc = row.doc
+  #print doc
+
+  if 'rescrape' in doc and doc['rescrape']:
+    continue
+
+  if 'journal' in doc:
+    journal_name = doc['journal']
+  elif 'citation' in doc and 'journal' in doc['citation']:
+    journal_name = doc['citation']['journal']
+  elif 'categories' in doc and 'arxiv' in doc['categories']:
+    journal_name = 'arxiv:' + doc['categories']['arxiv'][0]
   else:
-    print row.key
-    journal_doc = {'name': row.key,
-                   'aliases': [row.key],}
-    db2.save(journal_doc)
+    continue
+
+  if journal_name is not None:
+    missing_journals.add(journal_name)
+
+for missing_journal in missing_journals:
+  print missing_journal
+
+  journal_doc = {'name': missing_journal,
+                 'aliases': [missing_journal,],}
+
+  db2.save(journal_doc)
 

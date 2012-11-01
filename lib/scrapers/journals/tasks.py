@@ -70,6 +70,14 @@ def scrape_doi(doi, doc_id=None):
 
     return doc_id
 
+def check_source(url, db):
+  rows = db.view('index/sources', key=url, include_docs='true').rows
+  
+  if len(rows) == 0:
+    return True
+  else:
+    return False
+
 @task
 def scrape_journal(url, doc_id=None, base_article={}):
     """Find the paper in the database and then add or merge as necessary."""
@@ -77,12 +85,11 @@ def scrape_journal(url, doc_id=None, base_article={}):
     # check the store for this source url
     db = couchdb.Server()['store']
 
-    records = db.view('index/sources', key=url, include_docs='true').rows
-
     error = None
 
-
-    if doc_id is not None or not records:
+    # Scrape if we have a doc_id or it hasn't already been scraped
+    # always scrape if we're given a doc_id
+    if doc_id is not None or check_source(url, db):
         # source url isn't in db
         if doc_id:
           article = db[doc_id]
@@ -109,7 +116,9 @@ def scrape_journal(url, doc_id=None, base_article={}):
           article['rescrape'] = True
 
         if article:
-          doc_id, _ = db.save(article)
+          # check this hasn't been inadvertantly scraped already before we go
+          if check_source(article['source_urls'][-1], db):
+            doc_id, _ = db.save(article)
     else:
         # we've already scraped this url. there should only be one such doc.
         article = records[0].doc
