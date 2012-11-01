@@ -278,6 +278,6 @@ def backend_journals(request):
   journals = sorted(journals, key=lambda doc: doc['name'])
 
   for journal in journals:
-    journal.num_docs = len(db_docs.view('index/journal_id', key=journal._id, include_docs=False).rows)
+    journal.num_docs = len(db_docs.view('index/journal_id', key=journal.id, include_docs=False).rows)
 
   return render_to_response('backend/journals.html', {'journals': journals,}, context_instance=RequestContext(request))
