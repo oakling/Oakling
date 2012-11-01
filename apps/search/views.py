@@ -276,4 +276,4 @@ def backend_journals(request):
 
   journals = sorted(journals, key=lambda doc: doc['name'])
 
-  return render_to_response('backend/journals.html', {'journals': journals,})
+  return render_to_response('backend/journals.html', {'journals': journals,}, context_instance=RequestContext(request))
