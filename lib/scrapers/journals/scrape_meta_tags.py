@@ -97,8 +97,11 @@ def scrape(abstract_url):
         article['date_published'] = time.mktime(date.timetuple())
         article['citation']['year'] = date.year
 
+    print article
+
     for field in NECESSARY_FIELDS:
         if field not in article or not article[field]:
+            print field
             raise ScraperNotFound
     return article
 
