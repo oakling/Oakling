@@ -18,17 +18,25 @@ $(document).ready(akorn.init);
 
 {% block content %}
 <div class="span9 search">
-  <ul>
+  <table>
+  <th>
+    <tr><td></td><td>Name</td><td>Aliases</td><td>Num docs</td></tr>
+  </th>
   {% for journal in journals %}
-    <li><input type='checkbox' value='{{ journal.id }}'/> <a href='/journals/{{ journal.id }}'>{{ journal.name }}</a> - {{ journal.num_docs }}<br/>
-      <ul>
-        {% for alias in journal.aliases %}
-        <li>{{ alias }}</li>
-        {% endfor %}
-      </ul>
-    </li>
+    <tr>
+      <td><input type='checkbox' value='{{ journal.id }}'/></td>
+      <td><a href='/journals/{{ journal.id }}'>{{ journal.name }}</a></td>
+      <td>
+        <ul>
+          {% for alias in journal.aliases %}
+          <li>{{ alias }}</li>
+          {% endfor %}
+        </ul>
+      </td>
+      <td>{{ journal.num_docs }}</td>
+    </tr>
   {% endfor %}
-  </ul>
+  </table>
 </div>
 
 <div class="span3">
