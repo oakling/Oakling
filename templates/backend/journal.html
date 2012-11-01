@@ -65,8 +65,19 @@ $(document).ready(akorn.init);
   </p>
   <p>
     <ul>
+      <script>
+        function toggle(doc_id) {
+          $('#doc' + doc_id).toggle();
+        }
+      </script>
       {% for doc in docs %}
-      <li>{{ doc.id }}</li>
+      <li><a onclick='toggle("{{ doc.id }}");'>{{ doc.id }}</a><br/>
+        <table style='display:none;' id='doc{{ doc.id }}'>
+        {% for key, val in doc.items %}
+          <tr><td valign='top' style='font-weight:bold;'>{{ key }}</td><td valign='top'>{{ val }}</td></tr>
+        {% endfor %}
+        </table>
+      </li>
       {% endfor %}
     </ul>
   </p>
