@@ -2,6 +2,8 @@ import sys
 import lxml.html
 import utils
 from comm import *
+import time
+import datetime
 
 #DESCRIPTION:
 # Scrapes an article from Wiley Online RSS feeds:
@@ -46,14 +48,21 @@ def scrape(abstract_url):
   except:
     article['abstract'] = tree.xpath("//div[@id='graphicalAbstract']/div/p")[0].text_content()
     
-  try:
-    article['date_published'] = get_meta('citation_publication_date', tree)
-  except:
-    pass
+  x = get_meta('citation_publication_date', tree)
+  if x is None:
+    x = get_meta('citation_online_date', tree)
+  
+
+  year, month, day = x.split('/')   
+  year = int(year); month = int(month); day = int(day)
+  new_date = time.mktime(datetime.date(year, month, day).timetuple())
+  article['date_published'] = new_date
+
+  
   article['citation']['journal'] = article['journal']
   article['citation']['volume'] = get_meta('citation_volume', tree)
   try:
-    article['citation']['year'] = article['date_published'].split('/')[0]
+    article['citation']['year'] = year
   except:
     pass
   
@@ -67,6 +76,7 @@ def scrape(abstract_url):
     
   if first_page != '0' and last_page != '0':
     article['citation']['page'] = first_page + '-' + last_page
+    
   return article
 
 #Test
