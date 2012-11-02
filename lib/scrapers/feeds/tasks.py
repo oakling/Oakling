@@ -9,6 +9,10 @@ def fetch_feed(feedhandler, feed_urls):
     for feed_url in feed_urls:
         add_feed_items.delay(feedhandler, feed_url)
 
+def fix_url(url):
+  # Remove session key for wiley urls
+  return url.split(';')[0]
+
 @task
 def add_feed_items(feedhandler, feed_url):
     """Add feed items to database.."""
@@ -29,7 +33,7 @@ def add_feed_items(feedhandler, feed_url):
         else:
             base_article = {}
 
-        item_url = handler['url'](item)
+        item_url = fix_url(handler['url'](item))
 
         if not db.view('index/sources', key=item_url, include_docs='false').rows:
           scrape_journal.delay(item_url, base_article=base_article)
