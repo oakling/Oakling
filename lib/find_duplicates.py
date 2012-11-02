@@ -3,24 +3,20 @@ import sys
 
 db = couchdb.Server()['store']
 
-num_done = 0
-for doc_id in db:
-  #print doc_id
+duplicate_sources = []
+for row in db.view('dupes/duplicate_sources', group=True).rows:
+  if row.value > 1:
+    duplicate_sources.append(row.key)
 
-  doc = db[doc_id]
+print len(duplicate_sources), "duplicates"
 
-  if 'source_urls' not in doc:
-    continue
+for source in duplicate_sources:
+  rows = db.view('index/sources', key=source).rows
 
-  source_url = doc['source_urls'][-1]
+  doc_ids = sorted(list(set([row.id for row in rows])))
 
-  row_match = db.view('index/sources', key=source_url)
-
-  if len(row_match) != 1:
-    print source_url
-
-  if num_done % 100 == 0:
-    print >>sys.stderr, num_done
-
-  num_done += 1
-
+  if len(doc_ids) > 1:
+    print doc_ids
+    #for doc_id in doc_ids[1:]:
+    #  doc = db[doc_id]
+    #  db.delete(doc)
