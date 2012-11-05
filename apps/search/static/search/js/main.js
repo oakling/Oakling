@@ -96,6 +96,23 @@ var akorn = {
             // Get articles after the current last article
             ak.get_articles(20, last_article, query);
     },
+    insert_date_line: function(date_str, latest_article) {
+        var content = 'Today';
+        // Is it today?
+        if(arguments[2] === undefined || !arguments[2]) {
+            var date_bits = date_str.split('-');
+            content = [date_bits[2],
+            ' ',
+            akorn.month_names[parseInt(date_bits[1])-1]].join('');
+        }
+        // Make a date line
+        date_added = $(['<h2>',
+            content,
+            '</h2>']
+            .join(''));
+        date_added.insertBefore(latest_article);
+        return;
+    },
     // Cycle through the articles marking date changes
     // Also mark the users last visit
     // TODO Refactor this method
@@ -106,10 +123,12 @@ var akorn = {
         var prev_article = ak.prev_article;
         var add_last_visit = false;
         var last_visit = ak.last_visit; // Get the users last visit
+        var first_run = false;
 
         if(prev_article === undefined) {
             // If it is not set then take the first in the whole list
             prev_article = ak.articles_container.find('li:first');
+            first_run = true;
         }
         // Get all the articles that follow the last article before this set
         latest_articles = prev_article.nextAll('li');
@@ -123,6 +142,17 @@ var akorn = {
         }
 
         prev_date = prev_datetime.substr(0,10);
+
+        if(first_run) {
+            // Is it today?
+            var today = false;
+            if(new Date(prev_datetime) === new Date()) {
+                today = true;
+            }
+            // and print an initial date/today line
+            ak.insert_date_line(prev_date, prev_article, today);
+        }
+
         // If a last visit is set then add a line
         if(last_visit !== undefined) {
             last_visit_obj = new Date(last_visit);
@@ -150,14 +180,7 @@ var akorn = {
             date_str = datetime_str.substr(0,10);
             // If the date does not match
             if(date_str !== prev_date) {
-                // Make a date line
-                date_bits = date_str.split('-');
-                date_added = $(['<h2>',date_bits[2],
-                                ' ',
-                                ak.month_names[parseInt(date_bits[1])-1],
-                                '</h2>']
-                                .join(''));
-                date_added.insertBefore(latest_article);
+                ak.insert_date_line(date_str, latest_article);
             }
             // Are we looking for a last visit
             if(add_last_visit) {
