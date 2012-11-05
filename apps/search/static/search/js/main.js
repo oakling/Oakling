@@ -4,27 +4,22 @@ var akorn = {
     // Storing set nice names for months
     month_names: [ "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December" ],
-    panes: {
-        related: {
-            url: 'http://dev.related-work.net/akorn/ref/',
-            name: 'related-work.net',
-            website: 'http://related-work.net/'
-        }
-    },
-    add_pane: function(pane_key, article) {
+    load_pane: function(pane_url, pane_el) {
         var ak = akorn;
-        var pane = ak.panes[pane_key];
-        var container = $('#pane');
-        ak.get_pane_content(pane.url+article, function(data){
+        var container = pane_el.find('.accordion-inner');
+        try {
+            // ajaxError is there to catch JSONP errors
+            $.getJSON(pane_url+"?jsonp=?", function(data){
                 akorn.show_pane(data, container);
-        });
+            }).ajaxError();
+        }
+        catch(err) {
+            container.html("No results found.");
+        }
     },
     show_pane: function(data, continer) {
         // Replace the current articles with new ones
         container.html(data);
-    },
-    get_pane_content: function(url, callback) { 
-        $.get(url, {}, callback, 'html');
     },
     // Append a given HTML Fragment to the articles list
     append_articles: function(data) {
