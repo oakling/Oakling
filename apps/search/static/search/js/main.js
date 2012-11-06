@@ -17,7 +17,7 @@ var akorn = {
             container.html("No results found.");
         }
     },
-    show_pane: function(data, continer) {
+    show_pane: function(data, container) {
         // Replace the current articles with new ones
         container.html(data);
     },
