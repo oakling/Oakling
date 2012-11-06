@@ -10,7 +10,7 @@ var akorn = {
         try {
             // ajaxError is there to catch JSONP errors
             $.getJSON(pane_url+"?jsonp=?", function(data){
-                akorn.show_pane(data, container);
+                akorn.show_pane(data.key, container);
             }).ajaxError();
         }
         catch(err) {
