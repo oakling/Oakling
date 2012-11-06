@@ -255,11 +255,15 @@ def doc(request, id):
   except:
     date_published = None
 
+  # Process the IDs to make them usable in URLS
+  # TODO Make this more robust, but retain slash to underscore behaviour
+  pane_doc_ids = {k: v.replace('/', '_') for k, v in doc['ids'].items()}
+
   panes = Pane.objects.all()
   valid_panes = []
   for p in panes:
     try:
-      valid_panes.append({'name': p.name, 'url': p.url.format(**doc['ids'])})
+      valid_panes.append({'name': p.name, 'url': p.url.format(**pane_doc_ids)})
     except KeyError:
       print "Pane not valid for article"
   return render_to_response('doc/doc.html', {'doc': doc, 'date_published': date_published, 'panes': valid_panes}, context_instance=RequestContext(request))
