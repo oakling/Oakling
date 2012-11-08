@@ -7,15 +7,15 @@ var akorn = {
     load_pane: function(pane_url, pane_el) {
         var ak = akorn;
         var container = pane_el.find('.accordion-inner');
-        try {
-            // ajaxError is there to catch JSONP errors
-            $.getJSON(pane_url+"?jsonp=?", function(data){
+        $.jsonp({
+            "url": pane_url+"?jsonp=?",
+            "success": function(data) {
                 akorn.show_pane(data.key, container);
-            }).ajaxError();
-        }
-        catch(err) {
-            container.html("No results found.");
-        }
+            },
+            "error": function(data, msg) {
+                container.html('No results found.');
+            }
+        });
     },
     show_pane: function(data, container) {
         // Replace the current articles with new ones
