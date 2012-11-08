@@ -78,13 +78,11 @@
 
 </div>
 
-<div id="panes" class="span6 accordion">
+<div id="panes" class="span6">
     {% for p in panes %}
         <div class="accordion-group" data-pane-url="{{ p.url }}">
             <div class="accordion-heading">
                 <a class="accordion-toggle"
-                    data-toggle="collapse"
-                    data-parent="#panes"
                     href="#collapse{{ forloop.counter }}">
                     {{ p.name }}
                     <i class="icon-chevron-right"></i>
@@ -92,7 +90,7 @@
             </div>
 
             <div id="collapse{{ forloop.counter }}"
-                class="accordion-body collapse">
+                style="display:none">
                 <div class="accordion-inner">
                     Loading&hellip;
                 </div>
@@ -109,16 +107,20 @@
 <script type="text/javascript">
 // When the document has loaded start the show
 $(document).ready(function(e) {
-        // Listen for the events showing and hiding the panes
-        $('#panes').on("show hide", '.accordion-group', function(e) {
-            $(e.currentTarget)
-                .find(".accordion-heading i")
-                .toggleClass("icon-chevron-down", "icon-chevron-right");
-        });
 
-        $('#panes').on("shown", ".accordion-group", function(e) {
-            var el = $(e.currentTarget);
-            akorn.load_pane(el.data('pane-url'), el);
+        $('#panes').on('click', ".accordion-heading", function(e) {
+            var cur = $(e.currentTarget);
+            // Set the little arrow to the right state
+            cur.find("i")
+                .toggleClass("icon-chevron-down", "icon-chevron-right");
+            // Open the pane and load the content
+            cur.next().toggle('slow', function() {
+                if ($(this).is(":visible")) {
+                    var par = cur.parent();
+                    akorn.load_pane(par.data('pane-url'), par);
+                }
+            });
+            return false;
         });
     });
 </script>
