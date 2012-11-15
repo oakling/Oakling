@@ -4,6 +4,23 @@ var akorn = {
     // Storing set nice names for months
     month_names: [ "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December" ],
+    load_pane: function(pane_url, pane_el) {
+        var ak = akorn;
+        var container = pane_el.find('.accordion-inner');
+        $.jsonp({
+            "url": pane_url+"?jsonp=?",
+            "success": function(data) {
+                akorn.show_pane(data.key, container);
+            },
+            "error": function(data, msg) {
+                container.html('No results found.');
+            }
+        });
+    },
+    show_pane: function(data, container) {
+        // Replace the current articles with new ones
+        container.html(data);
+    },
     // Append a given HTML Fragment to the articles list
     append_articles: function(data) {
         var ak = akorn;
@@ -423,6 +440,7 @@ var akorn = {
         ak.get_articles(20);
         // Activate search box
         ak.activate_search_box();
+
         // Listen to window scroll events
         // Reduce spurious calls by adding a 250 ms delay between triggers
         $(window).scroll(ak.throttle(function() {

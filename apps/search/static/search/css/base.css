@@ -185,3 +185,11 @@ span.full {
     right: 10px;
     float: right;
 }
+
+#panes {
+    margin-top: 1.5em;
+}
+
+#panes .accordion-heading i {
+    float: right;
+}

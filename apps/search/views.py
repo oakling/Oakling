@@ -15,6 +15,8 @@ import lib.scrapers.journals.tasks as scraping_tasks
 import lib.scrapers.journals.utils as scraping_utils
 import apps.api.views
 
+from apps.panes.models import Pane
+
 # /api/save_search?user_id=<user_id>
 # /api/get_searches?user_id=<user_id>
 
@@ -248,15 +250,23 @@ def doc(request, id):
   db = couchdb.Server()['store']
   doc = db[id]
   doc['docid'] = id
-
   try:
     date_published = datetime.datetime.fromtimestamp(doc['date_published'])
   except:
     date_published = None
 
-  return render_to_response('doc/doc.html',
-                            {'doc': doc, 'date_published': date_published},
-                            context_instance=RequestContext(request))
+  # Process the IDs to make them usable in URLS
+  # TODO Make this more robust, but retain slash to underscore behaviour
+  pane_doc_ids = {k: v.replace('/', '_') for k, v in doc['ids'].items()}
+
+  panes = Pane.objects.all()
+  valid_panes = []
+  for p in panes:
+    try:
+      valid_panes.append({'name': p.name, 'url': p.url.format(**pane_doc_ids)})
+    except KeyError:
+      print "Pane not valid for article"
+  return render_to_response('doc/doc.html', {'doc': doc, 'date_published': date_published, 'panes': valid_panes}, context_instance=RequestContext(request))
 
 def journal(request, id):
   # Get their last visit

@@ -8,19 +8,18 @@ duplicate_sources = []
 i = 0
 
 #result = db.view('dupes/duplicate_sources', group=True, reduce=True)
-result = json.load(open('duplicate_sources?reduce=true&group=true'))
+result = json.load(open('data_dumps/duplicate_doi_scraper?reduce=true&group=true'))
 rows = result['rows']
 
 i = 0
 lenrows = len(rows)
+
 for row in rows:
-    if row['value'] > 1:
-      #print row['key']
-      source_rows = db.view('index/sources', key=row['key']).rows
+    if row['key'][0] == "lib.scrapers.journals.scrape_wiley" and row['key'][1] != None and row['value'] > 1:
+      source_rows = db.view('index/ids', key="doi:" + row['key'][1]).rows
 
       doc_ids = sorted(list(set([row2.id for row2 in source_rows])))
       if len(doc_ids) > 1:
-        print doc_ids
         for doc_id in doc_ids[1:]:
           doc = db[doc_id]
           db.delete(doc)

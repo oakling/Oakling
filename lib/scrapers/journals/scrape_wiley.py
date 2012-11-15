@@ -18,8 +18,12 @@ import datetime
 
 #WEBSITES:
 
+def fix_wiley_url(url):
+  # Fix issue with session key being appended, thus mucking up duplicate spotting
+  return url.split(';')[0]
 
 def scrape(abstract_url):
+  abstract_url = fix_wiley_url(abstract_url)
   tree, urls, page_text = get_tree(abstract_url) 
 
   article = make_blank_article()
