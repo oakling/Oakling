@@ -1,7 +1,7 @@
 import sys
 import lxml.html
 import utils
-#from comm import *
+from comm import *
 import urllib2
 import time
 import datetime
@@ -25,32 +25,6 @@ months = {'January':1, 'February':2, 'March':3, 'April':4,\
           'October':10, 'November':11, 'December':12}
 
 
-def get_tree(abstract_url):
-    req = urllib2.Request(abstract_url, headers=utils.headers)
-    urls, page = utils.get_response_chain(req)
-    page_text = page.read().decode('utf-8')
-
-    tree = lxml.html.fromstring(page_text, base_url=page.geturl())
-
-    return tree, urls, page_text
-
-def make_blank_article():
-    article = {'scraper': None, 'source_urls': None, 'title': None, 'author_names': None,
-               'ids': None, 'citation': None, 'date_published': None, 'abstract': None,
-               'journal': None, }
-
-    article['citation'] = { 'journal':None, 'volume': None, 'year': None, 'page': None, }
-
-    return article
-
-def get_div(name, tree):
-    attribute = tree.xpath("//div[@name='%s']/@content" % name)
-	
-    if attribute:
-      return attribute[0]
-    else:
-      return None
-
 def scrape(abstract_url):
     tree, urls, page_text = get_tree(abstract_url)
 
@@ -63,6 +37,8 @@ def scrape(abstract_url):
     except:
         pass
 
+    
+
     article['author_names'] = tree.xpath("//div[@id='head']/p")[0].text_content()
     
     article['journal'] = tree.xpath("//meta[@name='keywords']/@content")[0].split(',')[0]
@@ -73,6 +49,33 @@ def scrape(abstract_url):
     day, month, year = int(pubdate[0]), int(pubdate[1]), int(pubdate[2])
     pubdateuni = time.mktime(datetime.date(year, month, day).timetuple())
     article['date_published'] = pubdateuni
+
+
+
+    info = tree.xpath("//div[@id='head']")[0].text_content()
+
+    ab1 = info.split("Abstract")[1]
+    ab2 = ab1.split("Key words")[0]
+    article['abstract'] = ab2
+
+    rec1 = info.split("Accepted: ")[1]
+    rec2 = rec1.split("\nAbstract")[0]
+
+    day, month, year = rec2.split(' ')
+    article['date_published'] = make_datestamp(day, months[month], year)
+
+    article['citation']['year'] = year
+
+    issueinfo = info.split(article['title'])[0]
+    jour, vol, num, yea = issueinfo.split(' ')[0], issueinfo.split(' ')[1],\
+                          issueinfo.split(' ')[2], issueinfo.split(' ')[3]
+
+    article['citation']['journal'] = jour
+    article['citation']['volume'] = vol.split(',')[0]
+
+    doi = article['source_urls'][0].split('doi=')[1]
+    doi2 = doi.split('&')[0]
+    article['ids'] = doi2
 
 
     return article
