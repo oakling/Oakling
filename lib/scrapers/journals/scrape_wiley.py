@@ -26,7 +26,6 @@ def scrape(abstract_url):
   article['scraper'] = 'wiley'
   article['source_urls'] = [uri for _, uri in urls]
 
-  #article['publisher'] = get_meta('citation_publisher', tree)
   try:
     article['journal'] = get_meta('citation_journal_title', tree)
   except:
@@ -53,9 +52,8 @@ def scrape(abstract_url):
     x = get_meta('citation_online_date', tree)
   
 
-  year, month, day = x.split('/')   
-  year = int(year); month = int(month); day = int(day)
-  new_date = time.mktime(datetime.date(year, month, day).timetuple())
+  year, month, day = x.split('/')
+  new_date = make_datestamp(day, month, year)
   article['date_published'] = new_date
 
   
