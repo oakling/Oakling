@@ -1,3 +1,8 @@
+a.brand:hover {
+    text-shadow: 0 0 10px #fff;
+    color: #fff;
+}
+
 .stream-item {
     margin: 10px;
     padding: 10px;
