@@ -3,6 +3,14 @@ a.brand:hover {
     color: #fff;
 }
 
+.flatpage {
+    margin-left: 3em !important;
+    margin-top: 2em;
+}
+.flatpage h2 {
+    margin-bottom: 0.5em;
+}
+
 .stream-item {
     margin: 10px;
     padding: 10px;
