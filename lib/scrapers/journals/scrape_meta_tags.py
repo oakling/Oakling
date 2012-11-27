@@ -99,6 +99,7 @@ def scrape(abstract_url):
 
     for field in NECESSARY_FIELDS:
         if field not in article or not article[field]:
+            print field
             raise ScraperNotFound
     return article
 
