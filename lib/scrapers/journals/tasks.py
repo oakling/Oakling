@@ -121,7 +121,8 @@ def scrape_journal(url, doc_id=None, base_article={}):
             doc_id, _ = db.save(article)
     else:
         # we've already scraped this url. there should only be one such doc.
-        article = records[0].doc
+        rows = db.view('index/sources', key=url, include_docs='true').rows
+        article = rows[0].doc
         doc_id = article.id
 
     resolve_merges()
