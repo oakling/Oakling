@@ -3,6 +3,10 @@ a.brand:hover {
     color: #fff;
 }
 
+.lead {
+    margin-top: 0.25em;
+}
+
 .flatpage {
     margin-left: 3em !important;
     margin-top: 2em;
