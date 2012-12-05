@@ -9,3 +9,6 @@ collectedstatic
 
 # Dumps of couch for local setup
 dumps/*
+
+local_settings.py
+db/
