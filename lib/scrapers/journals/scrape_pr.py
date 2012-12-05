@@ -7,6 +7,19 @@ import utils
 import datetime
 import time
 
+# Scaper metadata
+SCRAPER_DOMAINS = ['pra.aps.org',
+                   'prb.aps.org',
+                   'prc.aps.org',
+                   'prd.aps.org',
+                   'pre.aps.org',
+                   'prx.aps.org',
+                   'prl.aps.org',
+                   'prst-ab.aps.org',
+                   'prst-per.aps.org',
+                   'rmp.aps.org',
+                   'prola.aps.org',]
+
 # The browser identity we'll assume for this run. Possibly not needed.
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
 

@@ -5,6 +5,7 @@ import urllib2
 import cookielib
 import classification
 import re
+import pkgutil
 
 from couch import db_store, db_journals, db_scrapers
 
@@ -76,9 +77,31 @@ def resolve_journal(alias):
 
   return journal_id
 
+def discover_scrapers():
+  """
+    Use pkgutil to find scrapers in this module. Build a list of scrapers and which domains they map to.
+  """
+
+  scraper_modules = []
+  scraper_domain_map = {}
+
+  for module_importer, name, ispkg in pkgutil.iter_modules('lib.scrapers.journals'):
+    if not name.startswith('scrape_'):
+      continue
+    module = module_importer.find_module(name).load_module(name)
+
+    scraper_modules.append(module)
+
+    if hasattr(module, 'SCRAPER_DOMAINS'):
+      for domain in module.SCRAPER_DOMAINS:
+        scraper_domain_map[domain] = module
+
+  return (scraper_modules, scraper_domain_map)
+
+scraper_modules, scraper_domain_map = discover_scrapers()
+
 def resolve_scraper(url):
   # Do it by domain for now. This might not always work, a full url prefix might be needed, but this is cheaper.
-
   url_parsed = urlparse.urlparse(url)
   domain = url_parsed.netloc
 
@@ -134,17 +157,3 @@ def merge(new_id, old_ids):
     """Try to merge the two database entries."""
     pass
 
-def categorize(codes):
-    """Put classification codes into gropus."""
-    categories = {}
-
-    for code in codes:
-        match = False
-        for group in classification.codes:
-            matches = re.findall(group[0], code)
-            if matches:
-                categories.setdefault(group[1], []).extend(matches)
-                match = True
-        if not match:
-            categories.setdefault('unknown', []).append(code)
-    return categories
