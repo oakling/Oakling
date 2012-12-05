@@ -6,9 +6,9 @@ import cookielib
 import classification
 import re
 
-headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
+from couch import db_store, db_journals, db_scrapers
 
-server = couchdb.Server()
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
 
 class ScraperNotFound(Exception):
   pass
@@ -66,8 +66,6 @@ def resolve_url(url):
   return response.geturl()
 
 def resolve_journal(alias):
-  db_journals = server['journals']
-
   matches = db_journals.view('index/aliases', key=alias).rows
 
   if matches:
@@ -84,8 +82,7 @@ def resolve_scraper(url):
   url_parsed = urlparse.urlparse(url)
   domain = url_parsed.netloc
 
-  db = server['scrapers']
-  records = db.view('index/domain', key=domain, include_docs='true').rows
+  records = db_scrapers.view('index/domain', key=domain, include_docs='true').rows
 
   if not records:
     return None
