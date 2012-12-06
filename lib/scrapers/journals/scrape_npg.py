@@ -7,6 +7,9 @@ from comm import *
 from StringIO import StringIO
 
 import utils
+
+SCRAPER_DOMAINS = ['www.nature.com',]
+
 #DESCRIPTION:
 # Scrapes an article from Nature Publishing Group
 

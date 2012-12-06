@@ -5,6 +5,8 @@ from comm import *
 import time
 import datetime
 
+SCRAPER_DOMAINS = ['onlinelibrary.wiley.com',]
+
 #DESCRIPTION:
 # Scrapes an article from Wiley Online RSS feeds:
 # http://onlinelibrary.wiley.com/browse/publications?type=journal&activeLetter=

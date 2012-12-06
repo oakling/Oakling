@@ -3,6 +3,8 @@ import lxml.html
 import utils
 from comm import *
 
+SCRAPER_MODULES = ['iopscience.iop.org',]
+
 #DESCRIPTION:
 # Scrapes an article from IOP Science (Full list: http://iopscience.iop.org/journals)
 
