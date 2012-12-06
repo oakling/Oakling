@@ -210,3 +210,27 @@ span.full {
 #panes .accordion-heading i {
     float: right;
 }
+
+#about h1 {
+    font-size: 12em;
+    line-height: 100%;
+    width: 100%;
+    text-align: center;
+}
+
+#about .header_row {
+    padding-top: 5em;
+}
+
+#about .text {
+    text-align: justify;
+    font-size: 1.25em;
+    line-height: 140%;
+    padding-top: 1em;
+}
+
+em {
+    color: #d68400;
+    font-weight: bold;
+    font-style: normal;
+}
