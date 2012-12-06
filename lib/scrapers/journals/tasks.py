@@ -1,4 +1,5 @@
 import couchdb
+from couch import db_store
 from celery.task import task
 from utils import resolve_and_scrape, merge, ScraperNotFound, resolve_doi
 
@@ -18,26 +19,22 @@ def resolve_merges():
 
 @task
 def rescrape_articles():
-  db = couchdb.Server()['store']
-
-  records = db.view('rescrape/rescrape', include_docs='true').rows
+  records = db_store.view('rescrape/rescrape', include_docs='true').rows
 
   for record in records:
     scrape_journal.delay(record.doc['source_url'], record.doc.id)
 
 @task
 def scrape_doi(doi, doc_id=None):
-    db = couchdb.Server()['store']
-
-    records_doi = db.view('index/ids', key='doi:' + doi, include_docs='true').rows
+    records_doi = db_store.view('index/ids', key='doi:' + doi, include_docs='true').rows
 
     url = resolve_doi(doi)
-    records_source = db.view('index/sources', key=url, include_docs='true').rows
+    records_source = db_store.view('index/sources', key=url, include_docs='true').rows
     
     if doc_id is not None or not (records_doi and records_source):
         # source url isn't in db
         if doc_id:
-          article = db[doc_id]
+          article = db_store[doc_id]
           rev_id = article.rev
         else:
           article = {}
@@ -60,7 +57,7 @@ def scrape_doi(doi, doc_id=None):
           article['source_url'] = url
 
         if article:
-          doc_id, _ = db.save(article)
+          doc_id, _ = db_store.save(article)
 
     else:
         article = records[0].doc
@@ -70,8 +67,8 @@ def scrape_doi(doi, doc_id=None):
 
     return doc_id
 
-def check_source(url, db):
-  rows = db.view('index/sources', key=url, include_docs='true').rows
+def check_source(url):
+  rows = db_store.view('index/sources', key=url, include_docs='true').rows
   
   if len(rows) == 0:
     return True
@@ -83,16 +80,14 @@ def scrape_journal(url, doc_id=None, base_article={}):
     """Find the paper in the database and then add or merge as necessary."""
 
     # check the store for this source url
-    db = couchdb.Server()['store']
-
     error = None
 
     # Scrape if we have a doc_id or it hasn't already been scraped
     # always scrape if we're given a doc_id
-    if doc_id is not None or check_source(url, db):
+    if doc_id is not None or check_source(url):
         # source url isn't in db
         if doc_id:
-          article = db[doc_id]
+          article = db_store[doc_id]
           rev_id = article.rev
         else:
           article = {}
@@ -117,11 +112,11 @@ def scrape_journal(url, doc_id=None, base_article={}):
 
         if article:
           # check this hasn't been inadvertantly scraped already before we go
-          if check_source(article['source_urls'][-1], db):
-            doc_id, _ = db.save(article)
+          if check_source(article['source_urls'][-1], db_store):
+            doc_id, _ = db_store.save(article)
     else:
         # we've already scraped this url. there should only be one such doc.
-        rows = db.view('index/sources', key=url, include_docs='true').rows
+        rows = db_store.view('index/sources', key=url, include_docs='true').rows
         article = rows[0].doc
         doc_id = article.id
 

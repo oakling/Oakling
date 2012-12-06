@@ -3,7 +3,10 @@ import urllib2
 import feedparser
 import time
 import re
-from utils import categorize
+
+from classification import classify
+
+SCRAPER_DOMAINS = ['www.arxiv.org',]
 
 def arxiv_id(url):
     return remove_vNumber(re.search('(?:abs|pdf)/(.*)', url).groups()[0])
@@ -36,7 +39,7 @@ def arxiv_api(ids):
 
         paper['source_urls'] = [remove_vNumber(result.link)]
 
-        paper['categories'] = categorize([tag['term'] for tag in result.tags])
+        paper['categories'] = classify([tag['term'] for tag in result.tags])
         paper['journal'] = 'arxiv:' + result.arxiv_primary_category['term']
         paper['citation'] = {'journal':paper['journal'],
                              'year':result.published_parsed.tm_year}

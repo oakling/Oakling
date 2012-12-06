@@ -17,6 +17,8 @@ from django.views.generic import View
 
 from lib.search import citeulike, mendeley, arxiv
 
+from couch import db_store, db_journals
+
 @csrf_exempt
 def save_search(request):
     """
@@ -68,7 +70,7 @@ def del_saved_search(request):
     return HttpResponse(status=204)
 
 def latest(request, num):
-    db = couchdb.Server()['store']
+    db = db_store
 
     num = min(int(num), 100)
 
@@ -149,8 +151,8 @@ def clean_journal(s):
     return None
 
 def journals(request):
-  db = couchdb.Server()['store']
-  
+  db = db_store
+ 
   rows = db.view('index/journals', group=True)
 
   if 'term' in request.GET:
@@ -163,8 +165,7 @@ def journals(request):
                       content_type='application/json')
 
 def get_journal_docs(db=None):
-  if db is None:
-    db = couchdb.Server()['journals']
+  db = db_journals
 
   journal_docs = list([db[doc_id] for doc_id in db])
 
@@ -179,8 +180,6 @@ def get_journal_docs(db=None):
 journal_doc_cache = get_journal_docs()
 
 def journals_new(request):
-  #db = couchdb.Server()['journals']
-
   if 'term' in request.GET:
     filter = clean_journal(request.GET['term'])
   else:
@@ -221,7 +220,7 @@ def articles_since(journals, timestamp=None):
     Returns a dict of journal IDs and article counts
     Takes a list of journal IDs and a timestamp to count from
     """
-    db = couchdb.Server()['store']
+    db = db_store
     output = {}
 
     #if timestamp is not None:

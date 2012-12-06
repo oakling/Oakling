@@ -6,6 +6,8 @@ import urllib2
 import time
 import datetime
 
+SCRAPER_MODULES = ['www.aanda.org',]
+
 #DESCRIPTION:
 # Scrapes an article from Astronomy & Astrophysics RSS feeds:
 # http://www.aanda.org/

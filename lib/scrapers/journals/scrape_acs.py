@@ -4,6 +4,8 @@ import utils
 import re
 from comm import *
 
+SCRAPER_DOMAINS = ['pubs.acs.org',]
+
 #WEBSITES:
 # http://pubs.acs.org/
 

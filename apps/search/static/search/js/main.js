@@ -386,7 +386,9 @@ var akorn = {
         var ak = akorn;
         // Make item element
         var el = $(['<li><div class="tools">',
-                    '<i class="delete icon-trash"></i></div>',
+                    '<i data-queryid="',
+                    query_id,
+                    '"  class="delete icon-trash"></i></div>',
                     '<a id="',query_id,'">',
                     ak.shorten_query(query),
                     '</a></li>'].join(''));

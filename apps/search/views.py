@@ -11,6 +11,8 @@ import threading
 import itertools
 import couchdb
 
+from couch import db_store, db_journals, db_scrapers
+
 import lib.scrapers.journals.tasks as scraping_tasks
 import lib.scrapers.journals.utils as scraping_utils
 import apps.api.views
@@ -227,7 +229,7 @@ def search(request):
         
         results = itertools.chain(*[api['results'] for api in api_results])
   
-        db = couchdb.Server()['store']
+        db = db_store 
         docs = _add_to_store(results, db) 
 
 
@@ -247,7 +249,7 @@ def search(request):
                                   context_instance=RequestContext(request))
 
 def doc(request, id):
-  db = couchdb.Server()['store']
+  db = db_store 
   doc = db[id]
   doc['docid'] = id
   try:
@@ -272,7 +274,7 @@ def journal(request, id):
   # Get their last visit
   last_visit = request.session.get('last_visit', None)
 
-  db = couchdb.Server()['journals']
+  db = db_journals 
 
   # Check the journal exists
   if id not in db:
@@ -283,8 +285,7 @@ def journal(request, id):
   return render_to_response('search/journal.html', {'last_visit': last_visit, 'journal': journal_doc,}, context_instance=RequestContext(request))
 
 def backend_journals(request):
-  db_journals = couchdb.Server()['journals']
-  db_docs = couchdb.Server()['store']
+  db_docs = db_store
   
   journals = [db_journals[doc_id] for doc_id in db_journals if '_design' not in doc_id]
 
@@ -296,8 +297,7 @@ def backend_journals(request):
   return render_to_response('backend/journals.html', {'journals': journals,}, context_instance=RequestContext(request))
 
 def backend_journal(request, journal_id):
-  db_journals = couchdb.Server()['journals']
-  db_docs = couchdb.Server()['store']
+  db_docs = db_store 
   journal_doc = db_journals[journal_id]
 
   rows = db_docs.view('index/journal_id', key=journal_id, include_docs=True).rows
@@ -322,9 +322,7 @@ def backend_journal(request, journal_id):
                             context_instance=RequestContext(request))
 
 def backend_scrapers(request):
-  db_journals = couchdb.Server()['journals']
-  db_scrapers = couchdb.Server()['scrapers']
-  db_docs = couchdb.Server()['store']
+  db_docs = db_store
 
   scrapers = [db_scrapers[doc_id] for doc_id in db_scrapers if not doc_id.startswith('_design/')]
   scrapers.append({'name': 'Default', 'module': 'lib.scrapers.journals.scrape_meta_tags'})

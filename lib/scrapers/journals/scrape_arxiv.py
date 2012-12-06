@@ -5,6 +5,8 @@ import sys
 
 from utils import get_response_chain
 
+SCRAPER_DOMAINS = ['www.arxiv.org',]
+
 def resolve_doi(doi):
   try:
     page = urllib2.urlopen("http://dx.doi.org/%s" % doi)

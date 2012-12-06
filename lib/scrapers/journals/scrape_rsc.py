@@ -3,6 +3,8 @@ import lxml.html
 import utils
 from comm import *
 
+SCRAPER_DOMAINS = ['pubs.rsc.org',]
+
 #JOURNALS:
 
 #WEBSITES:

@@ -6,6 +6,10 @@ from comm import *
 #NOTES:
 #functionally identical to nas scraper - consider merge
 
+SCRAPER_DOMAINS = ['jcb.rupress.org',
+                   'jem.rupress.org',
+                   'jgp.rupress.org',]
+
 #WEBSITES:
 # Rockefeller University Press
 # http://jcb.rupress.org - The Journal of Cell Biology

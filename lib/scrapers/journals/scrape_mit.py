@@ -4,6 +4,8 @@ import utils
 import re
 from comm import *
 
+SCRAPER_DOMAINS = ['www.mitpressjournals.org',]
+
 # Tested on:
 # - Neural Computation
 

@@ -5,10 +5,11 @@ import urllib2
 import cookielib
 import classification
 import re
+import pkgutil
+
+from couch import db_store, db_journals, db_scrapers
 
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',} 
-
-server = couchdb.Server()
 
 class ScraperNotFound(Exception):
   pass
@@ -66,8 +67,6 @@ def resolve_url(url):
   return response.geturl()
 
 def resolve_journal(alias):
-  db_journals = server['journals']
-
   matches = db_journals.view('index/aliases', key=alias).rows
 
   if matches:
@@ -78,43 +77,68 @@ def resolve_journal(alias):
 
   return journal_id
 
-def resolve_scraper(url):
-  # Do it by domain for now. This might not always work, a full url prefix might be needed, but this is cheaper.
-
-  url_parsed = urlparse.urlparse(url)
-  domain = url_parsed.netloc
-
-  db = server['scrapers']
-  records = db.view('index/domain', key=domain, include_docs='true').rows
-
-  if not records:
-    return None
-  else:
-    return records[0].doc
-
 def load_module(module_path):
     __import__(module_path)
     return sys.modules[module_path]
 
+def discover_scrapers():
+  """
+    Use pkgutil to find scrapers in this module. Build a list of scrapers and which domains they map to.
+  """
+
+  scraper_modules = []
+  scraper_domain_map = {}
+
+  for module_importer, name, ispkg in pkgutil.iter_modules('lib.scrapers.journals'):
+    if not name.startswith('scrape_'):
+      continue
+    module = module_importer.find_module(name).load_module(name)
+
+    scraper_modules.append(module)
+
+    if hasattr(module, 'SCRAPER_DOMAINS'):
+      for domain in module.SCRAPER_DOMAINS:
+        scraper_domain_map[domain] = module
+
+  return (scraper_modules, scraper_domain_map)
+
+scraper_modules, scraper_domain_map = discover_scrapers()
+
+def resolve_scraper(url):
+  # Do it by domain for now. This might not always work, a full url prefix might be needed, but this is cheaper.
+  url_parsed = urlparse.urlparse(url)
+  domain = url_parsed.netloc
+
+  #records = db_scrapers.view('index/domain', key=domain, include_docs='true').rows
+
+  #if not records:
+  #  return None
+  #else:
+  #  return records[0].doc
+
+  if domain in scraper_domain_map:
+    return scraper_domain_map[domain]
+  else:
+    return None
+
 def resolve_and_scrape(url):
     """Scrape the journal page and add to database."""
 
-    scraper_doc = resolve_scraper(url)
+    scraper_module = resolve_scraper(url)
 
-    if scraper_doc is None:
+    if scraper_module is None:
       url = resolve_url(url)
-      scraper_doc = resolve_scraper(url)
+      scraper_module = resolve_scraper(url)
    
-      if scraper_doc is None: 
+      if scraper_module is None: 
           # default to meta tags
-          scraper_doc = {'module': 'lib.scrapers.journals.scrape_meta_tags'}
+          scraper_module = load_module('lib.scrapers.journals.scrape_meta_tags')
 
-    scraper_module = load_module(scraper_doc['module'])
-      
+    module_path = "lib.scrapers.journals." + scraper_module.__name__
 
     article = scraper_module.scrape(url)
     
-    article['scraper_module'] = scraper_doc['module']
+    article['scraper_module'] = module_path 
 
     if 'journal' in article:
       journal_name = article['journal']
@@ -137,17 +161,3 @@ def merge(new_id, old_ids):
     """Try to merge the two database entries."""
     pass
 
-def categorize(codes):
-    """Put classification codes into gropus."""
-    categories = {}
-
-    for code in codes:
-        match = False
-        for group in classification.codes:
-            matches = re.findall(group[0], code)
-            if matches:
-                categories.setdefault(group[1], []).extend(matches)
-                match = True
-        if not match:
-            categories.setdefault('unknown', []).append(code)
-    return categories
