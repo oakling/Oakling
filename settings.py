@@ -162,3 +162,8 @@ STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/')
 SESSION_ENGINE = "django.contrib.sessions.backends.file"
 
 DEBUG=True
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
