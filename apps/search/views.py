@@ -13,8 +13,8 @@ import couchdb
 
 from couch import db_store, db_journals, db_scrapers
 
-import lib.scrapers.journals.tasks as scraping_tasks
-import lib.scrapers.journals.utils as scraping_utils
+#import lib.scrapers.journals.tasks as scraping_tasks
+#import lib.scrapers.journals.utils as scraping_utils
 import apps.api.views
 
 from apps.panes.models import Pane
@@ -108,7 +108,7 @@ def _add_to_store(search_results, db):
       if doc is None:
         bare_doc['source_url'] = 'http://dx.doi.org/' + result['doi']
         doc_id, _ = db.save(bare_doc)
-        scraping_tasks.scrape_doi.delay(result['doi'], doc_id)
+        #scraping_tasks.scrape_doi.delay(result['doi'], doc_id)
 
         doc = db[doc_id]
       else:
@@ -119,7 +119,7 @@ def _add_to_store(search_results, db):
       if doc is None:
         bare_doc['source_url'] = result['uri']
         doc_id, _ = db.save(bare_doc)
-        scraping_tasks.scrape_journal.delay(result['uri'], doc_id)
+        #scraping_tasks.scrape_journal.delay(result['uri'], doc_id)
         doc = db[doc_id]
       else:
         print "%s already in db" % result['uri']
