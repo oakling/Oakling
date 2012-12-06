@@ -161,3 +161,5 @@ def merge(new_id, old_ids):
     """Try to merge the two database entries."""
     pass
 
+if __name__ == "__main__":
+  print resolve_and_scrape(sys.argv[1])
