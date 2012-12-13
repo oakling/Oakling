@@ -86,6 +86,26 @@ def scrape(abstract_url):
       split = pub_date.split('-')
       article['date_published'] = make_datestamp(split[2], split[1], split[0])
 
+#Specific abstract scrapers for subsidiary journals
+  if article['journal'] == 'The EMBO Journal':
+      try:
+          article['abstract'] = tree.xpath("//p[@class='lead']")[0].text_content()
+      except:
+          pass
+  
+  elif article['journal'] == 'EMBO reports':
+      try:
+          article['abstract'] = tree.xpath("//p[@class='lead']")[0].text_content()
+      except:
+          pass
+
+  elif article['journal'] == 'Oncogene':
+      try:
+          article['abstract'] = tree.xpath("//p[@class='abs lead']")[0].text_content()
+      except:
+          pass
+
+
   return article
 
 if __name__ == "__main__":
