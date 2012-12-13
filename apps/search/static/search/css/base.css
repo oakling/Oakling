@@ -216,6 +216,7 @@ span.full {
     line-height: 100%;
     width: 100%;
     text-align: center;
+    text-transform: uppercase;
 }
 
 #about .header_row {
