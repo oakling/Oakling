@@ -33,6 +33,9 @@ class RedirectHandler(urllib2.HTTPRedirectHandler):
 class Ignore401Handler(urllib2.BaseHandler):
   def http_error_401(self, req, fp, code, msg, hdrs):
     return fp
+  
+  def http_error_403(self, req, fp, code, msg, hdrs):
+    return fp
 
 def get_response_chain(req):
   urls = []
@@ -119,6 +122,8 @@ def resolve_scraper(url):
   #else:
   #  return records[0].doc
 
+  print domain
+
   if domain in scraper_domain_map:
     return scraper_domain_map[domain]
   else:
@@ -138,6 +143,8 @@ def resolve_and_scrape(url):
           scraper_module = load_module('lib.scrapers.journals.scrape_meta_tags')
 
     module_path = "lib.scrapers.journals." + scraper_module.__name__
+
+    print module_path
 
     article = scraper_module.scrape(url)
     
