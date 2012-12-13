@@ -211,7 +211,7 @@ span.full {
     float: right;
 }
 
-h1 {
+#panes h1, #index h1 {
     font-size: 12em;
     line-height: 100%;
     width: 100%;
