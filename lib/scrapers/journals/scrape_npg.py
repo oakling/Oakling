@@ -74,7 +74,7 @@ def scrape(abstract_url):
 
   year = get_meta('citation_date', tree)
   if year:
-    article['citation']['year'] = year[0][:4]
+    article['citation']['year'] = year[0:4]
 
   article['ids'] = dict(zip(['doi'], [tree.xpath("//meta[@name='citation_doi']/@content")[0][4:]]))
 
