@@ -1,7 +1,6 @@
 import couchdb
 import json
-
-db = couchdb.Server()['store']
+from couch import db_store as db
 
 docs = []
 for id in db:

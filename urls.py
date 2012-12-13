@@ -5,7 +5,12 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns('django.contrib.flatpages.views',
+    url(r'^about/$', 'flatpage', {'url': '/about/'}, name='about'),
+    url(r'^$', 'flatpage', {'url': '/'}, name='main'),
+)
+
+urlpatterns += patterns('',
     # Examples:
     # url(r'^$', 'akorn.views.home', name='home'),
     # url(r'^akorn/', include('akorn.foo.urls')),
@@ -16,12 +21,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('apps.api.urls', namespace='api')),
-    url(r'^search/', include('apps.search.urls', namespace='search')),
-)
-
-urlpatterns += patterns('django.contrib.flatpages.views',
-    url(r'^about/$', 'flatpage', {'url': '/about/'}, name='about'),
-    url(r'^$', 'flatpage', {'url': '/'}, name='main'),
+    url(r'', include('apps.search.urls', namespace='search')),
 )
 
 if settings.DEBUG:

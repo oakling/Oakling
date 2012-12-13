@@ -211,11 +211,12 @@ span.full {
     float: right;
 }
 
-h1 {
+#about h1, #index h1 {
     font-size: 12em;
     line-height: 100%;
     width: 100%;
     text-align: center;
+    text-transform: uppercase;
 }
 
 #about .header_row {

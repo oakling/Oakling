@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import urlparse
 import couchdb
 import urllib2
@@ -32,6 +32,9 @@ class RedirectHandler(urllib2.HTTPRedirectHandler):
 
 class Ignore401Handler(urllib2.BaseHandler):
   def http_error_401(self, req, fp, code, msg, hdrs):
+    return fp
+  
+  def http_error_403(self, req, fp, code, msg, hdrs):
     return fp
 
 def get_response_chain(req):
@@ -89,7 +92,9 @@ def discover_scrapers():
   scraper_modules = []
   scraper_domain_map = {}
 
-  for module_importer, name, ispkg in pkgutil.iter_modules('lib.scrapers.journals'):
+  d = os.path.dirname(__file__)
+
+  for module_importer, name, ispkg in pkgutil.iter_modules([d,]):
     if not name.startswith('scrape_'):
       continue
     module = module_importer.find_module(name).load_module(name)
@@ -116,6 +121,8 @@ def resolve_scraper(url):
   #else:
   #  return records[0].doc
 
+  print domain
+
   if domain in scraper_domain_map:
     return scraper_domain_map[domain]
   else:
@@ -135,6 +142,8 @@ def resolve_and_scrape(url):
           scraper_module = load_module('lib.scrapers.journals.scrape_meta_tags')
 
     module_path = "lib.scrapers.journals." + scraper_module.__name__
+
+    print module_path
 
     article = scraper_module.scrape(url)
     
