@@ -54,7 +54,7 @@ def scrape_doi(doi, doc_id=None):
           # Make a doc to remember to rescrape later
           article['error'] = str(e)
           article['rescrape'] = True
-          article['source_url'] = url
+          article['source_urls'] = [url]
 
         if article:
           doc_id, _ = db_store.save(article)
@@ -107,12 +107,14 @@ def scrape_journal(url, doc_id=None, base_article={}):
         except Exception, e:
           # Make a doc to remember to rescrape later
           article['error'] = str(type(e)) + ': ' + str(e)
-          article['source_url'] = url
+          article['source_urls'] = [url]
           article['rescrape'] = True
+
+        print article
 
         if article:
           # check this hasn't been inadvertantly scraped already before we go
-          if check_source(article['source_urls'][-1], db_store):
+          if check_source(article['source_urls'][-1]):
             doc_id, _ = db_store.save(article)
     else:
         # we've already scraped this url. there should only be one such doc.
