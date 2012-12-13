@@ -7,9 +7,8 @@ urlpatterns = patterns('',
     
     url(r'^backend/scrapers$', views.backend_scrapers, name='backend_scrapers'),
 
-    url(r'^search/$', views.search, name='search'),
+    url(r'^search/$', views.home, name='home'),
     url(r'^doc/(?P<id>[A-Za-z0-9]+)$', views.doc, name='viewdoc'),
     url(r'^journals/(?P<id>.*)$', views.journal, name='viewjournal'),
-    url(r'^$', views.home, name='home'),
 )
 
