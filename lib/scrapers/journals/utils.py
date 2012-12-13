@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import urlparse
 import couchdb
 import urllib2
@@ -89,7 +89,10 @@ def discover_scrapers():
   scraper_modules = []
   scraper_domain_map = {}
 
-  for module_importer, name, ispkg in pkgutil.iter_modules('lib.scrapers.journals'):
+  d = os.path.dirname(__file__)
+
+  for module_importer, name, ispkg in pkgutil.iter_modules([d,]):
+    print name
     if not name.startswith('scrape_'):
       continue
     module = module_importer.find_module(name).load_module(name)
