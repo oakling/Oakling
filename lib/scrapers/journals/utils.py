@@ -95,7 +95,6 @@ def discover_scrapers():
   d = os.path.dirname(__file__)
 
   for module_importer, name, ispkg in pkgutil.iter_modules([d,]):
-    print name
     if not name.startswith('scrape_'):
       continue
     module = module_importer.find_module(name).load_module(name)
