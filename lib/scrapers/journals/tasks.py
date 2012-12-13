@@ -110,8 +110,6 @@ def scrape_journal(url, doc_id=None, base_article={}):
           article['source_urls'] = [url]
           article['rescrape'] = True
 
-        print article
-
         if article:
           # check this hasn't been inadvertantly scraped already before we go
           if check_source(article['source_urls'][-1]):
