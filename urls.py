@@ -5,8 +5,10 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
+# TODO Should be handled by a catch-all, but can't because of search app
 urlpatterns = patterns('django.contrib.flatpages.views',
     url(r'^about/$', 'flatpage', {'url': '/about/'}, name='about'),
+    url(r'^volunteer/$', 'flatpage', {'url': '/volunteer/'}, name='volunteer'),
     url(r'^$', 'flatpage', {'url': '/'}, name='main'),
 )
 
