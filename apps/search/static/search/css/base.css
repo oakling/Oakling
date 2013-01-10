@@ -323,11 +323,15 @@ em {
 }
 
 #recruitment .email {
-        text-align: center;
-        font-weight: bold;
+    text-align: center;
+    font-weight: bold;
 }
 
 #recruitment {
-        padding: 20px 0;
-        text-align: center;
+    padding: 20px 0;
+    text-align: center;
+}
+
+#recruitment ul {
+    list-style-position: inside;
 }
