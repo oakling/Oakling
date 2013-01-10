@@ -265,3 +265,69 @@ em {
     text-align: center;
     font-style: italic;
 }
+
+.font1a {
+        font-family: 'Jacques Francois Shadow';
+        font-size: 70px;
+        font-weight: normal;
+        text-transform: uppercase;
+        font-style: normal;
+}
+
+.font1b {
+        font-family: 'Jacques Francois Shadow';
+        font-size: 31px;
+        padding-top: 20px;
+        font-weight: normal;
+}
+
+.font2a {
+        font-family: VT323;
+        font-size: 40px;
+        padding-top: 35px;
+        font-weight: normal;
+        font-style: normal;
+        text-transform: uppercase;
+}
+
+.font2b {
+        font-family: VT323;
+        font-size: 27px;
+        font-weight: normal;
+        text-transform: uppercase;
+}
+
+#recruitment .header_row {
+    margin: 3em auto;
+}
+
+#recruitment .header_row h2 {
+    padding: 0;
+    margin-bottom: 0.3em;
+    width: 100%;
+    text-align: center;
+}
+
+#recruitment .header_row p {
+    padding-top: 0;
+}
+
+#recruitment h3 {
+    color: #d68400;
+    font-size: 1.7em;
+    margin: 1.5em auto;
+}
+
+#recruitment h4 {
+    margin-top: 1.5em;
+}
+
+#recruitment .email {
+        text-align: center;
+        font-weight: bold;
+}
+
+#recruitment {
+        padding: 20px 0;
+        text-align: center;
+}
