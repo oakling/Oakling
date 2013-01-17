@@ -1,5 +1,4 @@
 import lxml.html
-import utils
 import urllib2
 import datetime
 import time
