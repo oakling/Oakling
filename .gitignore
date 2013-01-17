@@ -4,6 +4,9 @@
 # vim swap files
 *.swp
 
+# Stupud directory caches
+.DS_Store
+
 # The Django collected static files dir
 collectedstatic
 
