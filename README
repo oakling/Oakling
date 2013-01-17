@@ -30,3 +30,13 @@ export PIP_VIRTUALENV_BASE=$WORKON_HOME
 ** $ curl -X PUT http://localhost:5984/store/
 ** $ workon akorn
 ** (akorn) $ couchdb-load --input=~/fulldump http://localhost:5984/store
+
+== Deploying changes ==
+
+Once you have made and commited changes to your local repository, you
+can deploy your changes to the servers using Fabric. It is in requirements.txt so will be available from within your virtualenv.
+
+* Push your local commits to the shared repository
+** (akorn) $ fab prepare_deploy
+* Pull in commits from shared repository, and restart the server
+** (akorn) $ fab deploy
