@@ -3,11 +3,13 @@ import urllib2
 import cookielib
 import pkgutil
 import urlparse
+import utils
+from utils import RedirectHandler, Ignore401Handler
 from couch import db_store, db_journals, db_scrapers
 
 def resolve_doi(doi):
   cookiejar = cookielib.CookieJar()
-  req = urllib2.Request('http://dx.doi.org/' + doi, headers=headers)
+  req = urllib2.Request('http://dx.doi.org/' + doi, headers=utils.headers)
   urls = []
   opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls),
                                 urllib2.HTTPCookieProcessor(cookiejar))
@@ -17,7 +19,7 @@ def resolve_doi(doi):
 
 def resolve_url(url):
   cookiejar = cookielib.CookieJar()
-  req = urllib2.Request(url, headers=headers)
+  req = urllib2.Request(url, headers=utils.headers)
   urls = []
   opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls),
                                 urllib2.HTTPCookieProcessor(cookiejar))

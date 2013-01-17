@@ -65,7 +65,7 @@ def get_meta(names, tree):
         return attributes[0]
 
 def scrape(abstract_url):
-    tree, urls, page_text = comm.get_tree(abstract_url) 
+    tree, urls, page_text = get_tree(abstract_url) 
 
     article = {}
     article['source_urls'] = [uri for _, uri in urls]

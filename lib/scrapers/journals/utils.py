@@ -59,8 +59,8 @@ def merge(new_id, old_ids):
 months = {'January':1, 'February':2, 'March':3, 'April':4, 'May':5, 'June':6, 'July':7, 'August':8, 'September':9, 'October':10, 'November':11, 'December':12}
 
 def get_tree(abstract_url):
-    req = urllib2.Request(abstract_url, headers=utils.headers)
-    urls, page = utils.get_response_chain(req)
+    req = urllib2.Request(abstract_url, headers=headers)
+    urls, page = get_response_chain(req)
     page_text = page.read().decode('utf-8')
 
     tree = lxml.html.fromstring(page_text, base_url=page.geturl())
