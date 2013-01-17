@@ -1,16 +1,20 @@
-from fabric.api import local, run, cd, sudo
+from fabric.api import local, run, cd, sudo, env
 
-def hello():
-    print("Hello world!")
+env.hosts = ['ubuntu@akorn.org']
+env.directory = "/home/ubuntu/akorn/akorn_search"
 
 def prepare_deploy():
-  local('git push')
+    local('git push')
 
 def deploy():
-  with cd('/home/ubuntu/akorn/akorn_search'):
-    run('git pull')
-    run('python manage.py collectstatic --noinput')
-    sudo('/etc/init.d/django-akorn restart')
+    with cd(env.directory):
+        run('git pull')
+        collect_static()
+        sudo('/etc/init.d/django-akorn restart')
+
+def collect_static():
+    with cd(env.directory):
+        run('python manage.py collectstatic --noinput')
 
 def celery_restart():
     sudo('/etc/init.d/celeryd restart')
