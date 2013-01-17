@@ -3,7 +3,7 @@ import urllib2
 import re
 import lxml.html
 import urlparse
-import utils
+import lib.scrapers.journals.utils as utils
 import datetime
 import time
 

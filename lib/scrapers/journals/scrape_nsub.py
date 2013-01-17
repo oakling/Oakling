@@ -1,6 +1,6 @@
 import scrape_npg as sn
 import sys
-from utils import *
+from lib.scrapers.journals.utils import get_tree, get_meta, get_meta_list, make_datestamp, make_blank_article
 
 SCRAPER_DOMAINS = ['http://www.nature.com/onc/index.html',
                    'http://www.nature.com/embor/index.html',

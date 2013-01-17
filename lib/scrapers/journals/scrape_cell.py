@@ -1,6 +1,6 @@
-import scrape_meta_tags as smt
+import lib.scrapers.journals.scrape_meta_tags as smt
 import sys
-from utils import *
+import lib.scrapers.journals.utils as utils
 import time
 from dateutil.parser import parse as parse_date
 import lxml.html
@@ -11,7 +11,7 @@ SCRAPER_DOMAINS = ['http://www.cell.com/home']
 
 
 def scrape(abstract_url):
-    tree, urls, page_text = get_tree(abstract_url) 
+    tree, urls, page_text = utils.get_tree(abstract_url) 
 
     article = smt.scrape(abstract_url)
 

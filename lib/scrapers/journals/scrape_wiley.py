@@ -1,6 +1,6 @@
 import sys
 import lxml.html
-from utils import *
+from lib.scrapers.journals.utils import get_tree, get_meta, get_meta_list, make_blank_article
 import time
 import datetime
 

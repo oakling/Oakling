@@ -2,7 +2,7 @@ import sys, os
 import urllib2
 import cookielib
 import pkgutil
-
+import urlparse
 from couch import db_store, db_journals, db_scrapers
 
 def resolve_doi(doi):

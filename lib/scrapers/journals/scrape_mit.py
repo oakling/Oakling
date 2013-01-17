@@ -1,7 +1,7 @@
 import sys
 import lxml.html
 import re
-from utils import *
+from lib.scrapers.journals.utils import get_tree, get_meta, get_meta_list, make_datestamp, make_blank_article
 
 SCRAPER_DOMAINS = ['www.mitpressjournals.org',]
 

@@ -1,7 +1,6 @@
-import couchdb
 from couch import db_store
 from celery.task import task
-from utils import resolve_and_scrape, merge, ScraperNotFound, resolve_doi
+from router import resolve_and_scrape, resolve_doi
 
 def resolve_merges():
     # TODO: At this stage, we check that our source doesn't have the same IDs as any other records.
