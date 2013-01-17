@@ -28,7 +28,7 @@ export PIP_VIRTUALENV_BASE=$WORKON_HOME
 ** $ sudo service couchdb start
 * Get a dump from the server and load it into your local couchdb
 ** $ workon akorn
-** (akorn) $ fab load_dump
+** (akorn) $ fab load_dumps
 
 == Deploying changes ==
 
