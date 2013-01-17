@@ -65,8 +65,6 @@ def scrape(abstract_url):
   page_text = page.read().decode('utf-8')
   tree = lxml.html.fromstring(page_text, base_url=abstract_url)
 
-  print page_text
-
   # Make XPATH queries for the first H1 and second H2 for the article title and how to cite it
   title = tree.xpath('//h1')[0].text_content().strip()
   cite_as = tree.xpath('//h2')[1].text.strip()

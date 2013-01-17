@@ -1,6 +1,6 @@
 import sys
 import lxml.html
-from comm import *
+from utils import *
 import urllib2
 import time
 import datetime

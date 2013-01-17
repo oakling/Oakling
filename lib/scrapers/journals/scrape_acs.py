@@ -1,8 +1,7 @@
 import sys
 import lxml.html
-import utils
+from utils import *
 import re
-from comm import *
 
 SCRAPER_DOMAINS = ['pubs.acs.org',]
 

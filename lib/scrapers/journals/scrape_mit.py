@@ -1,8 +1,7 @@
 import sys
 import lxml.html
-import utils
 import re
-from comm import *
+from utils import *
 
 SCRAPER_DOMAINS = ['www.mitpressjournals.org',]
 

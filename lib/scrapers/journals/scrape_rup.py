@@ -1,7 +1,6 @@
 import sys
 import lxml.html
-import utils
-from comm import *
+from utils import *
 
 #NOTES:
 #functionally identical to nas scraper - consider merge

@@ -1,6 +1,6 @@
 import scrape_meta_tags as smt
 import sys
-from comm import *
+from utils import *
 import time
 from dateutil.parser import parse as parse_date
 import lxml.html

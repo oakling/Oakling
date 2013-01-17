@@ -1,7 +1,6 @@
 import sys
 import lxml.html
-import utils
-from comm import *
+from utils import *
 
 SCRAPER_MODULES = ['iopscience.iop.org',]
 

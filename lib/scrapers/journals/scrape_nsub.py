@@ -1,6 +1,6 @@
 import scrape_npg as sn
 import sys
-from comm import *
+from utils import *
 
 SCRAPER_DOMAINS = ['http://www.nature.com/onc/index.html',
                    'http://www.nature.com/embor/index.html',

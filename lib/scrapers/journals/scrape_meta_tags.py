@@ -1,5 +1,5 @@
 import sys
-import comm
+import utils
 import time
 from dateutil.parser import parse as parse_date
 from utils import ScraperNotFound
