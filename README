@@ -8,7 +8,7 @@ Steps:
 * Get the code
 ** $ git clone ssh://ubuntu@akorn.org/~/git/akorn_search.git
 * Install required ubuntu packages
-** $ sudo apt-get install $(cat akorn_search/ubuntu_packages) 
+** $ sudo apt-get install $(cat akorn_search/UBUNTU_PACKAGES)
 * Install virtualenvwrapper
 ** $ sudo easy_install pip
 ** $ sudo pip install virtualenv virtualenvwrapper
@@ -23,13 +23,12 @@ export PIP_VIRTUALENV_BASE=$WORKON_HOME
 * Build a virtual environment to run the code
 ** $ mkvirtualenv -a ~/akorn_search/ -r akorn_search/REQUIREMENTS.txt akorn
 * Get a couchdb dump, so you have test data to play with
-** $ scp ubuntu@akorn.org:~/dump/fulldump ~/fulldump
 * Set up couchdb
 ** $ sudo update-rc.d couchdb enable
 ** $ sudo service couchdb start
-** $ curl -X PUT http://localhost:5984/store/
+* Get a dump from the server and load it into your local couchdb
 ** $ workon akorn
-** (akorn) $ couchdb-load --input=~/fulldump http://localhost:5984/store
+** (akorn) $ fab load_dump
 
 == Deploying changes ==
 
