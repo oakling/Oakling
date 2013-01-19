@@ -1,3 +1,6 @@
+import re
+
+
 codes = [
     (r'(?:astro-ph|cond-mat|cs|gr-qc|hep-ex|hep-lat|hep-ph|hep-th|math|math-ph|nlin|nucl-ex|nucl-th|physics|q-bio|q-fin|quant-ph|stat)(?:\.[a-zA-Z-]+)*',
      'arxiv'),
@@ -11,7 +14,7 @@ def classify(codes):
 
     for code in codes:
         match = False
-        for group in classification.codes:
+        for group in codes:
             matches = re.findall(group[0], code)
             if matches:
                 categories.setdefault(group[1], []).extend(matches)
