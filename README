@@ -8,7 +8,7 @@ Steps:
 * Get the code
 ** $ git clone ssh://ubuntu@akorn.org/~/git/akorn_search.git
 * Install required ubuntu packages
-** $ sudo apt-get install $(cat akorn_search/ubuntu_packages) 
+** $ sudo apt-get install $(cat akorn_search/UBUNTU_PACKAGES)
 * Install virtualenvwrapper
 ** $ sudo easy_install pip
 ** $ sudo pip install virtualenv virtualenvwrapper
@@ -23,12 +23,12 @@ export PIP_VIRTUALENV_BASE=$WORKON_HOME
 * Build a virtual environment to run the code
 ** $ mkvirtualenv -a ~/akorn_search/ -r akorn_search/REQUIREMENTS.txt akorn
 * Get a couchdb dump, so you have test data to play with
-** $ scp ubuntu@akorn.org:~/dump/fulldump ~/fulldump
 * Set up couchdb
 ** $ sudo update-rc.d couchdb enable
 ** $ sudo service couchdb start
-** $ curl -X PUT http://localhost:5984/store/
+* Get a dump from the server and load it into your local couchdb
 ** $ workon akorn
+<<<<<<< HEAD
 ** (akorn) $ couchdb-load --input=~/fulldump http://localhost:5984/store
 
 # Instructions to get full text search working, using couchdb-lucene
@@ -74,3 +74,16 @@ sudo /etc/init.d/couchdb restart
 # Then queries can be made like:
 http://127.0.0.1:5984/store/_fti/_design/lucene/by_title?q=quantum
 
+=======
+** (akorn) $ fab load_dumps
+
+== Deploying changes ==
+
+Once you have made and commited changes to your local repository, you
+can deploy your changes to the servers using Fabric. It is in requirements.txt so will be available from within your virtualenv.
+
+* Push your local commits to the shared repository
+** (akorn) $ fab prepare_deploy
+* Pull in commits from shared repository, and restart the server
+** (akorn) $ fab deploy
+>>>>>>> cf5218285d601648e5a6cfd5fb4ccbc65c910255

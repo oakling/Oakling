@@ -1,6 +1,6 @@
 import sys
 import lxml.html
-from comm import *
+import lib.scrapers.journals.utils as utils
 import urllib2
 import time
 import datetime
@@ -27,7 +27,7 @@ months = {'January':1, 'February':2, 'March':3, 'April':4,\
 
 
 def scrape(abstract_url):
-    tree, urls, page_text = get_tree(abstract_url)
+    tree, urls, page_text = utils.get_tree(abstract_url)
 
     article = make_blank_article()
     article['scraper'] = 'AA'

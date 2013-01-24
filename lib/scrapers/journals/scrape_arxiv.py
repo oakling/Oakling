@@ -3,9 +3,9 @@ import re
 import urlparse
 import sys
 
-from utils import get_response_chain
+from lib.scrapers.journals.utils import get_response_chain
 
-SCRAPER_DOMAINS = ['www.arxiv.org',]
+#SCRAPER_DOMAINS = ['www.arxiv.org','arxiv.org']
 
 def resolve_doi(doi):
   try:

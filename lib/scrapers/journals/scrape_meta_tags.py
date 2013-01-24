@@ -1,8 +1,7 @@
 import sys
-import comm
+from lib.scrapers.journals.utils import get_tree, make_blank_article, get_meta, get_meta_list, make_datestamp
 import time
 from dateutil.parser import parse as parse_date
-from utils import ScraperNotFound
 
 #TODO bepress
 
@@ -66,7 +65,7 @@ def get_meta(names, tree):
         return attributes[0]
 
 def scrape(abstract_url):
-    tree, urls, page_text = comm.get_tree(abstract_url) 
+    tree, urls, page_text = get_tree(abstract_url) 
 
     article = {}
     article['source_urls'] = [uri for _, uri in urls]

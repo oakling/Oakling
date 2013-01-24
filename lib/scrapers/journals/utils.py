@@ -2,10 +2,12 @@ import sys, os
 import urlparse
 import couchdb
 import urllib2
-import cookielib
 import classification
+import cookielib
 import re
-import pkgutil
+import lxml.html
+import datetime
+import time
 
 from couch import db_store, db_journals, db_scrapers
 
@@ -49,126 +51,63 @@ def get_response_chain(req):
   urls.append((code, response.geturl()))
   return (urls, response)
 
-def resolve_doi(doi):
-  cookiejar = cookielib.CookieJar()
-  req = urllib2.Request('http://dx.doi.org/' + doi, headers=headers)
-  urls = []
-  opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls),
-                                urllib2.HTTPCookieProcessor(cookiejar))
-  response = opener.open(req)
-
-  return response.geturl()
-
-def resolve_url(url):
-  cookiejar = cookielib.CookieJar()
-  req = urllib2.Request(url, headers=headers)
-  urls = []
-  opener = urllib2.build_opener(Ignore401Handler(), RedirectHandler(urls),
-                                urllib2.HTTPCookieProcessor(cookiejar))
-  response = opener.open(req)
-
-  return response.geturl()
-
-def resolve_journal(alias):
-  matches = db_journals.view('index/aliases', key=alias).rows
-
-  if matches:
-    journal_id = matches[0].id
-    #cache[journal_name] = journal_id
-  else:
-    journal_id = None
-
-  return journal_id
-
-def load_module(module_path):
-    __import__(module_path)
-    return sys.modules[module_path]
-
-def discover_scrapers():
-  """
-    Use pkgutil to find scrapers in this module. Build a list of scrapers and which domains they map to.
-  """
-
-  scraper_modules = []
-  scraper_domain_map = {}
-
-  d = os.path.dirname(__file__)
-
-  for module_importer, name, ispkg in pkgutil.iter_modules([d,]):
-    if not name.startswith('scrape_'):
-      continue
-    module = module_importer.find_module(name).load_module(name)
-
-    scraper_modules.append(module)
-
-    if hasattr(module, 'SCRAPER_DOMAINS'):
-      for domain in module.SCRAPER_DOMAINS:
-        scraper_domain_map[domain] = module
-
-  return (scraper_modules, scraper_domain_map)
-
-scraper_modules, scraper_domain_map = discover_scrapers()
-
-def resolve_scraper(url):
-  # Do it by domain for now. This might not always work, a full url prefix might be needed, but this is cheaper.
-  url_parsed = urlparse.urlparse(url)
-  domain = url_parsed.netloc
-
-  #records = db_scrapers.view('index/domain', key=domain, include_docs='true').rows
-
-  #if not records:
-  #  return None
-  #else:
-  #  return records[0].doc
-
-  print domain
-
-  if domain in scraper_domain_map:
-    return scraper_domain_map[domain]
-  else:
-    return None
-
-def resolve_and_scrape(url):
-    """Scrape the journal page and add to database."""
-
-    scraper_module = resolve_scraper(url)
-
-    if scraper_module is None:
-      url = resolve_url(url)
-      scraper_module = resolve_scraper(url)
-   
-      if scraper_module is None: 
-          # default to meta tags
-          scraper_module = load_module('lib.scrapers.journals.scrape_meta_tags')
-
-    module_path = "lib.scrapers.journals." + scraper_module.__name__
-
-    print module_path
-
-    article = scraper_module.scrape(url)
-    
-    article['scraper_module'] = module_path 
-
-    if 'journal' in article:
-      journal_name = article['journal']
-    elif 'citation' in article and 'journal' in article['citation']:
-      journal_name = article['citation']['journal']
-    elif 'categories' in article and 'arxiv' in article['categories']:
-      journal_name = 'arxiv:' + article['categories']['arxiv'][0]
-    else:
-      journal_name = None
-
-    if journal_name:
-      journal_id = resolve_journal(journal_name)
-
-      if journal_id:
-        article['journal_id'] = journal_id
-
-    return article
 
 def merge(new_id, old_ids):
     """Try to merge the two database entries."""
     pass
 
+months = {'January':1, 'February':2, 'March':3, 'April':4, 'May':5, 'June':6, 'July':7, 'August':8, 'September':9, 'October':10, 'November':11, 'December':12}
+
+def get_tree(abstract_url):
+    req = urllib2.Request(abstract_url, headers=headers)
+    urls, page = get_response_chain(req)
+    page_text = page.read().decode('utf-8')
+
+    tree = lxml.html.fromstring(page_text, base_url=page.geturl())
+
+    return tree, urls, page_text
+
+def strip_space(string):
+  newstr= ''
+  
+  for word in string.split():
+    newstr = newstr + ' ' + word
+	
+  return newstr.lstrip()
+
+def get_meta(name, tree):
+    attribute = tree.xpath("//meta[@name='%s']/@content" % name)
+	
+    if attribute:
+      return attribute[0]
+    else:
+      return None
+
+def get_meta_list(name, tree):
+    attributes = tree.xpath("//meta[@name='%s']/@content" % name)
+	
+    if attributes:
+      return [attribute for attribute in attributes]
+    else:
+	  return None
+
+def make_datestamp(day, month, year):
+    day = int(day)
+    month = int(month)
+    year = int(year)
+    return time.mktime(datetime.date(year, month, day).timetuple())
+
+def make_blank_article():
+    article = {'scraper': None, 'source_urls': None, 'title': None, 'author_names': None,
+               'ids': None, 'citation': None, 'date_published': None, 'abstract': None,
+               'journal': None, }
+
+    article['citation'] = { 'journal':None, 'volume': None, 'year': None, 'page': None, }
+
+    return article
+    
+
+
 if __name__ == "__main__":
   print resolve_and_scrape(sys.argv[1])
+

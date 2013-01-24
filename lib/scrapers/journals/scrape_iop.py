@@ -1,7 +1,6 @@
 import sys
 import lxml.html
-import utils
-from comm import *
+from lib.scrapers.journals.utils import get_tree, make_blank_article, get_meta, get_meta_list, make_datestamp
 
 SCRAPER_MODULES = ['iopscience.iop.org',]
 
