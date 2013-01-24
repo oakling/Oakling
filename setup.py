@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = open(os.path.join("akorn_search",)).read().strip()
+version = open(os.path.join("akorn_search", "version.txt")).read().strip()
 
 setup(name='akorn_search',
       version=version,
