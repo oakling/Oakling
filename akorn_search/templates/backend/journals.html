@@ -1,0 +1,77 @@
+{% extends 'page.html' %}
+{% load search_filters %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}search/js/json2.js"></script>
+<script src="{{ STATIC_URL }}search/js/tag-it.js"></script>
+<script src="{{ STATIC_URL }}search/js/main.js"></script>
+{% if last_visit %}
+<script type="text/javascript">
+// TODO There is probably a better way to do this
+akorn.last_visit = "{{ last_visit|date:"c" }}";
+// When the document has loaded start the show
+$(document).ready(akorn.init);
+</script>
+{% endif %}
+
+<style>
+  table.journals_table {
+
+  }
+
+  table.journals_table thead tr {
+    text-align:center;
+    border-bottom:1px solid #666;
+  }
+
+  tr.table-row td {
+   margin:0.25em;
+   padding:0.25em;
+  }
+  
+  tr.table-row td ul {
+    list-style:none;
+    font-size:0.9em;
+  }
+
+  tr.table-row td {
+    vertical-align:top;
+  }
+
+  tr.table-row-False {
+    background:#F9F9F9;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="span9 search">
+  <h2>Journals summary</h2>
+  <table class='journals_table'>
+  <thead>
+  <tr>
+    <th></th><th>Name</th><th>Aliases</th><th>Num docs</th>
+  </tr>
+  </thead>
+  {% for journal in journals %}
+    <tr class="table-row table-row-{{ forloop.counter0|divisibleby:'2' }}">
+      <td><input type='checkbox' value='{{ journal.id }}'/></td>
+      <td><a href='{% url search:backend_journal journal_id=journal.id %}'>{{ journal.name }}</a></td>
+      <td>
+        <ul>
+          {% for alias in journal.aliases %}
+          <li>{{ alias }}</li>
+          {% endfor %}
+        </ul>
+      </td>
+      <td>{{ journal.num_docs }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+
+<div class="span3">
+
+</div>
+{% endblock %}

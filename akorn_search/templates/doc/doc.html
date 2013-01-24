@@ -1,0 +1,150 @@
+{% extends 'page.html' %}
+{% load urls %}
+
+{% block canonical %}<link rel="canonical" href="{% url search:viewdoc doc.docid %}">{% endblock %}
+
+{% block og_meta %}
+<meta property="og:title" content="{{ doc.title }}" />
+<meta property="og:type" content="article" />
+<meta property="og:description" content="{{ doc.abstract }}" />
+<meta property="og:image" content="{{ STATIC_URL}}search/img/article.jpg" />
+<meta property="og:url" content="{% url search:viewdoc doc.docid %}" />
+<meta property="og:site_name" content="Akorn.org" />
+<!-- Facebook ID of Craig Loftus -->
+<meta property="fb:admins" content="506422046" />
+{% endblock %}
+
+{% block content %}
+<div id="fb-root"></div>
+
+<div itemscope itemtype="http://schema.org/CreativeWork" class="span12">
+
+<div class='span12 box_title alpha'><div class='box_inner'>
+  <h1 itemprop="name"><a href='{{ doc.source_urls.0 }}'>{{ doc.title }}</a></h1>
+</div></div>
+
+<div class='clear'></div>
+
+<div class='span8 box_date alpha'><div class='box_inner'>
+  {% if date_published %}
+    published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href='/journals/{{ doc.journal_id }}'>{{ doc.citation.journal }}</a></strong>
+  {% else %}
+    published on <strong>{{ date_published }}</strong> in <strong><a href='/journals/{{ doc.journal_id }}'>{{ doc.citation.journal }}</a></strong>
+  {% endif %}
+</div></div>
+
+<div class='clear'></div>
+
+<div class='span12 box_authors alpha'><div class='box_inner'>
+      {% for author in doc.author_names %}
+          <div class='author_name {% if forloop.counter > 10 %}author_name_hidden{% endif %}'>
+          {% if author.surname %}
+            {{ author.forename }} {{ author.surname }}{% if not forloop.last %},{% endif %}
+          {% else %}
+           {{ author }}{% if not forloop.last %},{% endif %}
+          {% endif %}
+          </div>
+          {% if forloop.counter == 11 %}
+            <div class='author_name author_name_show_link'><a onclick="$('.author_name_hidden').show();$(this).hide();">see all {{ doc.author_names|length }}</a></div>
+          {% endif %}
+      {% endfor %}
+  </div></div>
+
+<div class='clear'></div>
+
+<div class='span6 box_abstract alpha' itemprop="description"><div class='box_inner'>
+  {% if doc.abstract %}
+  <div class='abstract'>
+    {{ doc.abstract }}
+  </div>
+  {% endif %}
+</div></div>
+
+<div class='span4 box_info'><div class='box_inner'>
+  {% if doc.ids.doi %}<strong>doi</strong> <a href='http://dx.doi.org/{{ doc.ids.doi }}'>{{ doc.ids.doi }}</a>{% endif %}<br/>
+  {% if doc.ids.url %}<strong>link</strong> <a href='{{ doc.ids.url }}'>{{ doc.ids.url|domain }}</a>{% endif %}<br/>
+  {#{% if doc.source_url or doc.source_urls %}<strong>from</strong> <a href='{{ doc|scraped_location }}'>{{ doc|scraped_location }}</a> by {{ doc.scraper_module }}{% endif %}#}<br/>
+</div></div>
+
+<div class='span4 box_share'><div class='box_inner'>
+  <div class="share-button g-plusone"></div>
+
+  <div class="share-button tweet">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>
+  </div>
+
+  <div class="share-button fb-like" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false" data-action="like" data-colorscheme="light"></div>
+</div></div>
+
+</div>
+
+<div id="panes" class="span6">
+    {% for p in panes %}
+        <div class="accordion-group" data-pane-url="{{ p.url }}">
+            <div class="accordion-heading">
+                <a class="accordion-toggle"
+                    href="#collapse{{ forloop.counter }}">
+                    {{ p.name }}
+                    <i class="icon-chevron-right"></i>
+            </a>
+            </div>
+
+            <div id="collapse{{ forloop.counter }}"
+                style="display:none">
+                <div class="accordion-inner">
+                    Loading&hellip;
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}search/js/main.js"></script>
+
+<script type="text/javascript">
+// When the document has loaded start the show
+$(document).ready(function(e) {
+
+        $('#panes').on('click', ".accordion-heading", function(e) {
+            var cur = $(e.currentTarget);
+            // Set the little arrow to the right state
+            cur.find("i")
+                .toggleClass("icon-chevron-down", "icon-chevron-right");
+            // Open the pane and load the content
+            cur.next().toggle('slow', function() {
+                if ($(this).is(":visible")) {
+                    var par = cur.parent();
+                    akorn.load_pane(par.data('pane-url'), par);
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+<script type="text/javascript">
+// Google plus button
+window.___gcfg = {lang: 'en-GB'};
+(function() {
+    var po = document.createElement('script'); po.type =
+    'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(po, s);
+    })();
+
+// Tweet link
+
+// Facebook plugin
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
+{% endblock %}

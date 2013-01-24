@@ -1,0 +1,8 @@
+rabbitmq-server
+openssh-server
+openssh-client
+python-setuptools
+python-dev
+build-essential
+libxslt-dev
+couchdb

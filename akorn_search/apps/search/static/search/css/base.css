@@ -1,0 +1,337 @@
+a.brand:hover {
+    text-shadow: 0 0 10px #fff;
+    color: #fff;
+}
+
+.lead {
+    margin-top: 0.25em;
+}
+
+.flatpage {
+    margin-left: 3em !important;
+    margin-top: 2em;
+}
+.flatpage h2 {
+    margin-bottom: 0.5em;
+}
+
+.stream-item {
+    margin: 10px;
+    padding: 10px;
+}
+
+.navbar {
+    margin-bottom: 0px;
+}
+.navbar-inner {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+.container_12 {
+    margin-top:0;
+    padding-top:1em;
+}
+div.search {
+    padding-top: 2em;
+    border-left: 0.3em solid silver;
+    border-right: 0.3em solid silver;
+}
+
+#saved_searches {
+    margin-top: 2em;
+}
+
+#content {
+    margin: 0 auto;
+}
+
+.search ul.tagit{
+    float:left;
+    margin-left: 5% !important;
+}
+
+.tagit input { 
+    box-shadow: none;
+}
+
+#save_search {
+    margin-left: 1em;
+    margin-top: 0.2em;
+}
+
+#latest_articles {
+    margin-left: 0;
+}
+
+.tagit {
+    width: 80%;
+    margin: 0 auto !important;
+}
+
+#latest_articles h2 {
+    font-size:140%;
+    color:silver;
+    margin:1em 0;
+    padding:0;
+    line-height:1;
+    border-bottom: 0.15em solid silver;
+}
+
+#latest_articles a {
+    text-decoration: underline;
+}
+
+#latest_articles li {
+    padding-left: 2em;
+    list-style: none;
+    margin-bottom: 1em;
+}
+
+#latest_articles li p.abstract {
+    text-align: justify;
+}
+
+#latest_articles li h3 {
+    font-size:120%;
+}
+
+#latest_articles li span.original a{
+    color: #aaa;
+    font-size: 80%;
+}
+
+#latest_articles li span.journal {
+    font-style: italic;
+}
+
+#last_visit {
+    border-color: #aa0000 !important;
+    color:#aa0000 !important;
+}
+
+/* /doc/ page */
+
+.box_inner {
+  padding-left:15px;
+  padding-top:5px;
+}
+
+.alpha .box_inner {
+  padding-left:0;
+}
+
+.box_title {
+  margin-top:1em;
+}
+
+.box_title h1 a {
+  color:#08C;
+}
+
+.box_authors .author_name {
+  font-size:1.3em;
+  color:#336;
+  float:left;
+  margin-right:0.5em;
+}
+
+.box_authors .author_name_hidden {
+  display:none;
+}
+
+.box_authors .author_name_show_link {
+  cursor:pointer;
+}
+
+.box_abstract .abstract {
+  text-align:justify;
+  font-size:1.1em;
+  line-height:1.3em;
+  padding:10px;
+  border:1px solid #eee;
+  border-radius:5px;
+}
+
+.box_abstract .abstract h3 {
+  line-height:1em;
+  margin:0;
+  padding:0;
+}
+
+.box_date {
+  font-size:1.2em;
+  color:#AAA;
+}
+
+.box_date strong {
+  font-weight:normal;
+  color:#333;
+}
+
+.share-button {
+  display:inline;
+}
+
+.row-fluid [class*="span"] {
+  margin-left:0;
+}
+
+.row-fluid .box_inner h1 {
+  margin:0;
+}
+
+span.full {
+  color: #999;
+  font-size: 75%;
+  font-style: italic;
+  margin-left: 0.5em;
+}
+#saved_searches {
+    margin-left: 1em;
+}
+#saved_searches li a{
+    display: block;
+    width: 90%;
+}
+
+#saved_searches li div.tools{
+    position: relative;
+    top: 0.8em;
+    right: 10px;
+    float: right;
+}
+
+#panes {
+    margin-top: 1.5em;
+}
+
+#panes .accordion-heading i {
+    float: right;
+}
+
+#about h1, #index h1 {
+    font-size: 12em;
+    line-height: 100%;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+#about .header_row {
+    padding-top: 5em;
+}
+
+#about .text {
+    text-align: justify;
+    font-size: 1.25em;
+    line-height: 140%;
+    padding-top: 1em;
+}
+
+em {
+    color: #d68400;
+    font-weight: bold;
+    font-style: normal;
+}
+
+#index .header_row {
+    margin-top: 11em;
+}
+
+#index h1 {
+    margin-top: 0.5em;
+}
+
+#index .banner {
+    text-transform: uppercase;
+    margin-top: 2em;
+}
+
+#index .banner h2 {
+    font-size: 2.4em;
+    margin-bottom: 1em;
+}
+
+#index .banner a {
+    font-weight: bold;
+    font-style: normal;
+}
+
+#index .banner p, h2 {
+    width: 8em;
+    margin: 0 auto;
+    text-align: center;
+    font-style: italic;
+}
+
+.font1a {
+        font-family: 'Jacques Francois Shadow';
+        font-size: 70px;
+        font-weight: normal;
+        text-transform: uppercase;
+        font-style: normal;
+}
+
+.font1b {
+        font-family: 'Jacques Francois Shadow';
+        font-size: 31px;
+        padding-top: 20px;
+        font-weight: normal;
+}
+
+.font2a {
+        font-family: VT323;
+        font-size: 40px;
+        padding-top: 35px;
+        font-weight: normal;
+        font-style: normal;
+        text-transform: uppercase;
+}
+
+.font2b {
+        font-family: VT323;
+        font-size: 27px;
+        font-weight: normal;
+        text-transform: uppercase;
+}
+
+#recruitment .header_row {
+    margin: 3em auto;
+}
+
+#recruitment .header_row h2 {
+    padding: 0;
+    margin-bottom: 0.3em;
+    width: 100%;
+    text-align: center;
+}
+
+#recruitment .header_row p {
+    padding-top: 0;
+}
+
+#recruitment h3 {
+    color: #d68400;
+    font-size: 1.7em;
+    margin: 1.5em auto;
+}
+
+#recruitment h4 {
+    margin-top: 1.5em;
+}
+
+#recruitment .email {
+    text-align: center;
+    font-weight: bold;
+}
+
+#recruitment {
+    padding: 20px 0;
+    text-align: center;
+}
+
+#recruitment ul {
+    list-style-position: inside;
+}

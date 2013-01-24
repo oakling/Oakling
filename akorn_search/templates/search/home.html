@@ -1,0 +1,45 @@
+{% extends 'page.html' %}
+{% load search_filters %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}search/js/json2.js"></script>
+<script src="{{ STATIC_URL }}search/js/tag-it.js"></script>
+<script src="{{ STATIC_URL }}search/js/main.js"></script>
+{% if last_visit %}
+<script type="text/javascript">
+// TODO There is probably a better way to do this
+akorn.last_visit = "{{ last_visit|date:"c" }}";
+// When the document has loaded start the show
+$(document).ready(akorn.init);
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="span9 search">
+<form action="/search/" method="get" class="form-inline">
+    <input type="text" name="q" placeholder="Search" id="search"><button id="save_search" class="btn btn-primary" disabled="disabled" title="Save this search"><i class="icon-leaf icon-white"></i> Save</button>
+</form>
+<ul id="latest_articles" class="articles">
+</ul>
+</div>
+
+<div class="span3">
+<ul id="saved_searches" class="nav nav-tabs nav-stacked">
+    {% for q_id, q in saved_searches.items %}
+        {% spaceless %}
+        <li>
+        <div class="tools">
+            {% if q.count > 0 %}
+            <span class="badge badge-important">{{ q.count }}</span>
+            {% endif %}
+            <i data-queryid="{{ q_id }}" class="delete icon-trash"></i>
+        </div>
+        <a id="{{ q_id }}" data-query="{{ q.queries|to_json|escapejs }}">{{ q|short_label }}</a>
+        </li>
+        {% endspaceless %}
+    {% endfor %}
+</ul>
+</div>
+{% endblock %}

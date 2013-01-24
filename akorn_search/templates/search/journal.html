@@ -1,0 +1,40 @@
+{% extends 'page.html' %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}search/js/main.js"></script>
+<script type="text/javascript">
+// When the document has loaded start the show
+$(document).ready(function() {
+        var ak = akorn;
+        var query = "{{ journal.id }}";
+        ak.query = query;
+        ak.articles_container = $('#latest_articles');
+        ak.get_articles(20, undefined, query, true);
+        $(window).scroll(ak.throttle(function() {
+            ak.check_position();
+        }, 250));
+    });
+</script>
+{% endblock %}
+
+{% block content_class %}journal_page{% endblock %}
+{% block content %}
+
+<div class='span12 box_title alpha'><div class='box_inner'>
+  <h1>{{ journal.name }}</h1>
+</div></div>
+
+<div class='clear'></div>
+
+<div class='span8 box_date alpha'><div class='box_inner'>
+  Also known as: {% for alias in journal.aliases %}{{ alias }}{% if not forloop.last %}, {% endif %}{% endfor %}
+</div></div>
+
+<div class='span8 box_articles alpha'><div class='box_inner'>
+  <h3>Latest articles</h3>
+  <ul id='latest_articles' class='articles'>
+  </ul>
+</div></div>
+
+{% endblock %}

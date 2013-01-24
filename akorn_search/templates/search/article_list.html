@@ -1,0 +1,25 @@
+<meta itemprop="last_ids" content="{{ last_ids_json }}">
+{% for doc in docs %}
+<li id="{{ doc.docid }}" itemscope itemtype="http://schema.org/Article">
+<h3 itemprop="name">
+    <a href="{% url search:viewdoc doc.docid %}" title="{{ doc.title }}">{{ doc.title|truncatewords:12 }}</a>
+</h3>
+<p class="meta">
+    <meta itemprop="datePublished" content="{{ doc.date|date:"c" }}">
+    {% if doc.author_names %}
+    <span class="authors">
+    {% with author_count=doc.author_names|length %}
+    {% if author_count > 3 %}
+        {{ doc.author_names|slice:"2"|join:", " }} &hellip;
+        {{ doc.author_names|last }}
+    {% else %}
+        {{ doc.author_names|join:", " }}
+    {% endif %}
+    {% endwith %}</span>
+    {% endif %}
+    {% if doc.journal %}
+        — <span class="journal"><a href='{{ doc.source_urls.0 }}'>{{ doc.journal }}</a></span>
+    {% endif %}
+    </p>
+</li>
+{% endfor %}
