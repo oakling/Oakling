@@ -16,10 +16,11 @@ setup(name='akorn_search',
       url='',
       license='',
       packages=find_packages(exclude=['ez_setup']),
-      namespace_packages=[''],
+      namespace_packages=['akorn_search'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'setuptools',
       ],
       entry_points="""
       # -*- Entry points: -*-
