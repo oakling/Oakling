@@ -15,9 +15,9 @@ from couch import db_store, db_journals, db_scrapers
 
 #import lib.scrapers.journals.tasks as scraping_tasks
 #import lib.scrapers.journals.utils as scraping_utils
-from akorn_search import apps.api.views
+import apps.api.views
 
-from akorn_search.apps.panes.models import Pane
+from apps.panes.models import Pane
 
 # /api/save_search?user_id=<user_id>
 # /api/get_searches?user_id=<user_id>
