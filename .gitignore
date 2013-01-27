@@ -7,3 +7,5 @@ akorn_search.egg-info
 # Exclude Mac files
 .DS_Store
 
+*.py~
+
