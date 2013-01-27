@@ -128,7 +128,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'akorn_search.apps.search',
     'akorn_search.apps.api',
-    'akorn_search.apps.panes'
+    'akorn_search.apps.panes',
+    'akorn_search',
 )
 
 # A sample logging configuration. The only tangible logging
