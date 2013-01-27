@@ -1,6 +1,6 @@
 import unittest
 
-import scrape_pr, scrape_iop, scrape_nas, scrape_science, scrape_acs, scrape_arxiv
+import scrape_pr, scrape_iop, scrape_acs, scrape_arxiv
 import test_data
 
 class TestPhysRev(unittest.TestCase):
@@ -20,17 +20,17 @@ class TestIOP(unittest.TestCase):
 
     self.assertEqual(article, test_data.iop_1)
 
-class TestNAS(unittest.TestCase):
-  def test_pnas(self):
-    article = scrape_nas.scrape('http://www.pnas.org/content/109/10/E588.abstract')
+#class TestNAS(unittest.TestCase):
+#  def test_pnas(self):
+#    article = scrape_nas.scrape('http://www.pnas.org/content/109/10/E588.abstract')
+#
+#    self.assertEqual(article, test_data.pnas_1)
 
-    self.assertEqual(article, test_data.pnas_1)
-
-class TestScience(unittest.TestCase):
-  def test_science(self):
-    article = scrape_science.scrape('http://www.sciencemag.org/content/335/6073/1184')
-
-    self.assertEqual(article, test_data.science_1)
+#class TestScience(unittest.TestCase):
+#  def test_science(self):
+#    article = scrape_science.scrape('http://www.sciencemag.org/content/335/6073/1184')
+#
+#    self.assertEqual(article, test_data.science_1)
 
 class TestACS(unittest.TestCase):
   def test_molpharm(self):
