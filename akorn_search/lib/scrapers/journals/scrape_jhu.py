@@ -9,15 +9,20 @@ SCRAPER_DOMAINS = ['muse.jhu.edu',]
 class ScraperJhu(BaseScraper):
     """Scrape JHU for the American Journal of Mathematics"""
 
+    def scrape_journal(self, page_text=None):
+        """Scrape a html page which is an issue of the journal"""
+        if page_text is None:
+            return None
+        tree = html.fromstring(page_text)
+        attribute = tree.cssselect('div.current a')
+        current_issue_url = attribute[0].attrib['href']
+        return current_issue_url
+
     def scrape_issue(self, page_text=None):
         """Scrape a html page which is an issue of the journal"""
         if page_text is None:
             return None
         tree = html.fromstring(page_text)
-        name = 'current'
-        attribute = tree.cssselect('div.current a')
-        current_issue_url = attribute[0].attrib['href']
-        return current_issue_url
 
     def scrape_article(self, page_text=None):
         """Scrape a html page which is an issue of the journal"""

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><link media="all" href="jhu_ajm_issue_files/widget103.css" type="text/css" rel="stylesheet">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Project MUSE - American Journal of Mathematics</title>
+  <title>Project MUSE - American Journal of Mathematics-Volume 134, Number 6, December 2012</title>
   <link rel="search" type="application/opensearchdescription+xml" title="Search Project MUSE from your browser's Searchbar" href="http://muse.jhu.edu/plugins/muse-opensearch.xml">
               
   <script type="text/javascript" src="jhu_ajm_issue_files/installsearch.js"></script>
@@ -120,7 +120,7 @@
       }
   }	
 </script>
-<script type="text/javascript" src="jhu_ajm_issue_files/addthis_widget.js"></script><div id="_atssh" style="visibility: hidden; height: 1px; width: 1px; position: absolute; z-index: 100000;"><iframe src="jhu_ajm_issue_files/sh112.html" style="height: 1px; width: 1px; position: absolute; z-index: 100000; border: 0px none; left: 0px; top: 0px;" title="AddThis utility frame" id="_atssh831"></iframe></div><script src="jhu_ajm_issue_files/core063.js" type="text/javascript"></script>
+<script type="text/javascript" src="jhu_ajm_issue_files/addthis_widget.js"></script><div id="_atssh" style="visibility: hidden; height: 1px; width: 1px; position: absolute; z-index: 100000;"><iframe src="jhu_ajm_issue_files/sh112.html" style="height: 1px; width: 1px; position: absolute; z-index: 100000; border: 0px none; left: 0px; top: 0px;" title="AddThis utility frame" id="_atssh87"></iframe></div><script src="jhu_ajm_issue_files/core063.js" type="text/javascript"></script>
 
 
 
@@ -286,39 +286,6 @@
 </div><!--header -->
 
 
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#search_inside').ajaxStart(function() {
-      $(this).css({ opacity: 0.3 });
-      $('#searchProgress').show();
-    });
-
-    $('#search_inside').ajaxStop(function() {
-      $(this).css({ opacity: 1 });
-      $('#searchProgress').hide();
-    });
-  });
-</script>
-
-<script type="text/javascript">
-  $(function() {
-    var results = $('div.journal_results');
-    $('#search_inside_input').die('submit');
-    $('#search_inside_input').live('submit', function() {
-      $.ajax({
-        type: "POST",
-        url:  "/cgi-bin/search_inside.cgi",
-        data: { query : escape($('#search_journal').val()), entity_id : 5, type : 'journal'},
-        success: function(html){
-          results.html(html).fadeIn('slow');
-        }
-      });
-      return false;
-    });
-  });
-</script>
-
-
 <div class="site">
   <div class="site_block">
     <div class="breadcrumb">
@@ -329,1154 +296,409 @@
     
       <a href="http://muse.jhu.edu/browse/science_technology_and_mathematics/mathematics">Mathematics</a>
     
+     &gt; <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/">American Journal of Mathematics</a>
     </div>
  
     <div class="content">
-
-    <div class="cover">
-      <img id="cover_thumb" src="jhu_ajm_issue_files/ajmcoversmall.jpg" alt="">
-      <ul>
-       
-        <li><a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.1.html">Free Sample Issue</a></li>
-       
-        <!--<li><a href="">View Citation</a> </li>
-        <li><a href="">Save Citation</a> </li>-->
-      </ul>
-    </div><!-- cover -->
-  
     <div class="journal_info">
-      <!--<span id="journalhpaccessicon"><img src="/template2011/images/no_access.gif" alt="Access could not be determined" class="left" /></span>-->
-      <!--<h1 class="title">American Journal of Mathematics</h1>-->
-      <h1 class="title"><span class="access_no" id="title_access_icon" style=""></span>American Journal of Mathematics</h1>
-      <p class="designation_coverage">Vol. 118 (1996) through current issue</p>
 
-      <div class="description">
-      The oldest mathematics journal in the Western Hemisphere in 
-continuous publication, the American Journal of Mathematics  ranks as 
-one of the most respected and celebrated journals in its field.  
-Published since 1878, the Journal has earned its reputation by 
-presenting pioneering mathematical papers. It does not specialize, but 
-instead publishes articles of broad appeal covering the major areas of 
-contemporary mathematics. The American Journal of Mathematics  is used 
-as a basic reference work in academic libraries, both in the United 
-States and abroad.
-      </div>
-    </div>  <!-- journal info -->
   
-    <p class="publisher">Published by: <a href="http://muse.jhu.edu/browse/publishers/hopkins">The Johns Hopkins University Press</a></p>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#issue_cover_thumb').qtip({
+      content: {
+        text: "<div class='qtip-cover'><img src='/journals/american_journal_of_mathematics/cover/ajm.134.6_front.jpg' /> </div>",
+        title: {
+          text: 'Cover for Volume 134, Number 6, December 2012',
+          button: 'Close'
+        }, 
+      },
+      show: 'click',
+      hide: false,
+      position: {
+        my: 'topRight',
+        at: 'topLeft',
+        target: $('#issue_cover_thumb')
+      },
+      style: {
+        classes: 'ui-tooltip-dark ui-tooltip-rounded ui-tooltip-shadow qtip-journalcover'
+      }
+    });
+  });
+</script>
     
-     <div class="current">
-      Current Issue: <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.6.html">Volume 134, Number 6, December 2012</a>
-     </div>
-    
-
-    <div class="navigation_tab_bar">
-      <ul class="tabs">
-        <li class="active"><a href="#available_issues" title="Available Issues">Available Issues</a></li>
-        <li><a href="#search_inside" title="Search Inside">Search Journal </a></li>
-        <li><a href="#details" title="Details">Journal Information</a></li>
-      </ul>
-    </div><!-- navigation tab bar -->
-
-    <div style="display: block;" id="available_issues" class="tab_content">
-      <div id="issues_list">
-      
-      
-         
-	   
-
-           <h3>Volume 134, 2012</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.6.html">Volume 134, Number 6, December 2012</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.5.html">Volume 134, Number 5, October 2012</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.4.html">Volume 134, Number 4, August 2012</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.3.html">Volume 134, Number 3, June 2012</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.2.html">Volume 134, Number 2, April 2012</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    <span class="access"><img alt="Free Access" src="jhu_ajm_issue_files/free_access.gif"></span>
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.1.html">Volume 134, Number 1, February 2012</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 133, 2011</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.133.6.html">Volume 133, Number 6, December 2011</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.133.5.html">Volume 133, Number 5, October 2011</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.133.4.html">Volume 133, Number 4, August 2011</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.133.3.html">Volume 133, Number 3, June 2011</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.133.2.html">Volume 133, Number 2, April 2011</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.133.1.html">Volume 133, Number 1, February 2011</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 132, 2010</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.132.6.html">Volume 132, Number 6, December 2010</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.132.5.html">Volume 132, Number 5, October 2010</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.132.4.html">Volume 132, Number 4, August 2010</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.132.3.html">Volume 132, Number 3, June 2010</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.132.2.html">Volume 132, Number 2, April 2010</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.132.1.html">Volume 132, Number 1, February 2010</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 131, 2009</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.131.6.html">Volume 131, Number 6, December 2009</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.131.5.html">Volume 131, Number 5, October 2009</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.131.4.html">Volume 131, Number 4, August 2009</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.131.3.html">Volume 131, Number 3, June 2009</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.131.2.html">Volume 131, Number 2, April 2009</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.131.1.html">Volume 131, Number 1, February 2009</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 130, 2008</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.130.6.html">Volume 130, Number 6, December 2008</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.130.5.html">Volume 130, Number 5, October 2008</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.130.4.html">Volume 130, Number 4, August 2008</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.130.3.html">Volume 130, Number 3, June 2008</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm130.2.html">Volume 130, Number 2, April 2008</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm130.1.html">Volume 130, Number 1, February 2008</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 129, 2007</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm129.6.html">Volume 129, Number 6, December 2007</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm129.5.html">Volume 129, Number 5, October 2007</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm129.4.html">Volume 129, Number 4, August 2007</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm129.3.html">Volume 129, Number 3, June 2007</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm129.2.html">Volume 129, Number 2, April 2007</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm129.1.html">Volume 129, Number 1, February 2007</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 128, 2006</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm128.6.html">Volume 128, Number 6, December 2006</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm128.5.html">Volume 128, Number 5, October 2006</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm128.4.html">Volume 128, Number 4, August 2006</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm128.3.html">Volume 128, Number 3, June 2006</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm128.2.html">Volume 128, Number 2, April 2006</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm128.1.html">Volume 128, Number 1, February 2006</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 127, 2005</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm127.6.html">Volume 127, Number 6, December 2005</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm127.5.html">Volume 127, Number 5, October 2005</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm127.4.html">Volume 127, Number 4, August 2005</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm127.3.html">Volume 127, Number 3, June 2005</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm127.2.html">Volume 127, Number 2, April 2005</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm127.1.html">Volume 127, Number 1, February 2005</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 126, 2004</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm126.6.html">Volume 126, Number 6, December 2004</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm126.5.html">Volume 126, Number 5, October 2004</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm126.4.html">Volume 126, Number 4, August 2004</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm126.3.html">Volume 126, Number 3, June 2004</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm126.2.html">Volume 126, Number 2, April 2004</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm126.1.html">Volume 126, Number 1, February 2004</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 125, 2003</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm125.6.html">Volume 125, Number 6, December 2003</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm125.5.html">Volume 125, Number 5, October 2003</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm125.4.html">Volume 125, Number 4, August 2003</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm125.3.html">Volume 125, Number 3, June 2003</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm125.2.html">Volume 125, Number 2, April 2003</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm125.1.html">Volume 125, Number 1, February 2003</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 124, 2002</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm124.6.html">Volume 124, Number 6, December 2002</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm124.5.html">Volume 124, Number 5, October 2002</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm124.4.html">Volume 124, Number 4, August 2002</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm124.3.html">Volume 124, Number 3, June 2002</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm124.2.html">Volume 124, Number 2, April 2002</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm124.1.html">Volume 124, Number 1, February 2002</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 123, 2001</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm123.6.html">Volume 123, Number 6, December 2001</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm123.5.html">Volume 123, Number 5, October 2001</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm123.4.html">Volume 123, Number 4, August 2001</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm123.3.html">Volume 123, Number 3, June 2001</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm123.2.html">Volume 123, Number 2, April 2001</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm123.1.html">Volume 123, Number 1, February 2001</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 122, 2000</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm122.6.html">Volume 122, Number 6, December 2000</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm122.5.html">Volume 122, Number 5, October 2000</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm122.4.html">Volume 122, Number 4, August 2000</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm122.3.html">Volume 122, Number 3, June 2000</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm122.2.html">Volume 122, Number 2, April 2000</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm122.1.html">Volume 122, Number 1, February 2000</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 121, 1999</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm121.6.html">Volume 121, Number 6, December 1999</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm121.5.html">Volume 121, Number 5, October 1999</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm121.4.html">Volume 121, Number 4, August 1999</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm121.3.html">Volume 121, Number 3, June 1999</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm121.2.html">Volume 121, Number 2, April 1999</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm121.1.html">Volume 121, Number 1, February 1999</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 120, 1998</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm120.6.html">Volume 120, Number 6, December 1998</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm120.5.html">Volume 120, Number 5, October 1998</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm120.4.html">Volume 120, Number 4, August 1998</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm120.3.html">Volume 120, Number 3, June 1998</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm120.2.html">Volume 120, Number 2, April 1998</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm120.1.html">Volume 120, Number 1, February 1998</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 119, 1997</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm119.6.html">Volume 119, Number 6, December 1997</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm119.5.html">Volume 119, Number 5, October 1997</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm119.4.html">Volume 119, Number 4, August 1997</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm119.3.html">Volume 119, Number 3, June 1997</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm119.2.html">Volume 119, Number 2, April 1997</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm119.1.html">Volume 119, Number 1, February 1997</a>
-	   </li>
-	   
-      
-         
-	   
-           </ul>
-	   
-
-           <h3>Volume 118, 1996</h3>
-	   <ul>
-	   
-	 
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm118.6.html">Volume 118, Number 6, December 1996</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm118.5.html">Volume 118, Number 5, October 1996</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm118.4.html">Volume 118, Number 4, August 1996</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm118.3.html">Volume 118, Number 3, June 1996</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm118.2.html">Volume 118, Number 2, April 1996</a>
-	   </li>
-	   
-      
-         
-           <li>
-	    
-	    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm118.1.html">Volume 118, Number 1, February 1996</a>
-	   </li>
-	   
-            </ul>
-	   
-      
-      </div>
-    </div>
-  
+ 
    
-    <!-- search inside -->
-    <div style="display: none; opacity: 1;" id="search_inside" class="tab_content">
-      <br>
-      <form id="search_inside_input" method="post">
-        <fieldset class="search_inside" style="width:97%;">
-          <input value="journal" name="searchtype" type="hidden">
-          <input value="5" id="eid" type="hidden">
-          <label><input id="search_journal" name="search_term" value="Search Inside This Journal" type="text"></label>
-          <input class="go_journal" alt="Go" src="jhu_ajm_issue_files/search_go.gif" type="image">
-        </fieldset>
-      </form>
 
-      <div class="journal_results"></div>
-
-    </div>
-    <!-- search inside -->
- 
+    <div class="cover" style="width:180px;margin-right: 0px;">
+        <img id="issue_cover_thumb" src="jhu_ajm_issue_files/ajm.jpg" style="border: 1px solid; margin: 0 0 0 25px;">
+    <p style="font-size: 12px;padding-bottom: 0;margin-bottom: 5px; text-align: center;">From: <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics">American Journal of Mathematics</a></p>
+    <p style="width: 90%;font-size: 11px;padding-top: 0; margin-top: 0; margin-left: 10px;">
     
+      <a class="previssue" href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.5.html">Previous Issue</a>
+     </p>
+  </div>    
     
- 
-    
-    
-    
-    <!-- details -->
-    <div style="display: none;" id="details" class="tab_content">
-     
-	  
-	  
-      <p class="detail_info">
-       <span class="keys">E-ISSN</span>: 1080-6377<br>
-       <span class="keys">Print ISSN</span>: 0002-9327<br>
-      </p>
-
-
-
-     <h2 class="subscription_info_link"><a href="http://muse.jhu.edu/about/order/singles.html">Subscription Information</a></h2> 
-
-
-<h2 class="info_link"><a href="http://www.press.jhu.edu/journals/american_journal_of_mathematics/indexing.html"><span>Indexing/Abstracting</span></a></h2> 
-
-
-<h2 class="info_link"><a href="http://www.press.jhu.edu/journals/american_journal_of_mathematics/rate_card.html"><span>Advertising Information</span></a></h2> 
-
-
-<h2 class="info_link"><a href="http://www.press.jhu.edu/journals/bookstore_policies.html"><span>Booksellers Terms</span></a></h2> 
-
-
-<h2 class="info_link"><a href="http://www.press.jhu.edu/journals/american_journal_of_mathematics/guidelines.html"><span>Submission Guidelines</span></a></h2> 
-
-
-
-
-<h2 class="trigger"><a href="#">Automorphic Forms, Geometry, and Number Theory</a></h2> 
-
- <div style="display: none;" class="toggle_container">
-		<div class="block">
 
  
-<h3> A Volume in Honor of Joseph A. Shalika </h3>
-<p>
-<strong>Edited by:</strong>
-<br>
-Haruzo Hida, Dinakar Ramakrishnan, and Freydoon Shahidi
-</p>
-
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida_front_matter.pdf">FRONT MATTER AND PREFACE</a> (pages i - viii)<br>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida_front_matter.pdf">ESSAY</a> (pages ix - xii)<br>
-<strong>JOE SHALIKA AND THE FINE HALL DAYS, 1968-1971</strong><br>
-By Stephen Gelbart
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida01.pdf">CHAPTER 1</a>  (pages 1 - 38)<br>
-<strong>REPRESENTATION OF THE TWO BY TWO UNIMODULAR GROUP OVER LOCAL FIELDS</strong><br>
-By Joseph A. Shalika
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida02.pdf">CHAPTER 2</a> (pages 39 - 56)<br>
-<strong>THETA-10</strong><br>
-By Jeffrey Adams
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida03.pdf">CHAPTER 3</a> (pages 57 - 64)<br>
-<strong>DISCRETE SERIES CHARACTERS OF DIVISION ALGEBRAS AND GLn OVER A <i>p</i>-ADIC FIELD</strong><br>
-By Jeffrey D. Adler, Lawrence Corwin, and Paul J. Sally, Jr.
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida04.pdf">CHAPTER 4</a> (pages 65 - 82)<br>
-<strong>AUTOMORPHIC REPRESENTATIONS OF GSp(4)</strong><br>
-By James Arthur
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida05.pdf">CHAPTER 5</a> (pages 83 - 104)<br>
-<strong>ELLIPTIC CURVES, HILBERT MODULAR FORMS, AND THE HODGE CONJECTURE</strong><br>
-By Don Blasius
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida06.pdf">CHAPTER 6</a> (pages 105 - 130)<br>
-<strong>ON THE GLOBAL GROSS-PRASAD CONJECTURE FOR YOSHIDA LIFTINGS</strong><br>
-By Siegfried Böcherer, Masaaki Furusawa, and Rainer Schulze-Pillot
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida07.pdf">CHAPTER 7</a> (pages 131 - 162)<br>
-<strong>SUMS OF TWISTED <i>GL</i>(3) AUTOMORPHIC L-FUNCTIONS</strong><br>
-By Daniel Bump, Solomon Friedberg, and Jeffrey Hoffstein
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida08.pdf">CHAPTER 8</a> (pages 163 - 192)<br>
-<strong>HARMONIC ANALYSIS OF THE SCHWARTZ SPACE OF Γ\SL2(R)</strong><br>
-By Bill Casselman
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida09.pdf">CHAPTER 9</a> (pages 193 - 254)<br>
-<strong>EQUIDISTRIBUTION DES POINTS DE HECKE</strong><br>
-By Laurent Clozel and Emmanuel Ullmo
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida10.pdf">CHAPTER 10</a> (pages 255 - 278)<br>
-<strong>REMARKS ON RANKIN-SELBERG CONVOLUTIONS</strong><br>
-By James W. Cogdell and Ilya I. Piatetski-Shapiro
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida11.pdf">CHAPTER 11</a> (pages 279 - 312)<br>
-<strong>ON SOME GEOMETRIC CONSTRUCTIONS RELATED TO THETA CHARACTERISTICS</strong><br>
-By Benedict H. Gross and Joe Harris
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida12.pdf">CHAPTER 12</a> (pages 313 - 330)<br>
-<strong>CAN <i>p</i>-ADIC INTEGRALS BE COMPUTED?</strong><br>
-By Thomas C. Hales
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida13.pdf">CHAPTER 13</a> (pages 331 - 354)<br>
-<strong>OCCULT PERIOD INVARIANTS AND CRITICAL VALUES OF THE DEGREE FOUR L-FUNCTION OF <i>GSp</i>(4)</strong><br>
-By Michael Harris
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida14.pdf">CHAPTER 14</a> (pages 355 - 372)<br>
-<strong>ON A CONJECTURE OF JACQUET</strong><br>
-By Michael Harris and Stephen S. Kudla
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida15.pdf">CHAPTER 15</a> (pages 373 - 420)<br>
-<strong>INTEGRAL REPRESENTATION OF WHITTAKER FUNCTIONS</strong><br>
-By Hervé Jacquet
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida16.pdf">CHAPTER 16</a> (pages 421 - 456)<br>
-<strong>A SPECTRAL IDENTITY FOR SKEW SYMMETRIC MATRICES</strong><br>
-By Hervé Jacquet, Erez Lapid, and Stephen Rallis
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida17.pdf">CHAPTER 17</a> (pages 457 - 520)<br>
-<strong>GENERIC REPRESENTATIONS AND LOCAL LANGLANDS RECIPROCITY LAW FOR <i>p</i>-ADIC SO2n+1</strong><br>
-By Dihua Jiang and David Soudry
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida18.pdf">CHAPTER 18</a> (pages 521 - 560)<br>
-<strong>LARSEN'S ALTERNATIVE, MOMENTS, AND THE MONODROMY OF LEFSCHETZ PENCILS</strong><br>
-By Nicholas M. Katz
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida19.pdf">CHAPTER 19</a> (pages 561 - 572)<br>
-<strong>ON THE HOLOMORPHY OF CERTAIN <i>L</i>-FUNCTIONS</strong><br>
-By Henry H. Kim and Freydoon Shahidi
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida20.pdf">CHAPTER 20</a> (pages 573 - 598)<br>
-<strong>RICHARDSON VARIETIES IN THE GRASSMANNIAN</strong><br>
-By Victor Kreiman and V. Lakshmibai
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida21.pdf">CHAPTER 21</a> (pages 599 - 610)<br>
-<strong>TYPES AND COVERS FOR SL(2)</strong><br>
-By Philip Kutzko
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida22.pdf">CHAPTER 22</a> (pages 611 - 698)<br>
-<strong>BEYOND ENDOSCOPY</strong><br>
-By Robert P. Langlands
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida23.pdf">CHAPTER 23</a> (pages 699 - 710)<br>
-<strong>AN ANALOGUE OF A CONJECTURE OF MAZUR: A QUESTION IN
-DIOPHANTINE APPROXIMATION ON TORI</strong><br>
-By Dipendra Prasad
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida24.pdf">CHAPTER 24</a> (pages 711 - 718)<br>
-<strong>EXISTENCE OF RAMANUJAN PRIMES FOR GL(3)</strong><br>
-By Dinakar Ramakrishnan
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida25.pdf">CHAPTER 25</a> (pages 719  - 732)<br>
-<strong>NONVANISHING OF <i>L</i>-FUNCTIONS ON R(s) = 1</strong><br>
-By Peter Sarnak
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida26.pdf">CHAPTER 26</a> (pages 733  - 742)<br>
-<strong>RATIONAL POINTS AND AUTOMORPHIC FORMS</strong><br>
-By Joseph A. Shalika, Ramin Takloo-Bighash, and Yuri Tschinkel
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida27.pdf">CHAPTER 27</a> (pages 743 - 772)<br>
-<strong>HEIGHT ZETA FUNCTIONS OF EQUIVARIANT COMPACTIFICATIONS
-OF THE HEISENBERG GROUP</strong><br>
-By Joseph A. Shalika and Yuri Tschinkel
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida28.pdf">CHAPTER 28</a> (pages 773 - 802)<br>
-<strong>ON HIGHEST WHITTAKER MODELS AND INTEGRAL STRUCTURES</strong><br>
-By Marie-France Vignéras
-</p>
-<p>
-<a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/info/docs/hida_pdfs/hida29.pdf">CHAPTER 29</a> (pages 803 - 910)<br>
-<strong>REPRÉSENTATIONS DE RÉDUCTION UNIPOTENTE POUR SO(2N+1):
-QUELQUES CONSÉQUENCES D'UN ARTICLE DE LUSZTIG</strong><br>
-By Jean-Loup Waldspurger
-</p>
-
-</div></div> 
-
-
-<h2 class="info_link"><a href="http://www.jstor.org/action/showPublication?journalCode=amerjmath"><span>Back Issues on JSTOR</span></a></h2> 
-
-
-
-
-<h2 class="info_link"><a href="http://www.press.jhu.edu/journals/american_journal_of_mathematics/editorial.html"><span>Editorial Board</span></a></h2> 
-
-
-
-
-
-
-      <p>
+  
+  
+      <h1 class="title"><span class="access_no" id="title_access_icon" style=""></span>Volume 134, Number 6, December 2012</h1>
+      <h2 style="margin-bottom: 0; padding-bottom: 0;margin-top: 0; padding-top: 0;margin-left: 45px;"> Table of Contents</h2>     
       
-      </p>
-    </div>
-    <!-- details -->
+      
+   
+     
+      
+      
+      
+      
+    </div>  <!-- journal info -->
 
+     
+
+    <div style="display: block;" id="toc" class="tab_content">
+
+    
+     
+    
+ 
+  
+    <div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.index.html">
+    Index to Volume 134
+    </a>
+   </h4>
+  
+  pp. 1-4 | DOI: 10.1353/ajm.2012.0050
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.index.pdf">Download PDF (179 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<hr>
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.nishinou.html">
+    Disk counting on toric varieties via tropical curves
+    </a>
+   </h4>
+  
+  pp. 1423-1472 | DOI: 10.1353/ajm.2012.0043
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Takeo%20Nishinou">Takeo Nishinou</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.nishinou.pdf">Download PDF (443 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.globevnik.html">
+    Small families of complex lines for testing holomorphic extendibility
+    </a>
+   </h4>
+  
+  pp. 1473-1490 | DOI: 10.1353/ajm.2012.0045
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Josip%20Globevnik">Josip Globevnik</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.globevnik.pdf">Download PDF (237 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.gordon.html">
+    Catalan numbers for complex reflection groups
+    </a>
+   </h4>
+  
+  pp. 1491-1502 | DOI: 10.1353/ajm.2012.0047
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Iain%20G.%20Gordon">Iain G. Gordon</a>, 
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Stephen%20Griffeth">Stephen Griffeth</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.gordon.pdf">Download PDF (226 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.hsieh.html">
+    On the non-vanishing of Hecke <i>L</i>-values modulo <i>p</i>
+    </a>
+   </h4>
+  
+  pp. 1503-1539 | DOI: 10.1353/ajm.2012.0049
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Ming-Lun%20Hsieh">Ming-Lun Hsieh</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.hsieh.pdf">Download PDF (375 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.chernousov.html">
+    Torsors over the punctured affine line
+    </a>
+   </h4>
+  
+  pp. 1541-1583 | DOI: 10.1353/ajm.2012.0051
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=V.%20Chernousov">V. Chernousov</a>, 
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=P.%20Gille">P. Gille</a>, 
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=A.%20Pianzola">A. Pianzola</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.chernousov.pdf">Download PDF (382 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.ghomi.html">
+    Deformations of unbounded convex bodies and hypersurfaces
+    </a>
+   </h4>
+  
+  pp. 1585-1611 | DOI: 10.1353/ajm.2012.0041
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Mohammad%20Ghomi">Mohammad Ghomi</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.ghomi.pdf">Download PDF (357 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.kelmer.html">
+    Distribution of holonomy about closed geodesics in a product of hyperbolic planes
+    </a>
+   </h4>
+  
+  pp. 1613-1653 | DOI: 10.1353/ajm.2012.0042
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Dubi%20Kelmer">Dubi Kelmer</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.kelmer.pdf">Download PDF (378 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.sun.html">
+    Multiplicity one theorems for Fourier-Jacobi models
+    </a>
+   </h4>
+  
+  pp. 1655-1678 | DOI: 10.1353/ajm.2012.0044
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Binyong%20Sun">Binyong Sun</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.sun.pdf">Download PDF (246 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.moravec.html">
+    Unramified Brauer groups of finite and infinite groups
+    </a>
+   </h4>
+  
+  pp. 1679-1704 | DOI: 10.1353/ajm.2012.0046
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Primo%C5%BE%20Moravec">Primož Moravec</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.moravec.pdf">Download PDF (299 KB)</a>
+    
+  </div>
+
+</div>
+
+
+<div class="article">
+  
+   <h4 class="title">
+    
+      
+    
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/summary/v134/134.6.wooley.html">
+    Multiple recurrence and convergence along the primes
+    </a>
+   </h4>
+  
+  pp. 1705-1732 | DOI: 10.1353/ajm.2012.0048
+  
+   <div class="authors">
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Trevor%20D.%20Wooley">Trevor D. Wooley</a>, 
+    
+    <a href="http://muse.jhu.edu/results?section1=author&amp;search1=Tamar%20D.%20Ziegler">Tamar D. Ziegler</a>
+    
+   </div>
+  
+  <div class="format_icon">
+    
+    
+    <img class="format_icon" alt="pdf icon" src="jhu_ajm_issue_files/pdf.png">  
+    <a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/v134/134.6.wooley.pdf">Download PDF (277 KB)</a>
+    
+  </div>
+
+</div>
+
+
+    </div>
+ 
   </div><!-- content -->
 
   <!-- right nav -->
@@ -1484,8 +706,6 @@ By Jean-Loup Waldspurger
 
 <div class="right_nav">
   
-   
- 
 
   
   <div class="pub_image">
@@ -1515,7 +735,7 @@ By Jean-Loup Waldspurger
     <li class="email">Email a link to this page
       <form action="/email_link" class="email" id="recommend_email">
         <div>
-          <input name="eid" id="eid" value="5" type="hidden">
+          <input name="eid" id="eid" value="1161357" type="hidden">
           <input name="ajax" id="ajax" value="" type="hidden">
           <input name="email" id="email_address" type="text">
            <input onclick="formSubmit()" value="Send" class="send_email" type="submit">
@@ -1529,15 +749,15 @@ By Jean-Loup Waldspurger
   
 
   
-  	<ul class="addthis_toolbox addthis_default_style rightnav_links_share" addthis:url="http://muse.jhu.edu/journals/american_journal_of_mathematics" addthis:title="Project MUSE - American Journal of Mathematics" addthis:description="">
+  
+  	<ul class="addthis_toolbox addthis_default_style rightnav_links_share" addthis:url="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.6.html" addthis:title="Project MUSE - Volume 134, Number 6, December 2012 American Journal of Mathematics" addthis:description="American Journal of Mathematics Volume 134, Number 6, December 2012">
   
   
-  
-		<a title="Citeulike" target="_blank" href="http://www.addthis.com/bookmark.php?v=250&amp;winname=addthis&amp;pub=ra-4ecb5479089cb81a&amp;source=tbx-250&amp;lng=en-GB&amp;s=citeulike&amp;u508=1&amp;url=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics&amp;title=Project%20MUSE%20-%20American%20Journal%20of%20Mathematics&amp;ate=AT-ra-4ecb5479089cb81a/-/-/51098e937b792f2d/2&amp;frommenu=1&amp;uid=51098e93cbf85e55&amp;trackurl=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2F&amp;ct=1&amp;pre=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2Fsummary%2Fv134%2F134.6.nishinou.html&amp;tt=0&amp;captcha_provider=nucaptcha" class="addthis_button_citeulike at300b"><span class=" at300bs at15nc at15t_citeulike"><span class="at_a11y">Share on citeulike</span></span></a>
+		<a title="Citeulike" target="_blank" href="http://www.addthis.com/bookmark.php?v=250&amp;winname=addthis&amp;pub=ra-4ecb5479089cb81a&amp;source=tbx-250&amp;lng=en-GB&amp;s=citeulike&amp;u508=1&amp;url=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2Ftoc%2Fajm.134.6.html&amp;title=Project%20MUSE%20-%20Volume%20134%2C%20Number%206%2C%20December%202012%20American%20Journal%20of%20Mathematics&amp;ate=AT-ra-4ecb5479089cb81a/-/-/5109ad2a68e459ba/2&amp;frommenu=1&amp;uid=5109ad2a9bb38e8a&amp;description=American%20Journal%20of%20Mathematics%20Volume%20134%2C%20Number%206%2C%20December%202012&amp;ct=1&amp;pre=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2F&amp;tt=0&amp;captcha_provider=nucaptcha" class="addthis_button_citeulike at300b"><span class=" at300bs at15nc at15t_citeulike"><span class="at_a11y">Share on citeulike</span></span></a>
 		<a href="#" title="Facebook" class="addthis_button_facebook at300b"><span class="at16nc at300bs at15nc at15t_facebook at16t_facebook"><span class="at_a11y">Share on facebook</span></span></a>
-		<a title="Delicious" target="_blank" href="http://www.addthis.com/bookmark.php?v=250&amp;winname=addthis&amp;pub=ra-4ecb5479089cb81a&amp;source=tbx-250&amp;lng=en-GB&amp;s=delicious&amp;u508=1&amp;url=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics&amp;title=Project%20MUSE%20-%20American%20Journal%20of%20Mathematics&amp;ate=AT-ra-4ecb5479089cb81a/-/-/51098e937b792f2d/3&amp;frommenu=1&amp;uid=51098e9373e0acf6&amp;ct=1&amp;pre=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2Fsummary%2Fv134%2F134.6.nishinou.html&amp;tt=0&amp;captcha_provider=nucaptcha" class="addthis_button_delicious at300b"><span class="at16nc at300bs at15nc at15t_delicious at16t_delicious"><span class="at_a11y">Share on delicious</span></span></a> 
+		<a title="Delicious" target="_blank" href="http://www.addthis.com/bookmark.php?v=250&amp;winname=addthis&amp;pub=ra-4ecb5479089cb81a&amp;source=tbx-250&amp;lng=en-GB&amp;s=delicious&amp;u508=1&amp;url=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2Ftoc%2Fajm.134.6.html&amp;title=Project%20MUSE%20-%20Volume%20134%2C%20Number%206%2C%20December%202012%20American%20Journal%20of%20Mathematics&amp;ate=AT-ra-4ecb5479089cb81a/-/-/5109ad2a68e459ba/3&amp;frommenu=1&amp;uid=5109ad2ad1cc077e&amp;description=American%20Journal%20of%20Mathematics%20Volume%20134%2C%20Number%206%2C%20December%202012&amp;ct=1&amp;pre=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2F&amp;tt=0&amp;captcha_provider=nucaptcha" class="addthis_button_delicious at300b"><span class="at16nc at300bs at15nc at15t_delicious at16t_delicious"><span class="at_a11y">Share on delicious</span></span></a> 
 		<a href="#" title="Tweet" class="addthis_button_twitter at300b" tw:screen_name="ProjectMUSE"><span class="at16nc at300bs at15nc at15t_twitter at16t_twitter"><span class="at_a11y">Share on twitter</span></span></a> 
-		<a title="Google" target="_blank" href="http://www.addthis.com/bookmark.php?v=250&amp;winname=addthis&amp;pub=ra-4ecb5479089cb81a&amp;source=tbx-250&amp;lng=en-GB&amp;s=google&amp;u508=1&amp;url=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics&amp;title=Project%20MUSE%20-%20American%20Journal%20of%20Mathematics&amp;ate=AT-ra-4ecb5479089cb81a/-/-/51098e937b792f2d/4&amp;frommenu=1&amp;uid=51098e936ea59664&amp;ct=1&amp;pre=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2Fsummary%2Fv134%2F134.6.nishinou.html&amp;tt=0&amp;captcha_provider=nucaptcha" class="addthis_button_google at300b"><span class="at16nc at300bs at15nc at15t_google at16t_google"><span class="at_a11y">Share on google</span></span></a> 
+		<a title="Google" target="_blank" href="http://www.addthis.com/bookmark.php?v=250&amp;winname=addthis&amp;pub=ra-4ecb5479089cb81a&amp;source=tbx-250&amp;lng=en-GB&amp;s=google&amp;u508=1&amp;url=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2Ftoc%2Fajm.134.6.html&amp;title=Project%20MUSE%20-%20Volume%20134%2C%20Number%206%2C%20December%202012%20American%20Journal%20of%20Mathematics&amp;ate=AT-ra-4ecb5479089cb81a/-/-/5109ad2a68e459ba/4&amp;frommenu=1&amp;uid=5109ad2aae6a5959&amp;description=American%20Journal%20of%20Mathematics%20Volume%20134%2C%20Number%206%2C%20December%202012&amp;ct=1&amp;pre=http%3A%2F%2Fmuse.jhu.edu%2Fjournals%2Famerican_journal_of_mathematics%2F&amp;tt=0&amp;captcha_provider=nucaptcha" class="addthis_button_google at300b"><span class="at16nc at300bs at15nc at15t_google at16t_google"><span class="at_a11y">Share on google</span></span></a> 
 		<a href="http://www.addthis.com/bookmark.php?v=250&amp;pubid=xa-4ecac55a1fd58a05" class="addthis_button_compact at300m"><span class="at16nc at300bs at15nc at15t_compact at16t_compact"><span class="at_a11y">More Sharing Services</span></span></a>
 
    
@@ -1559,17 +779,6 @@ By Jean-Loup Waldspurger
 
  
  
-  
-  <h2 class="rightnav box-nav" id="freq_downloaded"><a title="Frequently Downloaded" id="freq_downloaded" href="#">Frequently Downloaded</a></h2>
-  <ul class="rightnav" id="freq_downloaded-box">
-    
-    <li><a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.134.6.html">Disk counting on toric varieties via tropical curves</a></li>
-    
-    <li><a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm.131.3.html">Restricted volumes and base loci of linear series</a></li>
-    
-    <li><a href="http://muse.jhu.edu/journals/american_journal_of_mathematics/toc/ajm120.5.html">Endpoint Strichartz estimates</a></li>
-    
-  </ul>
   
 
   
