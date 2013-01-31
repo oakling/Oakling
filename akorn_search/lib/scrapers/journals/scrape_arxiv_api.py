@@ -6,7 +6,7 @@ import re
 
 from lib.scrapers.journals.classification import classify
 
-SCRAPER_DOMAINS = ['www.arxiv.org',]
+SCRAPER_DOMAINS = ['www.arxiv.org','arxiv.org']
 
 def arxiv_id(url):
     return remove_vNumber(re.search('(?:abs|pdf)/(.*)', url).groups()[0])
