@@ -28,7 +28,7 @@ export PIP_VIRTUALENV_BASE=$WORKON_HOME
 ** $ sudo service couchdb start
 * Get a dump from the server and load it into your local couchdb
 ** $ workon akorn
-<<<<<<< HEAD
+** (akorn) $ fab load_dumps
 ** (akorn) $ couchdb-load --input=~/fulldump http://localhost:5984/store
 
 # Instructions to get full text search working, using couchdb-lucene
@@ -74,9 +74,6 @@ sudo /etc/init.d/couchdb restart
 # Then queries can be made like:
 http://127.0.0.1:5984/store/_fti/_design/lucene/by_title?q=quantum
 
-=======
-** (akorn) $ fab load_dumps
-
 == Deploying changes ==
 
 Once you have made and commited changes to your local repository, you
@@ -86,4 +83,3 @@ can deploy your changes to the servers using Fabric. It is in requirements.txt s
 ** (akorn) $ fab prepare_deploy
 * Pull in commits from shared repository, and restart the server
 ** (akorn) $ fab deploy
->>>>>>> cf5218285d601648e5a6cfd5fb4ccbc65c910255
