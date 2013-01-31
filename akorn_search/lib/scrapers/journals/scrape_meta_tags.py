@@ -64,8 +64,7 @@ def get_meta(names, tree):
     if attributes:
         return attributes[0]
 
-def scrape(abstract_url):
-    tree, urls, page_text = get_tree(abstract_url) 
+def scrape_tree(tree, urls, page_text):
 
     article = {}
     article['source_urls'] = [uri for _, uri in urls]
@@ -100,12 +99,19 @@ def scrape(abstract_url):
         article['date_published'] = time.mktime(date.timetuple())
         article['citation']['year'] = date.year
 
-    for field in NECESSARY_FIELDS:
+    return article
+
+def scrape(abstract_url):
+  tree, urls, page_text = get_tree(abstract_url) 
+
+  article = scrape_tree(tree, urls, page_text)
+
+  for field in NECESSARY_FIELDS:
         if field not in article or not article[field]:
             print field
             raise ScraperNotFound
-    return article
 
+  return article
 
 if __name__ == "__main__":
   print scrape(sys.argv[1])
