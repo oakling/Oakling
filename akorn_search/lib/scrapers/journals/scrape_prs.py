@@ -4,12 +4,10 @@ from utils import *
 
 #Current Journals:
 #Proceedings of the Royal Society A & B
-#Proceedings of the National Academy of Sciences
 
 
 SCRAPER_DOMAINS = ['rspb.royalsocietypublishing.org',
-                   'rspa.royalsocietypublishing.org',
-                   'www.pnas.org']
+                   'rspa.royalsocietypublishing.org']
 
 
 
@@ -26,11 +24,6 @@ Mathematical, Physical and Engineering Science' or\
 Biological Sciences':
 
         article['abstract'] = tree.xpath("//div[@class='section abstract']/p")[0].text_content()
-
-    #For P.L.O.S
-    if article['journal'] == 'Proceedings of the National Academy of Sciences':
-        article['abstract'] = tree.xpath("//div[@class='section abstract']/p")[0].text_content()
-
 
 
     return article
