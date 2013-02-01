@@ -33,7 +33,16 @@ def add_feed_items(feedhandler, feed_url):
 
         item_url = fix_url(handler['url'](item))
 
-        if not db_store.view('index/sources', key=item_url, include_docs='false').rows:
+        check_exists = db_store.view('index/sources', key=item_url, include_docs='false')
+
+        try:
+          check_exists.rows
+        except:
+          check_exists = db_store.view('index/sources', key=item_url, include_docs='false')
+
+        if not check_exists.rows:
+          print "Scraping", item_url
           scrape_journal.delay(item_url, base_article=base_article)
                              #handler['identifier'](item))
-
+        else:
+          print "Not scraping", item_url

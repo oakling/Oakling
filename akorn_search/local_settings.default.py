@@ -1,5 +1,5 @@
 COUCH_SERVER_ROOT='localhost:5984'
-COUCH_USERNAME='michael'
+COUCH_USERNAME=''
 COUCH_PASSWORD=''
 
 ####### Couch Forms & Couch DB Kit Settings #######
@@ -12,4 +12,5 @@ def get_server_url(server_root, username, password):
         return "http://%(server)s" % {"server": server_root }
 
 COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
+#COUCH_SERVER = "http://couchdb.private:5984"
 
