@@ -1,8 +1,8 @@
 from lxml import html
 
-from utils import get_meta
-from utils import get_meta_list
-from base import BaseScraper
+from lib.scrapers.journals.utils import get_meta
+from lib.scrapers.journals.utils import get_meta_list
+from lib.scrapers.journals.base import BaseScraper
 
 SCRAPER_DOMAINS = ['muse.jhu.edu',]
 
@@ -23,6 +23,14 @@ class ScraperJhu(BaseScraper):
         if page_text is None:
             return None
         tree = html.fromstring(page_text)
+        article_list = []
+        elements = tree.cssselect('div.article .title a')
+        for element in elements:
+             if element.text_content().strip()[:15] != 'Index to Volume':
+                 print len(article_list)
+                 print element.text_content().strip()[:15]
+                 article_list.append(element)
+        return article_list
 
     def scrape_article(self, page_text=None):
         """Scrape a html page which is an issue of the journal"""

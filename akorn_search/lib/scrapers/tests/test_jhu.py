@@ -2,8 +2,12 @@ import unittest
 import os
 
 from akorn_search.lib.scrapers.journals.scrape_jhu import ScraperJhu
+from akorn_search.lib.scrapers.journals.router import discover_scrapers
 
 class JhuScraperTest(unittest.TestCase):
+
+    def test_scraper_added(self):
+        scrapers = discover_scrapers()
 
     def test_journal(self):
         scraper = ScraperJhu()
@@ -19,6 +23,7 @@ class JhuScraperTest(unittest.TestCase):
         file = open(os.path.join(os.path.dirname(__file__), "data", "jhu_ajm_issue.html"))
         page_text = file.read()
         file.close()
+        article_list = scraper.scrape_issue(page_text)
 
     def test_article(self):
         scraper = ScraperJhu()
