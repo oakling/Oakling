@@ -1,8 +1,7 @@
 from django.db import models
 import couchdb
+from couch import db_store, db_journals
 
-db_store = couchdb.Server()['store']
-db_journals = couchdb.Server()['journals']
 
 class Article:
   pass

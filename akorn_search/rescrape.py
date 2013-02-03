@@ -1,9 +1,11 @@
 import lib.scrapers.journals.tasks
 import sys
 import couchdb
+import couch
 
 if len(sys.argv) == 2:
-  db = couchdb.Server()['store']
+  db = couch.store
+
   rows = db.view('rescrape/rescrape', key=sys.argv[1], include_docs=True).rows
 
   print len(rows)

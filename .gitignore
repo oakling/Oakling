@@ -1,5 +1,9 @@
+# ignore the sql db
+akorn_search/db
+
 # Exclude the egg info folder, as this is dynamically generated
 akorn_search.egg-info
+akorn_search/local_settings.py
 
 # Exclude compiled files
 *.pyc
