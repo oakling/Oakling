@@ -240,11 +240,21 @@ var akorn = {
         allowSpaces: true,
         placeholderText: "Search for journals...",
         // Called when a tag is added
-        onTagAdded: function(event, tag) {
+        afterTagAdded: function(event, ui) {
+            var tag = $(ui.tag);
             var ak = akorn;
-            var tag = $(tag[0]);
+            // Retrieve journal data
+            var tag_data = tag.data('search_string');
+            // If no tag defined look for current selection
+            if(!tag_data) {
+                tag_data = ak.current_selection;
+                // Attach journal data to tag
+                tag.data('search_string', tag_data);
+                // Unset the current selection
+                delete ak.current_selection;
+            }
             // Journal ID
-            var search = tag.data('search_string');
+            var search = tag_data
             var search_obj = {};
             search_obj['label'] = tag.find('span.tagit-label').text();
             search_obj['query'] = search;
@@ -258,11 +268,30 @@ var akorn = {
                 ak.query,
                 true);
         },
+        // Stop non autocomplete tags from being created
+        beforeTagAdded: function(event, ui) {
+            var initilized = ui.duringInitialization;
+            // Check if tag is being added by a user
+            if(initilized === undefined || initilized === false) {
+                // Get the text of the tag
+                var tag_value = ui.tag.find('.tagit-label').text();
+                // Check text against all choices
+                for(var i=0, choices_len = akorn.choices.length; i<choices_len; i++) {
+                    // If there is a match then add the tag
+                    if(tag_value===akorn.choices[i]['value']) {
+                        return true;
+                    }
+                }
+                // Otherwise stop the tag being added
+                return false;
+            }
+        },
         // Called when a tag is removed
-        onTagRemoved: function(event, tag) {
+        afterTagRemoved: function(event, ui) {
             var ak = akorn;
+            var tag = $(ui.tag);
             // Find the journal id
-            var search = $(tag[0]).data('search_string');
+            var search = tag.data('search_string');
             // Remove from stored query
             delete ak.query[search];
             // Refresh the articles list
@@ -281,31 +310,37 @@ var akorn = {
             return [label,' <span class="full">', full, '</span>'].join('');
         },
         // Function to use for auto-completion
-        tagSource: function(search, showChoices) {
-            $.ajax({
-                url: "/api/journals_new",
-                data: {'term': search.term},
-                dateType: "json",
-                // TODO Copy and paste code, should be possible to improve
-                success: function(data) {
-                    var ak = akorn;
-                    var assigned = ak.search_box.tagit("assignedTags");
-                    var filtered = [];
-                    for (var i=0, dlen=data.length; i < dlen; i++) {
-                        full = data[i][0];
-                        val = data[i][1];
-                        query_val = data[i][2];
-                        if ($.inArray(val, assigned) == -1) {
-                            filtered.push({label: ak.search_config
-                                .make_label(val, search.term, full),
-                                value: val,
-                                search: query_val});
+        autocomplete: {
+            focus: function(e, ui) {
+                akorn.current_selection = ui.item['search'];
+            },
+            source: function(search, showChoices) {
+                $.ajax({
+                        url: "/api/journals_new",
+                        data: {'term': search.term},
+                        dateType: "json",
+                        // TODO Copy and paste code, should be possible to improve
+                        success: function(data) {
+                            var ak = akorn;
+                            var assigned = ak.search_box.tagit("assignedTags");
+                            var filtered = [];
+                            for (var i=0, dlen=data.length; i < dlen; i++) {
+                                full = data[i][0];
+                                val = data[i][1];
+                                query_val = data[i][2];
+                                if ($.inArray(val, assigned) == -1) {
+                                    filtered.push({label: ak.search_config
+                                        .make_label(val, search.term, full),
+                                        value: val,
+                                        search: query_val});
+                                }
+                            }
+                            akorn.choices = filtered;
+                            showChoices(filtered);
                         }
                     }
-                    akorn.choices = filtered;
-                    showChoices(filtered);
-                },
-            });
+                );
+            }
         },
     },
     populate_search_from_query: function(query_obj) {
@@ -314,12 +349,11 @@ var akorn = {
         aks.tagit('removeAll', false);
         // Create each in order
         for(keyword in query_obj) {
+            akorn.current_selection = $.trim(query_obj[keyword]['query']);
             // Add journal class, turn off the completion check and events
             aks.tagit('createTag',
                 $.trim(query_obj[keyword]['label']),
-                'journal',
-                false,
-                $.trim(query_obj[keyword]['query']));
+                'journal', true);
         }
         return this;
     },
