@@ -130,6 +130,8 @@ INSTALLED_APPS = (
     'akorn_search.apps.api',
     'akorn_search.apps.panes',
     'akorn_search',
+    'akorn.scrapers',
+    'akorn',
 )
 
 # A sample logging configuration. The only tangible logging

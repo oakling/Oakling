@@ -14,8 +14,8 @@ CELERY_RESULT_BACKEND = "amqp"
 #CELERY_RESULT_BACKEND = 'couchdb'
 
 CELERY_IMPORTS = (
-    "lib.scrapers.journals.tasks",
-    "lib.scrapers.feeds.tasks",
+    "akorn.scrapers.journals.tasks",
+    "akorn.scrapers.feeds.tasks",
     "lib.debug",
 )
 
@@ -28,7 +28,7 @@ CELERYBEAT_SCHEDULE = {
        "schedule": crontab(minute="*/15"),
     },
     "APS_feeds": {
-        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "task": "akorn.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=1, hour="15"),
         "args":("aps_feed",
                 ["http://feeds.aps.org/rss/recent/prl.xml",
@@ -42,14 +42,14 @@ CELERYBEAT_SCHEDULE = {
                )
     },
     "ACS_feeds": {
-        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "task": "akorn.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=1, hour="15"),
         "args":("acs_feed",
                 ["http://feeds.feedburner.com/acs/jacsat"],
                )
     },
     "IOP_feeds":{
-        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "task": "akorn.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=5, hour="12"),
         "args":("iop_feed",
                 [
@@ -108,7 +108,7 @@ CELERYBEAT_SCHEDULE = {
         )
     },
     "arxiv_feeds": {
-        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "task": "akorn.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=10, hour="0"),
         "args":("arxiv_feed",
                 ['http://export.arxiv.org/rss/astro-ph',
@@ -133,14 +133,14 @@ CELERYBEAT_SCHEDULE = {
                )
     },
     "Nature_feeds": {
-        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "task": "akorn.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=1, hour="*"),
         "args":("nature_feed",
                 ["http://feeds.nature.com/NatureLatestResearch"],
                )
     },
     "Wiley_feeds": {
-        "task": "lib.scrapers.feeds.tasks.fetch_feed",
+        "task": "akorn.scrapers.feeds.tasks.fetch_feed",
         "schedule": crontab(minute=5, hour="12"),
         "args":("wiley_feed",
                 ["feed://onlinelibrary.wiley.com/rss/journal/10.1111/(ISSN)1365-2966",
@@ -167,3 +167,4 @@ CELERYBEAT_SCHEDULE = {
                 )
         },
 }
+
