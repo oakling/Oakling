@@ -15,7 +15,7 @@ i = 0
 lenrows = len(rows)
 
 for row in rows:
-    if row['key'][0] == "lib.scrapers.journals.scrape_wiley" and row['key'][1] != None and row['value'] > 1:
+    if row['key'][0] == "akorn.scrapers.journals.scrape_wiley" and row['key'][1] != None and row['value'] > 1:
       source_rows = db.view('index/ids', key="doi:" + row['key'][1]).rows
 
       doc_ids = sorted(list(set([row2.id for row2 in source_rows])))
