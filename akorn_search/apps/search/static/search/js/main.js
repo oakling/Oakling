@@ -465,7 +465,35 @@ var akorn = {
         ak.save_search = save_search;
         // Activate the search box
         ak.search_box = $('#search');
+        ak.search_box_articles = $('#search_articles');
         ak.search_box.tagit(ak.search_config);
+        ak.search_box_articles.autocomplete({
+            source: function (req,add) {
+                var journals_tagged = ak.search_box.tagit("assignedTags");
+                console.log(journals_tagged);
+
+                var params = {};
+
+                if(journals_tagged !== undefined && journals_tagged) {
+                    params['journals_tagged'] = journals_tagged;
+                }
+
+                $.getJSON("/api/latest_articles_matching_keyword_and_journals?journals_tagged=" + journals_tagged, req, function (data) {
+                    var autocomplete_array = [];
+                    // process response
+                    $.each(data,function(i,val){
+                        autocomplete_array.push(val);
+                    });
+                    add(autocomplete_array);
+                });
+                
+                
+            },
+            select: function (e, ui) {
+                console.log('e = ' + e);
+                console.log('ui = ' + ui);
+            }
+        });
     },
     init: function() {
         var ak = akorn;

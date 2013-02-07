@@ -1,4 +1,5 @@
 import urllib
+import httplib2
 import time
 import uuid
 import re
@@ -8,12 +9,15 @@ import threading
 import itertools
 import couchdb
 import datetime
+import string
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
+
+http = httplib2.Http()
 
 from lib.search import citeulike, mendeley, arxiv
 
@@ -68,6 +72,64 @@ def del_saved_search(request):
     request.session.modified = True
     # Success but no content
     return HttpResponse(status=204)
+
+def latest_articles_matching_keyword_and_journals(request):
+	db = db_store
+	
+	# First want to identify the journals which have been tagged:
+	filters = []
+	if 'journals_tagged' in request.GET:
+		journal_name_string = request.GET['journals_tagged']
+		journal_names = journal_name_string.split(',')	# Separate out the different journals to filter by
+		for journal_name in journal_names:
+			filter = clean_journal(journal_name)
+			filters.append(filter)
+	else:
+		filter = None
+		
+	journal_ids = []
+
+	if not (len(filters[0]) == 0) :
+		for filter in filters:
+		
+			for doc in journal_doc_cache:
+				if 'name' not in doc:
+					continue
+		
+				for alias in doc['sorted_aliases']:
+					if filter is not None and filter in alias[0]:
+						journal_ids.append(doc.id)
+						break
+	
+	# Now for the requested keywords
+	keywords = request.GET.get('term')
+	
+	# Remove trailing spaces from the keywords
+	keywords = string.strip(keywords)
+	# We want the search to be an AND between all terms, so replace spaces in the keyword sting by the appropriate operator
+	keywords = string.replace(keywords, ' ', ' AND ')
+	# The last word may not be complete - add a wildcard character:
+	lucene_search_string = keywords + '*'
+	
+	# Deal with the case that there are no journals to be filtered by
+	if not (len(filters[0]) == 0) :		
+		journal_part_url = ' AND journalID:(' +  ' OR '.join(journal_ids) + ')'
+		lucene_search_string = lucene_search_string + journal_part_url
+	
+	autocomplete_lucene_url = 'http://127.0.0.1:5984/store/_fti/_design/lucene/by_title?q=' + urllib.quote(lucene_search_string)
+	
+	print autocomplete_lucene_url
+	
+	resp, content = http.request(autocomplete_lucene_url, 'GET')
+	
+	results = json.loads(content)['rows']
+	matches = []
+	for x in results:
+		matches.append(x['fields']['default'])
+	matches_json = json.dumps(matches)
+	# print('matches_json = ' + matches_json)
+	return HttpResponse(matches_json, 'application/json') 
+
 
 def latest(request, num):
     db = db_store
