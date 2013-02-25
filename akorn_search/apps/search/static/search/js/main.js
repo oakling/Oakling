@@ -48,11 +48,23 @@ var akorn = {
         // Stick a delay in to mitigate scrollbar glitches
         window.setTimeout('akorn.pause_updates = false', 400);
     },
-    make_query_string: function(query_obj) {
+    make_keyword_query: function(query_obj) {
     // Take a query object and return a string for use in get_articles
         queries = [];
         for(q in query_obj) {
-            queries.push(q);
+            if (query_obj[q]['type'] === 'keyword') {
+                queries.push(q);
+            }
+        }
+        return queries.join('+');
+    },
+    make_journal_query: function(query_obj) {
+    // Take a query object and return a string for use in get_articles
+        queries = [];
+        for(q in query_obj) {
+            if (query_obj[q]['type'] === 'journal') {
+                queries.push(q);
+            }
         }
         return queries.join('+');
     },
@@ -66,12 +78,18 @@ var akorn = {
         //      Function will switch from appending to replacing articles
         var params = {};
         var callback;
-
         if(article_id !== undefined && article_id) {
             params['last_ids'] = article_id;
         }
         if(query !== undefined && query) {
-            params['q'] = akorn.make_query_string(query);
+            var keyword_str = akorn.make_keyword_query(query);
+            if(keyword_str !== '') {
+                params['k'] = keyword_str;
+            }
+            var journal_str = akorn.make_journal_query(query);
+            if(journal_str !== '') {
+                params['j'] = journal_str;
+            }
         }
         if(clear !== undefined && clear) {
             callback = akorn.replace_articles;
@@ -79,7 +97,7 @@ var akorn = {
         else {
             callback = akorn.append_articles;
         }
-        $.get('/api/latest/'+num, params, callback, 'html');
+        $.get('/api/articles', params, callback, 'html');
     },
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
@@ -243,27 +261,35 @@ var akorn = {
         afterTagAdded: function(event, ui) {
             var tag = $(ui.tag);
             var ak = akorn;
+            // Initialise search object
+            var search_obj = {'type': 'journal'};
+            // Get the text content of the tag
+            var tag_label = tag.find('span.tagit-label').text();
             // Retrieve journal data
             var tag_data = tag.data('search_string');
+            // Check if it is marked as a journal
+            var journal_flag = tag.hasClass('journal');
+            // If not a journal, then it is a keyword
+            if(!journal_flag) {
+                tag_data = tag_label;
+                search_obj['type'] = 'keyword';
+            }
             // If no tag defined look for current selection
-            if(!tag_data) {
+            else if(!tag_data) {
                 tag_data = ak.current_selection;
                 // Attach journal data to tag
                 tag.data('search_string', tag_data);
                 // Unset the current selection
                 delete ak.current_selection;
             }
-            // Journal ID
-            var search = tag_data
-            var search_obj = {};
-            search_obj['label'] = tag.find('span.tagit-label').text();
-            search_obj['query'] = search;
+            search_obj['label'] = tag_label;
+            search_obj['query'] = tag_data;
             // Save search
-            ak.query[search] = search_obj;
+            ak.query[tag_data] = search_obj;
             // Enable save search button
             ak.save_search.removeAttr('disabled');
             // Refresh the list
-	    ak.get_articles(20,
+	        ak.get_articles(20,
                 undefined,
                 ak.query,
                 true);
@@ -276,22 +302,36 @@ var akorn = {
                 // Get the text of the tag
                 var tag_value = ui.tag.find('.tagit-label').text();
                 // Check text against all choices
-                for(var i=0, choices_len = akorn.choices.length; i<choices_len; i++) {
-                    // If there is a match then add the tag
-                    if(tag_value===akorn.choices[i]['value']) {
-                        return true;
+                try {
+                    for(var i=0, choices_len = akorn.choices.length; i<choices_len; i++) {
+                        // If there is a match then add the tag
+                        if(tag_value===akorn.choices[i]['value']) {
+                            // TODO Do something less stupid?
+                            $(ui.tag).addClass('journal');
+                            return true;
+                        }
                     }
                 }
-                // Otherwise stop the tag being added
-                return false;
+                catch (e) {
+                    // TypeError throw in choices does not exist
+                    // pass
+                }
             }
+            // Otherwise mark the tag as a keyword
+            $(ui.tag).addClass('keyword');
         },
         // Called when a tag is removed
         afterTagRemoved: function(event, ui) {
+            var search;
             var ak = akorn;
             var tag = $(ui.tag);
-            // Find the journal id
-            var search = tag.data('search_string');
+            if(tag.hasClass('journal')) {
+                // Find the journal id
+                search = tag.data('search_string');
+            }
+            else {
+                search = tag.find('.tagit-label').text();
+            }
             // Remove from stored query
             delete ak.query[search];
             // Refresh the articles list
@@ -465,35 +505,7 @@ var akorn = {
         ak.save_search = save_search;
         // Activate the search box
         ak.search_box = $('#search');
-        ak.search_box_articles = $('#search_articles');
         ak.search_box.tagit(ak.search_config);
-        ak.search_box_articles.autocomplete({
-            source: function (req,add) {
-                var journals_tagged = ak.search_box.tagit("assignedTags");
-                console.log(journals_tagged);
-
-                var params = {};
-
-                if(journals_tagged !== undefined && journals_tagged) {
-                    params['journals_tagged'] = journals_tagged;
-                }
-
-                $.getJSON("/api/latest_articles_matching_keyword_and_journals?journals_tagged=" + journals_tagged, req, function (data) {
-                    var autocomplete_array = [];
-                    // process response
-                    $.each(data,function(i,val){
-                        autocomplete_array.push(val);
-                    });
-                    add(autocomplete_array);
-                });
-                
-                
-            },
-            select: function (e, ui) {
-                console.log('e = ' + e);
-                console.log('ui = ' + ui);
-            }
-        });
     },
     init: function() {
         var ak = akorn;

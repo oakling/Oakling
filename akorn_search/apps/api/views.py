@@ -1,5 +1,3 @@
-import urllib
-import httplib2
 import time
 import uuid
 import re
@@ -10,18 +8,41 @@ import itertools
 import couchdb
 import datetime
 import string
+import requests
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
+from django.views.generic import View, TemplateView
 
-http = httplib2.Http()
 
 from lib.search import citeulike, mendeley, arxiv
 
 from couch import db_store, db_journals
+
+def get_journal_docs(db=None):
+  db = db_journals
+
+  journal_docs = list([db[doc_id] for doc_id in db])
+
+  for doc in journal_docs:
+    if 'aliases' in doc:
+      doc['sorted_aliases'] = sorted([(clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
+    else:
+      doc['sorted_aliases'] = []
+
+  return journal_docs
+
+def clean_journal(s):
+  # keep only alphanumeric characters for comparison purposes
+  try:
+    return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
+  except:
+    return None
+
+journal_doc_cache = get_journal_docs()
 
 @csrf_exempt
 def save_search(request):
@@ -73,62 +94,83 @@ def del_saved_search(request):
     # Success but no content
     return HttpResponse(status=204)
 
-def latest_articles_matching_keyword_and_journals(request):
-	db = db_store
-	
-	# First want to identify the journals which have been tagged:
-	filters = []
-	if 'journals_tagged' in request.GET:
-		journal_name_string = request.GET['journals_tagged']
-		journal_names = journal_name_string.split(',')	# Separate out the different journals to filter by
-		for journal_name in journal_names:
-			filter = clean_journal(journal_name)
-			filters.append(filter)
-	else:
-		filter = None
-		
-	journal_ids = []
 
-	if not (len(filters[0]) == 0) :
-		for filter in filters:
-		
-			for doc in journal_doc_cache:
-				if 'name' not in doc:
-					continue
-		
-				for alias in doc['sorted_aliases']:
-					if filter is not None and filter in alias[0]:
-						journal_ids.append(doc.id)
-						break
-	
-	# Now for the requested keywords
-	keywords = request.GET.get('term')
-	
-	# Remove trailing spaces from the keywords
-	keywords = string.strip(keywords)
-	# We want the search to be an AND between all terms, so replace spaces in the keyword sting by the appropriate operator
-	keywords = string.replace(keywords, ' ', ' AND ')
-	# The last word may not be complete - add a wildcard character:
-	lucene_search_string = keywords + '*'
-	
-	# Deal with the case that there are no journals to be filtered by
-	if not (len(filters[0]) == 0) :		
-		journal_part_url = ' AND journalID:(' +  ' OR '.join(journal_ids) + ')'
-		lucene_search_string = lucene_search_string + journal_part_url
-	
-	autocomplete_lucene_url = 'http://127.0.0.1:5984/store/_fti/_design/lucene/by_title?q=' + urllib.quote(lucene_search_string)
-	
-	print autocomplete_lucene_url
-	
-	resp, content = http.request(autocomplete_lucene_url, 'GET')
-	
-	results = json.loads(content)['rows']
-	matches = []
-	for x in results:
-		matches.append(x['fields']['default'])
-	matches_json = json.dumps(matches)
-	# print('matches_json = ' + matches_json)
-	return HttpResponse(matches_json, 'application/json') 
+class ArticlesView(TemplateView):
+    """
+    Takes a search query and responds with a list of articles as HTML
+    """
+    template_name = 'search/article_list.html'
+    lucene_url = settings.LUCENE_URL
+
+    def lucene_request(self, query):
+        options = {
+            'q': query,
+            'include_docs': 'true',
+            'limit': 10,
+            'stale': 'ok'
+            }
+        return requests.get(self.lucene_url, params=options).json()
+
+    def lucene_process(self, response):
+        return [x['doc'] for x in response['rows']]
+
+    def lucene_split_arg(self, arg):
+        try:
+            arg = arg.strip()
+            if not arg:
+                return []
+            return arg.split('+')
+        except AttributeError:
+            return []
+
+    def lucene_get_query(self):
+        keywords = self.lucene_split_arg(self.request.GET.get('k'))
+        journals = self.lucene_split_arg(self.request.GET.get('j'))
+        # AND between all keywords
+        # The last word may not be complete - add a wildcard character
+        keywords = ' AND '.join(keywords)+'*';
+        # Deal with the case that there are no journals to be filtered by
+        if journals:
+            keywords = ''.join(
+                [keywords,' AND journalID:(',' OR '.join(journals),')'])
+        return keywords
+
+    def lucene_search(self):
+        query = self.lucene_get_query()
+        resp = self.lucene_request(query)
+        return self.lucene_process(resp)
+
+    # TODO Behaviour of this method should be in scrapers/couch views
+    def process_docs(self, lucene_docs):
+        for d in lucene_docs:
+            # Cannot use _id inside a Django template
+            d['docid'] = d['_id']
+            # Process the timestamp to produce a usable datetime object
+            # TODO Need a reliable property to access for date
+            try:
+              if d.has_key('date_published') and d['date_published'] is not None:
+                  d['date'] = datetime.datetime.fromtimestamp(d['date_published'])
+              elif d.has_key('date_revised') and d['date_revised'] is not None:
+                  d['date'] = datetime.datetime.fromtimestamp(d['date_revised'])
+              elif d.has_key('date_received') and d['date_received'] is not None:
+                  d['date'] = datetime.datetime.fromtimestamp(d['date_received'])
+              else:
+                  d['date'] = datetime.datetime.now()
+            except TypeError:
+              d['date'] = datetime.datetime.now()
+
+            if 'citation' in d and 'journal' in d['citation']:
+              d['journal'] = d['citation']['journal']
+            elif 'categories' in d and 'arxiv' in d['categories']:
+              d['journal'] = d['categories']['arxiv'][0] + " (arxiv)"
+
+        return lucene_docs
+
+    def get_context_data(self, **kwargs):
+        docs = self.process_docs(self.lucene_search())
+        # Create the context structure
+        context = {'docs': docs}
+        return context
 
 
 def latest(request, num):
@@ -205,13 +247,6 @@ def latest(request, num):
 
     return render_to_response('search/article_list.html', {'docs': docs, 'last_ids_json': last_ids_json})
 
-def clean_journal(s):
-  # keep only alphanumeric characters for comparison purposes
-  try:
-    return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
-  except:
-    return None
-
 def journals(request):
   db = db_store
  
@@ -225,21 +260,6 @@ def journals(request):
   return HttpResponse(json.dumps([row.key for row in rows if filter is None or
                                   filter in clean_journal(row.key)]),
                       content_type='application/json')
-
-def get_journal_docs(db=None):
-  db = db_journals
-
-  journal_docs = list([db[doc_id] for doc_id in db])
-
-  for doc in journal_docs:
-    if 'aliases' in doc:
-      doc['sorted_aliases'] = sorted([(clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
-    else:
-      doc['sorted_aliases'] = []
-
-  return journal_docs
-
-journal_doc_cache = get_journal_docs()
 
 def journals_new(request):
   if 'term' in request.GET:

@@ -36,7 +36,7 @@ export PIP_VIRTUALENV_BASE=$WORKON_HOME
 # Get Maven, necessary for the build
 sudo apt-get install git-core maven2
 # lucene needs a newer version of java, get it:
-sudo add-apt-repository pap:webupd8team/java
+sudo add-apt-repository ppa:webupd8team/java
 sudo apt-get update
 sudo apt-get install oracle-java7-installer
 # This will bring up an installer, just select OK a couple times
@@ -60,13 +60,19 @@ _fti = {couch_httpd_external, handle_external_req, <<"fti">>}
 # Select the database (store), select "design documents" in the drop down. Create a document and name it "_design/lucene". Add a field "fulltext" to the document, an example to index all document titles:
 
 {
-"by_title": {
-"index": "function(doc) { var ret = new Document(); ret.add(doc.title); return ret }"
-}
+    "by_title": {
+        "index": "function(doc) { var ret=new Document(); ret.add(doc.title,
+            {'store':'yes'});
+            ret.add(doc.journal_id, {'field':'journalID'}); return ret; }"
+    },
+    "by_journal_id": {
+        "index": "function(doc) { var ret=new Document();
+            ret.add(doc.journal_id); return ret; }"
+    }
 }
 
 # Make sure the doc is saved. Might also need to restart the database:
-sudo /etc/init.d/couchdb restart
+sudo service couchdb restart
 
 # Then run lucene from
 /path/to/couchdb/lucene/target/couchdb-lucene*/bin/run
