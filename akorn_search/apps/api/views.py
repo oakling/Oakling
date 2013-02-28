@@ -22,6 +22,10 @@ from lib.search import citeulike, mendeley, arxiv
 
 from couch import db_store, db_journals
 
+class BadRequest(Exception):
+    pass
+
+
 def get_journal_docs(db=None):
   db = db_journals
 
@@ -126,6 +130,8 @@ class ArticlesView(TemplateView):
     def lucene_get_query(self):
         keywords = self.lucene_split_arg(self.request.GET.get('k'))
         journals = self.lucene_split_arg(self.request.GET.get('j'))
+        if not keywords and not journals:
+            raise BadRequest()
         # AND between all keywords
         # The last word may not be complete - add a wildcard character
         keywords = ' AND '.join(keywords)+'*';
@@ -171,6 +177,15 @@ class ArticlesView(TemplateView):
         # Create the context structure
         context = {'docs': docs}
         return context
+
+    def get(self, *args, **kwargs):
+        """
+        Returns the appropriate HttpResponse
+        """
+        try:
+            return super(ArticlesView, self).get(*args, **kwargs)
+        except BadRequest as e:
+            return HttpResponse(e.message, status=400)
 
 
 def latest(request, num):
