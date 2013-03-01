@@ -51,13 +51,13 @@ $(document).ready(akorn.init);
   <table class='scrapers_table'>
   <thead>
   <tr>
-    <th>Module</th><th>Domain</th><th>Num docs</th><th>Num to rescrape</th>
+    <th>Name</th><th>Module</th><th>Num docs</th><th>Num to rescrape</th>
   </tr>
   </thead>
   {% for scraper in scrapers %}
     <tr class="table-row table-row-{{ forloop.counter0|divisibleby:'2' }}">
+      <td>{{ scraper.name }}</td>
       <td>{{ scraper.module }}</td>
-      <td>{{ scraper.domain }}</td>
       <td>{{ scraper.num_docs }}</td>
       <td>{{ scraper.num_rescrape }}</td>
     </tr>

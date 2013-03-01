@@ -322,15 +322,41 @@ def backend_journal(request, journal_id):
                             context_instance=RequestContext(request))
 
 def backend_scrapers(request):
-  db_docs = db_store
+    # TODO: Rewrite to use couchdb views --- currently *very* slow
+    db_docs = db_store
 
-  scrapers = [db_scrapers[doc_id] for doc_id in db_scrapers if not doc_id.startswith('_design/')]
-  scrapers.append({'name': 'Default', 'module': 'akorn.scrapers.journals.scrape_meta_tags'})
-  scrapers.append({'name': 'No given scraper module', 'module': None})
+    scrapers = {}
 
-  for scraper in scrapers:
-    scraper['num_docs'] = len(db_docs.view('rescrape/scraper', key=scraper['module'], include_docs=False).rows)
-    scraper['num_rescrape'] = len(db_docs.view('rescrape/rescrape', key=scraper['module'], include_docs=False).rows)
+    scrapers['Unable to resolve'] = {'name': 'Scraper unresolved', 
+                                     'module': None, 
+                                     'num_rescrape': 0, 
+                                     'num_docs': 0}
+    scrapers['Other error'] = {'name': 'error', 
+                               'module': None, 
+                               'num_rescrape': 0, 
+                               'num_docs': 0}
 
-  return render_to_response('backend/scrapers.html', {'scrapers': scrapers,}, context_instance=RequestContext(request))
+    for row in db_docs.view('rescrape/rescrape', include_docs=False).rows:
+        article = db_docs[row.id]
+        if 'scraper_module' in article:
+            module = article['scraper_module']
+            scrapers.setdefault( module, 
+                                 { 'name':module.split('.')[-1], 
+                                   'module': module, 
+                                   'num_rescrape': 0, 
+                                   'num_docs': 0} )
+            scrapers[module]['num_rescrape'] += 1
+        else:
+            scrapers['Other error']['num_rescrape'] += 1
+
+    for key, details in scrapers.items():
+        scrapers[key]['num_docs'] = len( db_docs.view( 'rescrape/scraper', 
+                                                       key=details['module'], 
+                                                       include_docs=False ).rows )
+
+    scrapers = scrapers.values()
+
+    return render_to_response( 'backend/scrapers.html', 
+                               {'scrapers': scrapers,}, 
+                               context_instance=RequestContext(request) )
 
