@@ -322,37 +322,32 @@ def backend_journal(request, journal_id):
                             context_instance=RequestContext(request))
 
 def backend_scrapers(request):
-    # TODO: Rewrite to use couchdb views --- currently *very* slow
     db_docs = db_store
 
     scrapers = {}
 
-    scrapers['Unable to resolve'] = {'name': 'Scraper unresolved', 
+    scrapers['Unable to resolve'] = {'name': 'Scraper Unresolved', 
                                      'module': None, 
                                      'num_rescrape': 0, 
                                      'num_docs': 0}
-    scrapers['Other error'] = {'name': 'error', 
+    scrapers['Scraper Module Missing'] = {'name': 'Scraper Module Missing', 
                                'module': None, 
                                'num_rescrape': 0, 
                                'num_docs': 0}
 
-    for row in db_docs.view('rescrape/rescrape', include_docs=False).rows:
-        article = db_docs[row.id]
-        if 'scraper_module' in article:
-            module = article['scraper_module']
-            scrapers.setdefault( module, 
-                                 { 'name':module.split('.')[-1], 
-                                   'module': module, 
-                                   'num_rescrape': 0, 
-                                   'num_docs': 0} )
-            scrapers[module]['num_rescrape'] += 1
-        else:
-            scrapers['Other error']['num_rescrape'] += 1
+    for row in db_docs.view('rescrape/scraper_errors', group=True).rows:
+        module, error = row['key']
+        scrapers.setdefault(module, 
+                            { 'name': module.split('.')[-1],
+                              'module': module,
+                              'num_rescrape': 0,
+                              'num_docs': 0})
+        scrapers[module]['num_rescrape'] += row['value']
 
-    for key, details in scrapers.items():
-        scrapers[key]['num_docs'] = len( db_docs.view( 'rescrape/scraper', 
-                                                       key=details['module'], 
-                                                       include_docs=False ).rows )
+    for row in db_docs.view('rescrape/scraper_total_docs', group=True):
+        module = row['key']
+        if module in scrapers:
+            scrapers[module]['num_docs'] = row['value']
 
     scrapers = scrapers.values()
 
