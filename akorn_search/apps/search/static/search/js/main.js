@@ -78,6 +78,8 @@ var akorn = {
         //      Function will switch from appending to replacing articles
         var params = {};
         var callback;
+        var ak = akorn;
+
         if(article_id !== undefined && article_id) {
             params['last_ids'] = article_id;
         }
@@ -92,12 +94,14 @@ var akorn = {
             }
         }
         if(clear !== undefined && clear) {
-            callback = akorn.replace_articles;
+            callback = ak.replace_articles;
         }
         else {
-            callback = akorn.append_articles;
+            callback = ak.append_articles;
         }
         $.get('/api/articles', params, callback, 'html');
+        // Save the query state
+        ak.save_state();
     },
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
@@ -507,6 +511,29 @@ var akorn = {
         ak.search_box = $('#search');
         ak.search_box.tagit(ak.search_config);
     },
+    state: function() {
+        return {'query': akorn.query};
+    },
+    save_state: function() {
+        // We need to store the query and saved searches
+        // This is so we don't break the back button
+        history.replaceState(akorn.state(), "");
+    }, 
+    load_state: function(e) {
+        // Set the state using state passed by popstate event
+        var state = e.state;
+        // Check for state
+        if(!state) {
+            return;
+        }
+        // Use the query property to get articles
+        if(state.query !== undefined) {
+            akorn.get_articles(20,
+                undefined,
+                state.query,
+                true);
+        }
+    },
     init: function() {
         var ak = akorn;
         // Get the place to stick articles
@@ -522,6 +549,9 @@ var akorn = {
         $(window).scroll(ak.throttle(function() {
             ak.check_position();
         }, 250));
+
+        // Listen to window popstate events
+        $(window).on('popstate', ak.load_state);
     }
 };
 
