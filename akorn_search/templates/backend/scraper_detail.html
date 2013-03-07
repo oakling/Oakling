@@ -44,27 +44,7 @@ $(document).ready(akorn.init);
 
 {% block content %}
 <div class="span9 search">
-  <h2>Scraper summary</h2>
-  <table class='scrapers_table'>
-  <thead>
-  <tr>
-    <th>Name</th><th>Module</th><th>Num docs</th><th>Error</th><th>Num to rescrape</th>
-  </tr>
-  </thead>
-  {% for scraper in scrapers %}
-  {% for error in scraper.errors %}
-    <tr class="table-row">
-      {% if forloop.counter0 == 0%}
-      <td rowspan="{{scraper.error_type_count}}">{{scraper.name}}</td>
-      <td rowspan="{{scraper.error_type_count}}">{{scraper.module}}</td>
-      <td rowspan="{{scraper.error_type_count}}">{{scraper.num_docs}}</td>
-      {% endif %}
-      <td>{{error.exception}}</td>
-      <td>{{error.num_rescrape}}</td>
-    </tr>
-    {% endfor %}
-  {% endfor %}
-  </table>
+  <h2>{{ scraper_module }}</h2>
 </div>
 
 <div class="span3">

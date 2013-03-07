@@ -322,8 +322,6 @@ def backend_journal(request, journal_id):
                             context_instance=RequestContext(request))
 
 def backend_scrapers(request):
-    db_docs = db_store
-
     scrapers = {}
 
     scrapers['Unable to resolve'] = {'name': 'Scraper Unresolved', 
@@ -337,7 +335,7 @@ def backend_scrapers(request):
                                           'error_type_count': 0,
                                           'errors': []}
 
-    for row in db_docs.view('rescrape/scraper_errors', group=True).rows:
+    for row in db_store.view('rescrape/scraper_errors', group=True).rows:
         module, error = row['key']
         scrapers.setdefault(module, 
                             { 'name': module.split('.')[-1],
@@ -346,18 +344,21 @@ def backend_scrapers(request):
                               'error_type_count': 0,
                               'errors': []})
         scrapers[module]['error_type_count'] += 1
-        scrapers[module]['errors'].append({ 'error_text': error,
+        scrapers[module]['errors'].append({ 'exception': error,
                                        'num_rescrape': row['value'] })
 
-    for row in db_docs.view('rescrape/scraper_total_docs', group=True):
+    for row in db_store.view('rescrape/scraper_total_docs', group=True):
         module = row['key']
         if module in scrapers:
             scrapers[module]['num_docs'] = row['value']
 
     scrapers = scrapers.values()
-    print scrapers
 
     return render_to_response( 'backend/scrapers.html', 
                                {'scrapers': scrapers,}, 
                                context_instance=RequestContext(request) )
 
+def backend_scraper_detail(request, id):
+    return render_to_response( 'backend/scraper_detail.html',
+                               {'scraper_module': id,},
+                               context_instance=RequestContext(request) )
