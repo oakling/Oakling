@@ -328,21 +328,26 @@ def backend_scrapers(request):
 
     scrapers['Unable to resolve'] = {'name': 'Scraper Unresolved', 
                                      'module': None, 
-                                     'num_rescrape': 0, 
-                                     'num_docs': 0}
+                                     'num_docs': 0,
+                                     'error_type_count': 0,
+                                     'errors': []}
     scrapers['Scraper Module Missing'] = {'name': 'Scraper Module Missing', 
-                               'module': None, 
-                               'num_rescrape': 0, 
-                               'num_docs': 0}
+                                          'module': None, 
+                                          'num_docs': 0,
+                                          'error_type_count': 0,
+                                          'errors': []}
 
     for row in db_docs.view('rescrape/scraper_errors', group=True).rows:
         module, error = row['key']
         scrapers.setdefault(module, 
                             { 'name': module.split('.')[-1],
                               'module': module,
-                              'num_rescrape': 0,
-                              'num_docs': 0})
-        scrapers[module]['num_rescrape'] += row['value']
+                              'num_docs': 0,
+                              'error_type_count': 0,
+                              'errors': []})
+        scrapers[module]['error_type_count'] += 1
+        scrapers[module]['errors'].append({ 'error_text': error,
+                                       'num_rescrape': row['value'] })
 
     for row in db_docs.view('rescrape/scraper_total_docs', group=True):
         module = row['key']
@@ -350,6 +355,7 @@ def backend_scrapers(request):
             scrapers[module]['num_docs'] = row['value']
 
     scrapers = scrapers.values()
+    print scrapers
 
     return render_to_response( 'backend/scrapers.html', 
                                {'scrapers': scrapers,}, 
