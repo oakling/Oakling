@@ -55,9 +55,17 @@ $(document).ready(akorn.init);
   {% for error in scraper.errors %}
     <tr class="table-row">
       {% if forloop.counter0 == 0%}
-      <td rowspan="{{scraper.error_type_count}}">{{scraper.name}}</td>
-      <td rowspan="{{scraper.error_type_count}}">{{scraper.module}}</td>
-      <td rowspan="{{scraper.error_type_count}}">{{scraper.num_docs}}</td>
+      <td rowspan="{{scraper.error_type_count}}">
+        <a href="scraper_detail/{{scraper.module}}">
+        {{scraper.name}}
+        </a>
+      </td>
+      <td rowspan="{{scraper.error_type_count}}">
+        {{scraper.module}}
+      </td>
+      <td rowspan="{{scraper.error_type_count}}">
+        {{scraper.num_docs}}
+      </td>
       {% endif %}
       <td>{{error.exception}}</td>
       <td>{{error.num_rescrape}}</td>

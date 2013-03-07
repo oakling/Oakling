@@ -45,6 +45,35 @@ $(document).ready(akorn.init);
 {% block content %}
 <div class="span9 search">
   <h2>{{ scraper_module }}</h2>
+
+  <table class='scrapers_table'>
+  <thead>
+  <tr>
+    <th>Exception</th><th>Details</th>
+  </tr>
+  </thead>
+  {% for exception in exceptions %}
+  <tr class="table-row">
+    <td>{{exception.exception}}</td>
+    <td colspan="2">{{exception.num_errors}} errors</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+    <table id="{{exception.exception}}">
+      <th>Error text</th><th>Source URLs</th>
+      {% for error in exception.errors %}
+      <tr>
+        <td>{{error.error_text}}</td>
+        <td>{{error.source_urls}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    </td>
+  </tr>
+  {% endfor %}
+  </table>
+  
 </div>
 
 <div class="span3">

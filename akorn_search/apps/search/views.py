@@ -358,7 +358,22 @@ def backend_scrapers(request):
                                {'scrapers': scrapers,}, 
                                context_instance=RequestContext(request) )
 
-def backend_scraper_detail(request, id):
+def backend_scraper_detail(request, scraper_module):
+    exceptions = {}
+    for row in db_store.view('rescrape/rescrape', key=scraper_module, include_docs=True).rows:
+        doc = row.doc
+        exceptions.setdefault(doc['exception'], 
+                          {'exception': doc['exception'],
+                           'num_errors': 0,
+                           'errors': [],})
+        exceptions[doc['exception']]['num_errors'] += 1
+        exceptions[doc['exception']]['errors'].append(
+            { 'error_text': doc['error_text'],
+              'source_urls': doc['source_urls'], })
+
+    exceptions = exceptions.values()
+
     return render_to_response( 'backend/scraper_detail.html',
-                               {'scraper_module': id,},
+                               {'scraper_module': scraper_module,
+                                'exceptions': exceptions},
                                context_instance=RequestContext(request) )
