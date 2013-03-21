@@ -57,7 +57,7 @@ $(document).ready(akorn.init);
   {% for journal in journals %}
     <tr class="table-row table-row-{{ forloop.counter0|divisibleby:'2' }}">
       <td><input type='checkbox' value='{{ journal.id }}'/></td>
-      <td><a href='{% url search:backend_journal journal_id=journal.id %}'>{{ journal.name }}</a></td>
+      <td><a href="{% url 'search:backend_journal' journal_id=journal.id %}">{{ journal.name }}</a></td>
       <td>
         <ul>
           {% for alias in journal.aliases %}
