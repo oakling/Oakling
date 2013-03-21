@@ -130,16 +130,23 @@ class ArticlesView(TemplateView):
     def lucene_get_query(self):
         keywords = self.lucene_split_arg(self.request.GET.get('k'))
         journals = self.lucene_split_arg(self.request.GET.get('j'))
+        # Creating some empty strings
+        keywords_str = ''
+        journals_str = ''
+        # It is badness to not search for anything
         if not keywords and not journals:
             raise BadRequest()
-        # AND between all keywords
-        # The last word may not be complete - add a wildcard character
-        keywords = ' AND '.join(keywords)+'*';
+        if keywords:
+            # AND between all keywords
+            # The last word may not be complete - add a wildcard character
+            keywords_str = ' AND '.join(keywords)+'*';
         # Deal with the case that there are no journals to be filtered by
         if journals:
-            keywords = ''.join(
-                [keywords,' AND journalID:(',' OR '.join(journals),')'])
-        return keywords
+           journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])
+           # If there are keywords then AND the journals to them
+           if keywords:
+               journals_str = ' AND '+journals_str
+        return ''.join([keywords_str, journals_str])
 
     def lucene_search(self):
         query = self.lucene_get_query()
