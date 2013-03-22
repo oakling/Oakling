@@ -48,7 +48,7 @@ $(document).ready(akorn.init);
   <table class='scrapers_table'>
   <thead>
   <tr>
-    <th>Name</th><th>Module</th><th>Num docs</th><th>Error</th><th>Num to rescrape</th>
+    <th>Name</th><th>Module</th><th>Total docs</th><th>Error</th><th>Num to rescrape</th><th/>
   </tr>
   </thead>
   {% for scraper in scrapers %}
@@ -69,6 +69,14 @@ $(document).ready(akorn.init);
       {% endif %}
       <td>{{error.exception}}</td>
       <td>{{error.num_rescrape}}</td>
+      <td>
+        <form method="post" action="/backend/rescrape">{% csrf_token %}
+          <input type="hidden" name="source" value="main"/>
+          <input type="hidden" name="scraper_module" value="{{scraper.module}}"/>
+          <input type="hidden" name="exception" value="{{error.exception}}"/>
+          <button>rescrape</button>
+        </form>
+      </td>
     </tr>
     {% endfor %}
   {% endfor %}
