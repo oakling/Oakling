@@ -1,6 +1,8 @@
 // Namespace for akorn js
 var akorn = {
     query: {},
+    limit: 10,
+    skip: 0,
     // Storing set nice names for months
     month_names: [ "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December" ],
@@ -30,6 +32,8 @@ var akorn = {
         ak.add_date_lines();
         // Once we have finished adding, stop the pause on updates
         ak.unpause_updates();
+        // Increment the skip counter
+        ak.skip += ak.limit;
     },
     // Replaces the articles with a new set, rather than appending
     replace_articles: function(data) {
@@ -42,6 +46,8 @@ var akorn = {
         ak.add_date_lines();
         // Once we have finished adding, stop the pause on updates
         ak.unpause_updates();
+        // Increment the skip counter
+        ak.skip += ak.limit;
     },
     // Stop the scroll updates
     unpause_updates: function() {
@@ -69,20 +75,26 @@ var akorn = {
         return queries.join('+');
     },
     // Get a specified number of articles
-    get_articles: function(num, article_id, query, clear) {
-        // Optionally pass an article id as the 2nd argument
-        //      Function will return the articles after this article id
-        // Optionally pass a query string as the 3rd argument
-        //      Function will filter articles based on the query
-        // Optionally pass a flag as the 4th argument
+    get_articles: function(query, clear) {
+        // Optionally pass a flag as the 2nd argument
         //      Function will switch from appending to replacing articles
-        var params = {};
-        var callback;
         var ak = akorn;
+        var callback;
 
-        if(article_id !== undefined && article_id) {
-            params['last_ids'] = article_id;
+        if(clear !== undefined && clear) {
+            callback = ak.replace_articles;
+            // We are clearing, to reset the skip counter
+            ak.skip = 0;
         }
+        else {
+            callback = ak.append_articles;
+        }
+
+        var params = {
+            'skip': ak.skip,
+            'limit': ak.limit
+        };
+
         if(query !== undefined && query) {
             var keyword_str = akorn.make_keyword_query(query);
             if(keyword_str !== '') {
@@ -93,12 +105,6 @@ var akorn = {
                 params['j'] = journal_str;
             }
         }
-        if(clear !== undefined && clear) {
-            callback = ak.replace_articles;
-        }
-        else {
-            callback = ak.append_articles;
-        }
         $.get('/api/articles', params, callback, 'html');
         // Save the query state
         ak.save_state();
@@ -106,17 +112,11 @@ var akorn = {
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
             var ak = akorn;
-            // Get the ids of the last articles of each journal
-            var last_article = ak.articles_container
-                    .find('meta[itemprop="last_ids"]:last')
-                    .attr("content");
             // Get the last article for use later
             ak.prev_article = ak.articles_container
-                    .find('li:last-child');
-            // Get the current query, if set
-            var query = ak.query;
+                .find('li:last-child');
             // Get articles after the current last article
-            ak.get_articles(20, last_article, query);
+            ak.get_articles(ak.query);
     },
     insert_date_line: function(date_str, latest_article) {
         var content = 'Today';
@@ -265,6 +265,7 @@ var akorn = {
         afterTagAdded: function(event, ui) {
             var tag = $(ui.tag);
             var ak = akorn;
+            var initilized = ui.duringInitialization;
             // Initialise search object
             var search_obj = {'type': 'journal'};
             // Get the text content of the tag
@@ -292,11 +293,11 @@ var akorn = {
             ak.query[tag_data] = search_obj;
             // Enable save search button
             ak.save_search.removeAttr('disabled');
-            // Refresh the list
-	        ak.get_articles(20,
-                undefined,
-                ak.query,
-                true);
+            // Check if tag is being added by a user
+            // If it is then refresh the list
+            if(initilized === undefined || initilized === false) {
+	            ak.get_articles(ak.query, true);
+            }
         },
         // Stop non autocomplete tags from being created
         beforeTagAdded: function(event, ui) {
@@ -339,10 +340,7 @@ var akorn = {
             // Remove from stored query
             delete ak.query[search];
             // Refresh the articles list
-            ak.get_articles(20,
-                    undefined,
-                    ak.query,
-                    true);
+            ak.get_articles(ak.query, true);
         },
         _highlight: function(s, t) {
             var matcher = new RegExp("("+$.ui.autocomplete
@@ -392,12 +390,14 @@ var akorn = {
         // Clean the search box
         aks.tagit('removeAll', false);
         // Create each in order
-        for(keyword in query_obj) {
-            akorn.current_selection = $.trim(query_obj[keyword]['query']);
+        var bit_val;
+        for(bit in query_obj) {
+            bit_val = query_obj[bit];
+            akorn.current_selection = $.trim(bit_val['query']);
             // Add journal class, turn off the completion check and events
             aks.tagit('createTag',
-                $.trim(query_obj[keyword]['label']),
-                'journal', true);
+                $.trim(bit_val['label']),
+                bit_val['type'], true);
         }
         return this;
     },
@@ -424,10 +424,7 @@ var akorn = {
         // Change tags displayed in search box
         ak.populate_search_from_query(query);
         // Do a new query
-        ak.get_articles(20,
-                    undefined,
-                    query,
-                    true);
+        ak.get_articles(query, true);
         // Stop the event from propagating
         return false;
     },
@@ -528,10 +525,7 @@ var akorn = {
         }
         // Use the query property to get articles
         if(state.query !== undefined) {
-            akorn.get_articles(20,
-                undefined,
-                state.query,
-                true);
+            akorn.get_articles(state.query, true);
         }
     },
     init: function() {
@@ -540,7 +534,7 @@ var akorn = {
         // Set it as a static property to be accessible across instances
         ak.articles_container = $('#latest_articles');
         // Get initial articles
-        ak.get_articles(20);
+        ak.get_articles();
         // Activate search box
         ak.activate_search_box();
 

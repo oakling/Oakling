@@ -1,7 +1,8 @@
-import lib.scrapers.journals.tasks
 import sys
 import couchdb
 import couch
+
+from akorn.scrapers.journals import tasks
 
 if len(sys.argv) == 2:
   db = couch.store
@@ -22,11 +23,11 @@ if len(sys.argv) == 2:
 
     #lib.scrapers.journals.tasks.scrape_journal.delay(row.doc['source_url'], row.doc.id)
     if 'source_url' in row.doc:
-      lib.scrapers.journals.tasks.scrape_journal.delay(row.doc['source_url'], row.doc.id)
+      tasks.scrape_journal.delay(row.doc['source_url'], row.doc.id)
     if 'source_urls' in row.doc:
-      lib.scrapers.journals.tasks.scrape_journal.delay(row.doc['source_urls'][0], row.doc.id)
+      tasks.scrape_journal.delay(row.doc['source_urls'][0], row.doc.id)
     elif 'scraper_source' in row.doc:
-      lib.scrapers.journals.tasks.scrape_journal.delay(row.doc['scraper_source'], row.doc.id)
+      tasks.scrape_journal.delay(row.doc['scraper_source'], row.doc.id)
 else:
-  lib.scrapers.journals.tasks.rescrape_articles()
+  tasks.rescrape_articles()
 
