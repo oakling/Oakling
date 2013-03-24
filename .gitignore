@@ -5,6 +5,9 @@ akorn_search/db
 akorn_search.egg-info
 akorn_search/local_settings.py
 
+# Ignore the collectedstatic directory
+akorn_search/collectedstatic
+
 # Exclude compiled files
 *.pyc
 

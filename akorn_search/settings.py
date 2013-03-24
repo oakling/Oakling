@@ -167,7 +167,7 @@ LOGGING = {
 MENDELEY_CONSUMER_KEY='c03c2cb64ec7dc1522b71127085747ac04f2d516d'
 
 # Base URL for search engine
-LUCENE_URL = 'http://127.0.0.1:5984/store/_fti/_design/lucene/by_title'
+LUCENE_URL = 'http://couchdb.private:5984/store/_fti/_design/lucene/by_title'
 
 STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/')
 
