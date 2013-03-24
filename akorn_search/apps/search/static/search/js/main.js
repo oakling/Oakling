@@ -390,12 +390,14 @@ var akorn = {
         // Clean the search box
         aks.tagit('removeAll', false);
         // Create each in order
-        for(keyword in query_obj) {
-            akorn.current_selection = $.trim(query_obj[keyword]['query']);
+        var bit_val;
+        for(bit in query_obj) {
+            bit_val = query_obj[bit];
+            akorn.current_selection = $.trim(bit_val['query']);
             // Add journal class, turn off the completion check and events
             aks.tagit('createTag',
-                $.trim(query_obj[keyword]['label']),
-                'journal', true);
+                $.trim(bit_val['label']),
+                bit_val['type'], true);
         }
         return this;
     },
