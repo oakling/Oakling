@@ -76,7 +76,7 @@ var akorn = {
     },
     // Get a specified number of articles
     get_articles: function(query, clear) {
-        // Optionally pass a flag as the 4th argument
+        // Optionally pass a flag as the 2nd argument
         //      Function will switch from appending to replacing articles
         var ak = akorn;
         var callback;
@@ -265,6 +265,7 @@ var akorn = {
         afterTagAdded: function(event, ui) {
             var tag = $(ui.tag);
             var ak = akorn;
+            var initilized = ui.duringInitialization;
             // Initialise search object
             var search_obj = {'type': 'journal'};
             // Get the text content of the tag
@@ -292,8 +293,11 @@ var akorn = {
             ak.query[tag_data] = search_obj;
             // Enable save search button
             ak.save_search.removeAttr('disabled');
-            // Refresh the list
-	        ak.get_articles(ak.query, true);
+            // Check if tag is being added by a user
+            // If it is then refresh the list
+            if(initilized === undefined || initilized === false) {
+	            ak.get_articles(ak.query, true);
+            }
         },
         // Stop non autocomplete tags from being created
         beforeTagAdded: function(event, ui) {
