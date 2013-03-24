@@ -6,14 +6,14 @@
 <script src="{{ STATIC_URL }}search/js/json2.js"></script>
 <script src="{{ STATIC_URL }}search/js/tag-it.js"></script>
 <script src="{{ STATIC_URL }}search/js/main.js"></script>
-{% if last_visit %}
 <script type="text/javascript">
+{% if last_visit %}
 // TODO There is probably a better way to do this
 akorn.last_visit = "{{ last_visit|date:"c" }}";
+{% endif %}
 // When the document has loaded start the show
 $(document).ready(akorn.init);
 </script>
-{% endif %}
 {% endblock %}
 
 {% block content %}

@@ -12,7 +12,7 @@ results for {{ search_request }}
   {% for doc in docs %}
         <div class="row stream-item">
             {% if doc.uri %}
-              <p><a href='{{ doc.uri }}'>{{ doc.title }}</a></p>
+              <p><a href="{{ doc.uri }}">{{ doc.title }}</a></p>
             {% else %}
               <p>{{ doc.title }}</p>
             {% endif %}
@@ -29,7 +29,7 @@ results for {{ search_request }}
             {% if doc.ids.doi %}
               {{ doc.ids.doi }} - 
             {% endif %}
-            <a href='{% url viewdoc id=doc.docid %}'>{{ doc.docid }}</a>
+            <a href="{% url 'viewdoc' id=doc.docid %}">{{ doc.docid }}</a>
             - from {{ doc.api.name }}
         </div>
   {% endfor %}

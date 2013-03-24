@@ -325,7 +325,7 @@ def backend_scrapers(request):
   db_docs = db_store
 
   scrapers = [db_scrapers[doc_id] for doc_id in db_scrapers if not doc_id.startswith('_design/')]
-  scrapers.append({'name': 'Default', 'module': 'lib.scrapers.journals.scrape_meta_tags'})
+  scrapers.append({'name': 'Default', 'module': 'akorn.scrapers.journals.scrape_meta_tags'})
   scrapers.append({'name': 'No given scraper module', 'module': None})
 
   for scraper in scrapers:
