@@ -105,14 +105,24 @@ class ArticlesView(TemplateView):
     """
     template_name = 'search/article_list.html'
     lucene_url = settings.LUCENE_URL
+    max_limit = 50
 
-    def lucene_request(self, query):
+    def lucene_request(self, query, skip=None):
         options = {
             'q': query,
             'include_docs': 'true',
-            'limit': 10,
             'stale': 'ok'
             }
+        # Check if a limit has been specified
+        limit = int(self.request.GET.get('limit'))
+        if limit and limit < self.max_limit:
+            options['limit'] = limit
+        else:
+            options['limit'] = self.max_limit
+        # Check if a number of articles to skip has been specified
+        skip = self.request.GET.get('skip')
+        if skip:
+            options['skip'] = int(skip)
         return requests.get(self.lucene_url, params=options).json()
 
     def lucene_process(self, response):
@@ -180,6 +190,9 @@ class ArticlesView(TemplateView):
         return lucene_docs
 
     def get_context_data(self, **kwargs):
+        """
+        Return the context to the template
+        """
         docs = self.process_docs(self.lucene_search())
         # Create the context structure
         context = {'docs': docs}
