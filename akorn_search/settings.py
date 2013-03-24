@@ -165,6 +165,10 @@ LUCENE_URL = 'http://127.0.0.1:5984/store/_fti/_design/lucene/by_title'
 
 STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/')
 
+# Define the domains that Django can be served from (security measure)
+# This was added as a requirement by Django 1.5
+ALLOWED_HOSTS = ['akorn.org']
+
 DEBUG=True
 
 try:
