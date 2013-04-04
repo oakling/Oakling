@@ -1,4 +1,3 @@
-import urllib
 import time
 import uuid
 import re
@@ -8,16 +7,46 @@ import threading
 import itertools
 import couchdb
 import datetime
+import string
+import requests
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
+from django.views.generic import View, TemplateView
+
 
 from lib.search import citeulike, mendeley, arxiv
 
 from couch import db_store, db_journals
+
+class BadRequest(Exception):
+    pass
+
+
+def get_journal_docs(db=None):
+  db = db_journals
+
+  journal_docs = list([db[doc_id] for doc_id in db])
+
+  for doc in journal_docs:
+    if 'aliases' in doc:
+      doc['sorted_aliases'] = sorted([(clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
+    else:
+      doc['sorted_aliases'] = []
+
+  return journal_docs
+
+def clean_journal(s):
+  # keep only alphanumeric characters for comparison purposes
+  try:
+    return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
+  except:
+    return None
+
+journal_doc_cache = get_journal_docs()
 
 @csrf_exempt
 def save_search(request):
@@ -68,6 +97,116 @@ def del_saved_search(request):
     request.session.modified = True
     # Success but no content
     return HttpResponse(status=204)
+
+
+class ArticlesView(TemplateView):
+    """
+    Takes a search query and responds with a list of articles as HTML
+    """
+    template_name = 'search/article_list.html'
+    lucene_url = settings.LUCENE_URL
+    max_limit = 50
+
+    def lucene_request(self, query, skip=None):
+        options = {
+            'q': query,
+            'include_docs': 'true',
+            'stale': 'ok'
+            }
+        # Check if a limit has been specified
+        limit = int(self.request.GET.get('limit'))
+        if limit and limit < self.max_limit:
+            options['limit'] = limit
+        else:
+            options['limit'] = self.max_limit
+        # Check if a number of articles to skip has been specified
+        skip = self.request.GET.get('skip')
+        if skip:
+            options['skip'] = int(skip)
+        return requests.get(self.lucene_url, params=options).json()
+
+    def lucene_process(self, response):
+        return [x['doc'] for x in response['rows']]
+
+    def lucene_split_arg(self, arg):
+        try:
+            arg = arg.strip()
+            if not arg:
+                return []
+            return arg.split('+')
+        except AttributeError:
+            return []
+
+    def lucene_get_query(self):
+        keywords = self.lucene_split_arg(self.request.GET.get('k'))
+        journals = self.lucene_split_arg(self.request.GET.get('j'))
+        # Creating some empty strings
+        keywords_str = ''
+        journals_str = ''
+        # It is badness to not search for anything
+        if not keywords and not journals:
+            raise BadRequest()
+        if keywords:
+            # AND between all keywords
+            # The last word may not be complete - add a wildcard character
+            keywords_str = ' AND '.join(keywords)+'*';
+        # Deal with the case that there are no journals to be filtered by
+        if journals:
+           journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])
+           # If there are keywords then AND the journals to them
+           if keywords:
+               journals_str = ' AND '+journals_str
+        return ''.join([keywords_str, journals_str])
+
+    def lucene_search(self):
+        query = self.lucene_get_query()
+        resp = self.lucene_request(query)
+        return self.lucene_process(resp)
+
+    # TODO Behaviour of this method should be in scrapers/couch views
+    def process_docs(self, lucene_docs):
+        for d in lucene_docs:
+            # Cannot use _id inside a Django template
+            d['docid'] = d['_id']
+            # Process the timestamp to produce a usable datetime object
+            # TODO Need a reliable property to access for date
+            try:
+              if d.has_key('date_published') and d['date_published'] is not None:
+                  d['date'] = datetime.datetime.fromtimestamp(d['date_published'])
+              elif d.has_key('date_revised') and d['date_revised'] is not None:
+                  d['date'] = datetime.datetime.fromtimestamp(d['date_revised'])
+              elif d.has_key('date_received') and d['date_received'] is not None:
+                  d['date'] = datetime.datetime.fromtimestamp(d['date_received'])
+              else:
+                  d['date'] = datetime.datetime.now()
+            except TypeError:
+              d['date'] = datetime.datetime.now()
+
+            if 'citation' in d and 'journal' in d['citation']:
+              d['journal'] = d['citation']['journal']
+            elif 'categories' in d and 'arxiv' in d['categories']:
+              d['journal'] = d['categories']['arxiv'][0] + " (arxiv)"
+
+        return lucene_docs
+
+    def get_context_data(self, **kwargs):
+        """
+        Return the context to the template
+        """
+        docs = self.process_docs(self.lucene_search())
+        # Create the context structure
+        context = {'docs': docs}
+        return context
+
+    def get(self, *args, **kwargs):
+        """
+        Returns the appropriate HttpResponse
+        """
+        try:
+            return super(ArticlesView, self).get(*args, **kwargs)
+        except BadRequest as e:
+            return HttpResponse(e.message, status=400)
+
 
 def latest(request, num):
     db = db_store
@@ -143,13 +282,6 @@ def latest(request, num):
 
     return render_to_response('search/article_list.html', {'docs': docs, 'last_ids_json': last_ids_json})
 
-def clean_journal(s):
-  # keep only alphanumeric characters for comparison purposes
-  try:
-    return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
-  except:
-    return None
-
 def journals(request):
   db = db_store
  
@@ -163,21 +295,6 @@ def journals(request):
   return HttpResponse(json.dumps([row.key for row in rows if filter is None or
                                   filter in clean_journal(row.key)]),
                       content_type='application/json')
-
-def get_journal_docs(db=None):
-  db = db_journals
-
-  journal_docs = list([db[doc_id] for doc_id in db])
-
-  for doc in journal_docs:
-    if 'aliases' in doc:
-      doc['sorted_aliases'] = sorted([(clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
-    else:
-      doc['sorted_aliases'] = []
-
-  return journal_docs
-
-journal_doc_cache = get_journal_docs()
 
 def journals_new(request):
   if 'term' in request.GET:

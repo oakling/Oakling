@@ -142,9 +142,15 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
@@ -157,10 +163,17 @@ LOGGING = {
     }
 }
 
-#Mendeley consumer key
+# Mendeley consumer key
 MENDELEY_CONSUMER_KEY='c03c2cb64ec7dc1522b71127085747ac04f2d516d'
 
+# Base URL for search engine
+LUCENE_URL = 'http://couchdb.private:5984/store/_fti/_design/lucene/by_title'
+
 STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/')
+
+# Define the domains that Django can be served from (security measure)
+# This was added as a requirement by Django 1.5
+ALLOWED_HOSTS = ['akorn.org']
 
 DEBUG=True
 
