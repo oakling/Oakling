@@ -161,7 +161,7 @@ class ArticlesView(TemplateView):
             raise BadRequest()
 
         if keywords:
-            keywords_str = " OR ".join(["\"" + " ".join(aa) + "\"" for aa in keywords])
+            keywords_str = "(" + " OR ".join(["\"" + " ".join(aa) + "\"" for aa in keywords]) + ")"
 
         # Deal with the case that there are no journals to be filtered by
         if journals:
@@ -169,7 +169,8 @@ class ArticlesView(TemplateView):
            # If there are keywords then AND the journals to them
            if keywords:
                journals_str = ' AND '+journals_str
-        return ''.join([keywords_str, journals_str])
+
+        return keywords_str + journals_str
 
     def lucene_search(self):
         query = self.lucene_get_query()
