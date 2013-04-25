@@ -111,7 +111,8 @@ class ArticlesView(TemplateView):
         options = {
             'q': query,
             'include_docs': 'true',
-            'stale': 'ok'
+            'stale': 'ok',
+            'sort': '\sort_date',
             }
         # Check if a limit has been specified
         limit = int(self.request.GET.get('limit'))
@@ -186,8 +187,6 @@ class ArticlesView(TemplateView):
               d['journal'] = d['citation']['journal']
             elif 'categories' in d and 'arxiv' in d['categories']:
               d['journal'] = d['categories']['arxiv'][0] + " (arxiv)"
-
-        lucene_docs = sorted(lucene_docs, key=lambda d: d['date'], reverse=True)
 
         return lucene_docs
 
