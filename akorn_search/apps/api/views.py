@@ -129,7 +129,7 @@ class ArticlesView(TemplateView):
     def lucene_process(self, response):
         return [x['doc'] for x in response['rows']]
 
-    def lucene_split_arg(self, arg):
+    def lucene_split_keywords(self, arg):
         try:
             arg = arg.strip()
             if not arg:
@@ -140,8 +140,17 @@ class ArticlesView(TemplateView):
         except AttributeError:
             return []
 
+    def lucene_split_arg(self, arg):
+        try:
+            arg = arg.strip()
+            if not arg:
+                return []
+            return arg.split('+')
+        except AttributeError:
+            return []
+
     def lucene_get_query(self):
-        keywords = self.lucene_split_arg(self.request.GET.get('k'))
+        keywords = self.lucene_split_keywords(self.request.GET.get('k'))
         journals = self.lucene_split_arg(self.request.GET.get('j'))
         # Creating some empty strings
         keywords_str = ''
