@@ -187,6 +187,8 @@ class ArticlesView(TemplateView):
             elif 'categories' in d and 'arxiv' in d['categories']:
               d['journal'] = d['categories']['arxiv'][0] + " (arxiv)"
 
+        lucene_docs = sorted(lucene_docs, key=lambda d: d['date'], reverse=True)
+
         return lucene_docs
 
     def get_context_data(self, **kwargs):
