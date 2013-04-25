@@ -24,6 +24,7 @@ urlpatterns += patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('apps.api.urls', namespace='api')),
     url(r'', include('apps.search.urls', namespace='search')),
+    url(r'', include('apps.scraperpanel.urls', namespace='scraperpanel'))
 )
 
 if settings.DEBUG:
