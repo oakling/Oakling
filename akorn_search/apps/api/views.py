@@ -161,7 +161,7 @@ class ArticlesView(TemplateView):
             raise BadRequest()
 
         if keywords:
-            keywords_str = " AND ".join(["(" + " OR ".join(aa) + ")" for aa in keywords])
+            keywords_str = " OR ".join(["\"" + " ".join(aa) + "\"" for aa in keywords])
 
         # Deal with the case that there are no journals to be filtered by
         if journals:
