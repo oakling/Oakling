@@ -134,7 +134,9 @@ class ArticlesView(TemplateView):
             arg = arg.strip()
             if not arg:
                 return []
-            return arg.split('+')
+            args = arg.split(' ')
+            arg_blocks = [a.split('+') for a in args]
+            return arg_blocks
         except AttributeError:
             return []
 
@@ -144,13 +146,14 @@ class ArticlesView(TemplateView):
         # Creating some empty strings
         keywords_str = ''
         journals_str = ''
+
         # It is badness to not search for anything
         if not keywords and not journals:
             raise BadRequest()
+
         if keywords:
-            # AND between all keywords
-            # The last word may not be complete - add a wildcard character
-            keywords_str = ' AND '.join(keywords)+'*';
+            keywords_str = " AND ".join([" OR ".join(aa) for aa in keywords])
+
         # Deal with the case that there are no journals to be filtered by
         if journals:
            journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])
