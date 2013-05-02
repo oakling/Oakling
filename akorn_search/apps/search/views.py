@@ -33,7 +33,7 @@ class HomeView(TemplateView):
 
 
 class DocView(TemplateView):
-    template_name = "doc/doc.html"
+    template_name = "search/doc.html"
 
     def get_context_data(self, **kwargs):
         doc_id = self.kwargs['id']
