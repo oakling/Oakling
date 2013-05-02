@@ -29,7 +29,7 @@ results for {{ search_request }}
             {% if doc.ids.doi %}
               {{ doc.ids.doi }} - 
             {% endif %}
-            <a href="{% url 'viewdoc' id=doc.docid %}">{{ doc.docid }}</a>
+            <a href="{% url 'search:doc' id=doc.docid %}">{{ doc.docid }}</a>
             - from {{ doc.api.name }}
         </div>
   {% endfor %}
