@@ -1,12 +1,10 @@
 import datetime
 import couchdb
 
-from django.http import HttpResponse, Http404
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.http import Http404
 from django.views.generic import TemplateView
 
-from couch import db_store, db_journals, db_scrapers
+from couch import db_store, db_journals
 
 import apps.api.views
 import apps.panes.models
@@ -80,53 +78,3 @@ class JournalView(TemplateView):
             # Throw a 404 if couchdb doc does not exist
             raise Http404
         return {'last_visit': last_visit, 'journal': journal}
-
-def backend_journals(request):
-  db_docs = db_store
-  
-  journals = [db_journals[doc_id] for doc_id in db_journals if '_design' not in doc_id]
-
-  journals = sorted(journals, key=lambda doc: doc['name'])
-
-  for journal in journals:
-    journal.num_docs = len(db_docs.view('index/journal_id', key=journal.id, include_docs=False).rows)
-
-  return render_to_response('backend/journals.html', {'journals': journals,}, context_instance=RequestContext(request))
-
-def backend_journal(request, journal_id):
-  db_docs = db_store 
-  journal_doc = db_journals[journal_id]
-
-  rows = db_docs.view('index/journal_id', key=journal_id, include_docs=True).rows
-
-  num_rescrape = 0
-  scraper_modules = set()
-  
-  docs = [row.doc for row in rows]
-
-  for row in rows:
-    doc = row.doc
-    if 'rescrape' in doc and doc['rescrape']:
-      num_rescrape += 1
-   
-    if 'scraper_module' in doc:
-      scraper_modules.add(doc['scraper_module'])
-
-  return render_to_response('backend/journal.html', {'journal': journal_doc,
-                                                     'docs': docs,
-                                                     'num_rescrape': num_rescrape,
-                                                     'scraper_modules': list(scraper_modules),},
-                            context_instance=RequestContext(request))
-
-def backend_scrapers(request):
-  db_docs = db_store
-
-  scrapers = [db_scrapers[doc_id] for doc_id in db_scrapers if not doc_id.startswith('_design/')]
-  scrapers.append({'name': 'Default', 'module': 'akorn.scrapers.journals.scrape_meta_tags'})
-  scrapers.append({'name': 'No given scraper module', 'module': None})
-
-  for scraper in scrapers:
-    scraper['num_docs'] = len(db_docs.view('rescrape/scraper', key=scraper['module'], include_docs=False).rows)
-    scraper['num_rescrape'] = len(db_docs.view('rescrape/rescrape', key=scraper['module'], include_docs=False).rows)
-
-  return render_to_response('backend/scrapers.html', {'scrapers': scrapers,}, context_instance=RequestContext(request))
