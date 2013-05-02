@@ -26,6 +26,14 @@ class BadRequest(Exception):
     pass
 
 
+class LuceneFailed(Exception):
+    pass
+
+
+class NoResults(Exception):
+    pass
+
+
 def get_journal_docs(db=None):
   db = db_journals
 
@@ -123,7 +131,10 @@ class ArticlesView(TemplateView):
         skip = self.request.GET.get('skip')
         if skip:
             options['skip'] = int(skip)
-        return requests.get(self.lucene_url, params=options).json()
+        try:
+            return requests.get(self.lucene_url, params=options).json()
+        except ValueError as e:
+            raise LuceneFailed(e.message)
 
     def lucene_process(self, response):
         return [x['doc'] for x in response['rows']]
@@ -194,6 +205,8 @@ class ArticlesView(TemplateView):
         Return the context to the template
         """
         docs = self.process_docs(self.lucene_search())
+	if not docs:
+            raise NoResults()
         # Create the context structure
         context = {'docs': docs}
         return context
@@ -204,8 +217,12 @@ class ArticlesView(TemplateView):
         """
         try:
             return super(ArticlesView, self).get(*args, **kwargs)
+        except NoResults as e:
+            return HttpResponse(e.message, status=204)
         except BadRequest as e:
             return HttpResponse(e.message, status=400)
+        except LuceneFailed as e:
+            return HttpResponse(e.message, status=503)
 
 
 def latest(request, num):
