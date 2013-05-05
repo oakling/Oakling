@@ -175,6 +175,9 @@ STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/')
 # This was added as a requirement by Django 1.5
 ALLOWED_HOSTS = ['akorn.org']
 
+# Directory to search for fixtures
+FIXTURE_DIRS = ('fixtures/flatpages',)
+
 DEBUG=True
 
 try:

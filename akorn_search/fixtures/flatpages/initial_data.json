@@ -1,0 +1,47 @@
+[
+{
+  "pk": 1, 
+  "model": "flatpages.flatpage", 
+  "fields": {
+    "registration_required": false, 
+    "title": "About", 
+    "url": "/about/", 
+    "template_name": "", 
+    "sites": [
+      1
+    ], 
+    "content": "<div class=\"container\" id=\"about\">\r\n\r\n<div class=\"row header_row\">\r\n<div class=\"span2\">\r\n<img src=\"/static/logo_small.png\" />\r\n</div>\r\n<div class=\"span8\">\r\n<h1>Akorn</h1>\r\n</div>\r\n</div>\r\n\r\n<div class=\"row\">\r\n<div class=\"span8 offset2 text\">\r\n<p>\r\n<strong>Welcome!</strong> Akorn brings you all the <em>latest research</em>, in a nutshell. Akorn is a new website for <em>academia</em>, aiming to make the lives of researchers simpler, more networked, more powerful, and more open. Akorn will give you a\u00a0<em>personalizable\u00a0news stream</em> of all new papers in your field, vastly simplifying the task of keeping up to date with the literature. Akorn will also give you an\u00a0<em>ecosystem of research\u00a0apps</em>,\u00a0taking locally developed research tools and spreading them to the wider community. You'll find tools for downloading tables of data, detecting chemicals mentioned in articles, visualizing citation networks, and much more.\r\n</p>\r\n<p>\r\nUntil we <em>launch in early 2013</em>, subscribe to our <a href=\"http://blog.akorn.org\">blog</a> and <a href=\"https://twitter.com/oxford_akorn\">twitter</a> stream! Or, if you're a web developer, then <a href=\"http://akorn.org/volunteer\">join our team</a>. We will be posting updates of the site's progress as we prepare to launch. In addition, we regularly post articles and links about <em>innovations</em> in academic collaboration, open access, the modernisation of publishing, data sharing, and new online research tools. We support any initiatives that aim to make these future visions of research a very present possibility. <strong>See you again soon!</strong>\r\n</p>\r\n</div>\r\n</div>\r\n\r\n&nbsp<br />\r\n&nbsp<br />\r\n&nbsp<br />\r\n\r\n</div>", 
+    "enable_comments": false
+  }
+},
+{
+  "pk": 2, 
+  "model": "flatpages.flatpage", 
+  "fields": {
+    "registration_required": false, 
+    "title": "open science", 
+    "url": "/", 
+    "template_name": "", 
+    "sites": [
+      1
+    ], 
+    "content": "<div class=\"container\" id=\"index\">\r\n\r\n<div class=\"row header_row\">\r\n<div class=\"span3\">\r\n<img src=\"/static/logo_medium.png\" />\r\n</div>\r\n<div class=\"span8\">\r\n    <h1>Akorn</h1>\r\n</div>\r\n</div>\r\n\r\n<div class=\"row\">\r\n<div class=\"span4 offset5 banner\">\r\n<h2>Coming Soon</h2>\r\n<p><a href=\"/about/\">About</a></p>\r\n</div>\r\n</div>\r\n\r\n</div>", 
+    "enable_comments": false
+  }
+},
+{
+  "pk": 3, 
+  "model": "flatpages.flatpage", 
+  "fields": {
+    "registration_required": false, 
+    "title": "Recruitment", 
+    "url": "/volunteer/", 
+    "template_name": "", 
+    "sites": [
+      1
+    ], 
+    "content": "<link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>\r\n<link href='http://fonts.googleapis.com/css?family=Jacques+Francois+Shadow' rel='stylesheet' type='text/css'>\r\n\r\n<div class=\"container\" id=\"recruitment\">\r\n\r\n<div class=\"row header_row\">\r\n<div class=\"span8 offset2\">\r\n<h2 class=\"font1a\">Recruiting!</h2>\r\n<h2 class=\"font2a\">Web Developers // Web Designers</h2>\r\n<p class=\"font1b\">for open science web project</p>\r\n</div>\r\n</div>\r\n\r\n<div class=\"row\">\r\n<div class=\"span8 offset2 text\">\r\n\r\n<p>We are an Oxford-based project creating an ambitious and cutting-edge website for scientific research. We are expanding the project as we get ready to launch in beta. If you have experience with web development or design, or mobile app development - we want to hear from you!</p>\r\n\r\n<h3>Details</h3>\r\n\r\n<p>Akorn offers users a news feed to watch the latest research, as well as a platform for exchanging research apps. See the <a href=\"/about/\">about</a> page for more details. We are supportive of the open access / open science movement, and aim to encourage open innovation in a research context. We are looking for web developers to help build the core of the site, and graphic/web designers to help build a great UI. More details on positions below&hellip;</p>\r\n\r\n<h3>Contact</h3>\r\n\r\n<p>If this sounds interesting, then get in touch! Email us some brief info about yourself:</p>\r\n\r\n<p class=\"email\">recruitment@akorn.org</p>\r\n\r\n<p class=\"note\"><i>Note that the project is not yet funded but we are seeking funding. Our team currently works for free, so this may suit those wishing to gain CV experience or simply wanting to be part of an ambitious and lively project.</i></p>\r\n\r\n<h3>Position Details</h3>\r\n\r\n<h4 class=\"font2b\">Web Developers: User Interface</h4>\r\n\r\n<h5><em>Requirements:</em></h5>\r\n<ul style=\"list-style-position: inside\">\r\n<li>Strong working knowledge of HTML, CSS, and Javascript</li>\r\n<li>Dynamic web pages</li>\r\n<li>Able to commit 5 hrs per week</li>\r\n</ul>\r\n\r\n<h5><em>Useful knowledge:</em></h5>\r\n<ul>\r\n<li>Twitter Bootstrap</li>\r\n</ul>\r\n\r\n<h4 class=\"font2b\">Web Developers: Back-End</h4>\r\n\r\n<h5><em>Requirements:</em></h5>\r\n<ul>\r\n<li>Working knowledge of python</li>\r\n<li>Able to commit 5 hrs per week</li>\r\n</ul>\r\n\r\n<h5><em>Useful knowledge:</em></h5>\r\n<ul>\r\n<li>NoSQL databases</li>\r\n<li>Dynamic web pages</li>\r\n<li>JSON, jQuery</li>\r\n</ul>\r\n\r\n<h4 class=\"font2b\">Graphic Designers</h4>\r\n\r\n<h5><em>Requirements:</em></h5>\r\n<ul>\r\n<li>Proficient in graphic design software (e.g., Adobe Illustrator)</li>\r\n<li>Able to commit 5 hrs per week</li>\r\n</ul>\r\n\r\n<h5><em>Useful knowledge:</em></h5>\r\n<ul>\r\n<li>HTML and CSS</li>\r\n<li>Animation software</li>\r\n</ul>\r\n\r\n\r\n<h4 class=\"font2b\">Mobile Developers</h4>\r\n\r\n<h5><em>Requirements:</em></h5>\r\n<ul>\r\n<li>Mobile website development, OR...</li>\r\n<li>Android app development, OR... </li>\r\n<li>iOS app development </li>\r\n<li>Able to commit 5 hrs per week</li>\r\n</ul>\r\n\r\n\r\n</div>\r\n</div>\r\n</div>", 
+    "enable_comments": false
+  }
+}
+]
