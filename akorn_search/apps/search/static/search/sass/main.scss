@@ -1,0 +1,160 @@
+@import "colors.scss";
+
+body {
+    color: $main_text;
+}
+
+a {
+    color: $link_text;
+}
+
+.navbar a, .navbar {
+    color: $nav_text !important;
+}
+
+.container-fluid {
+    padding: 0;
+    background-color: $background;
+}
+
+.search {
+    width: 100%;
+    form {
+        margin: 2em 0;
+    }
+    ul {
+        background: #fff;
+        width: 50%;
+    }
+}
+
+hr {
+    border-top: 1px solid $hr_indent;
+    background: $hr_highlight;
+    height: 1px;
+}
+
+.btn-primary {
+    background-color: $feature_color !important;
+    background-image: none;
+    border-radius: 0px;
+    font-weight: bold;
+    line-height: 23px;
+    margin-top: 0 !important;
+}
+
+a.brand {
+    margin-left: 0.1em !important;
+    font-size: 3em !important;
+}
+
+p.lead {
+    margin-right: 1.5em;
+    margin-top: 0.5em;
+    font-size: 190%;
+}
+
+.nav li a {
+    text-transform: uppercase;
+    text-shadow: none !important;
+    /* Using this to vertically centre the text relative to brand */
+    line-height: 250% !important;
+}
+
+.navbar {
+    margin-bottom: 0px;
+}
+
+.navbar-inner {
+    padding-top: 2em;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    height: 8em;
+}
+
+.navbar-inner {
+    background-image: linear-gradient(top, $header_top, $header_bottom);
+    /* Safari 4+, Chrome 1-9 */
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($header_top), to($header_bottom));
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, $header_top, $header_bottom);
+    /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, $header_top, $header_bottom);
+    /* IE 10+ */
+    background-image: -ms-linear-gradient(top, $header_top, $header_bottom);
+    /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, $header_top, $header_bottom);
+}
+
+
+@mixin triangle($color, $size) {
+    /* Stick to the list border */
+    margin-left: -2em;
+    /* Make the triangle */
+    display: block;
+    width: 0px;
+    height: 0px;
+    border-right: $size solid transparent;
+    border-top: $size solid $color;
+    border-left: $size solid $color;
+    border-bottom: $size solid transparent;
+
+    i {
+        position: relative;
+        top: -15px;
+        left: -13px;
+        font-size: 90%;
+        color: $white;
+    }
+}
+
+#latest_articles {
+    margin-left: 5em;
+
+    h2 {
+        font-size: 150%;
+        color: $main_text;
+        margin: 1em 0;
+        padding: 0;
+        line-height: 1;
+    }
+
+    li {
+        padding-left: 2em;
+        min-height: 4em;
+        list-style: none;
+        margin-bottom: 1.2em;
+        border-left: 1px solid $feature_color;
+
+        $triangle_size: 15px;
+    
+        .flag {
+            @include triangle($flag_color, $triangle_size);
+        }
+
+        .gflag { 
+            @include triangle($flag_hover_color, $triangle_size);
+        }
+
+        p.abstract {
+            text-align: justify;
+        }
+
+        h3 {
+            font-size: 120%;
+            a {
+               color: $main_text; 
+            }
+        }
+
+        span.original a {
+            color: #aaa;
+            font-size: 80%;
+        }
+
+        span.journal {
+            font-style: italic;
+        }
+    }
+}

@@ -1,11 +1,14 @@
+{% load assets %}
 <!DOCTYPE html>
 <html lang="en"> 
     <head> 
         <meta charset="utf-8"> 
         <link rel="stylesheet" href="{{ STATIC_URL }}search/css/bootstrap.css">
         <link rel="stylesheet" href="{{ STATIC_URL }}search/css/ui-lightness/jquery-ui-1.8.22.custom.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/grid.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/base.css">
+
+        {% assets "search_css" %}
+        <link rel="stylesheet" href="{{ ASSET_URL }}">
+        {% endassets %}
         <link rel="stylesheet" href="{{ STATIC_URL }}search/css/jquery.tagit.css">
         <title>Akorn {% block pagetitle %}open science{% endblock %}</title>
         {% block canonical %}{% endblock %}
@@ -33,10 +36,9 @@
         </div>
         {% endblock %}
     {% block scripts %}
-    <script src="{{ STATIC_URL }}search/js/jquery.min.js"></script>
-    <script src="{{ STATIC_URL }}search/js/jquery.jsonp-2.4.0.min.js"></script>
-    <script src="{{ STATIC_URL }}search/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}search/js/jquery-ui-1.8.22.custom.js"></script>
+        {% assets "search_js_libs" %}
+        <script src="{{ ASSET_URL }}"></script>
+        {% endassets %}
     {% endblock %}
     </body>
 </html>
