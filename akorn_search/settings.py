@@ -15,12 +15,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(BASE_PATH, 'db/akorn.sqlite'),                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_PATH, 'db/akorn.sqlite'),
     }
 }
 
@@ -94,7 +90,6 @@ SECRET_KEY = '80im&^x8%tq^+$)0^d+t2t8xg&gj=y!tjl@@^*q3#m4(1uo50^'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -108,9 +103,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'akorn_search.urls'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
     BASE_PATH+'/templates/',
 )
 
@@ -177,8 +169,6 @@ ALLOWED_HOSTS = ['akorn.org']
 
 # Directory to search for fixtures
 FIXTURE_DIRS = ('fixtures/flatpages',)
-
-DEBUG=True
 
 try:
     from local_settings import *
