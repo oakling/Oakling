@@ -129,12 +129,14 @@ p.lead {
 
         $triangle_size: 15px;
     
-        .flag {
+        .flag:hover {
             @include triangle($flag_color, $triangle_size);
         }
 
-        .gflag { 
-            @include triangle($flag_hover_color, $triangle_size);
+        .flag {
+            /* For some reason using a variable name won't work here */
+            @include triangle(rgb(226, 226, 226), $triangle_size);
+            cursor: pointer;
         }
 
         p.abstract {
