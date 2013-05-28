@@ -1,4 +1,4 @@
-{% load assets %}
+{% load i18n lazysignup_tags assets %}
 <!DOCTYPE html>
 <html lang="en"> 
     <head> 
@@ -10,19 +10,28 @@
         <link rel="stylesheet" href="{{ ASSET_URL }}">
         {% endassets %}
         <link rel="stylesheet" href="{{ STATIC_URL }}search/css/jquery.tagit.css">
-        <title>Akorn {% block pagetitle %}open science{% endblock %}</title>
+        <title>Akorn {% block pagetitle %}{% trans "open science" %}{% endblock %}</title>
         {% block canonical %}{% endblock %}
         {% block og_meta %}{% endblock %}
     </head>
     <body>
         <div class="navbar">
             <div class="navbar-inner">
-                <a class="brand" href="/">AKORN</a>
+                <a class="brand" href="{% url "main" %}">AKORN</a>
                 <ul class="nav">
-                    <li><a href="/about/">About</a></li>
-                    <li><a href="http://blog.akorn.org/">Blog</a></li>
+                    <li><a href="{% url "about" %}">{% trans "About" %}</a></li>
+                    <li><a href="http://blog.akorn.org/">{% trans "Blog" %}</a></li>
                 </ul>
-                <p class="lead pull-right">Research in a nut shell</p>
+                <p class="lead pull-right">{% trans "Research in a nut shell" %}</p>
+                <ul id="account-bar">
+                    {% if not request.user|is_lazy_user and request.user.is_authenticated %}
+                    <li>{{ request.user }}</li>
+                    <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
+                    {% else %}
+                    <li><a href="{% url "lazysignup_convert" %}">{% trans "Sign up" %}</a></li>
+                    <li><a href="{% url "auth_login" %}?next={{ request.path }}">{% trans "Log in" %}</a></li>
+                    {% endif %}
+                </ul>
             </div>
 
         </div>
