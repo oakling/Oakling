@@ -1,3 +1,7 @@
-from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
 
-# Create your models here.
+from django_extensions.db.fields.json import JSONField
+
+class AkornUser(AbstractBaseUser):
+    # Stores a JSON blob of saved searches etc
+    settings_doc = JSONField(blank=True, null=True)
