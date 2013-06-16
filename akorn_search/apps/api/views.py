@@ -16,7 +16,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView
-
+from django.utils.decorators import method_decorator
 
 from lib.search import citeulike, mendeley, arxiv
 
@@ -32,6 +32,21 @@ class LuceneFailed(Exception):
 
 class NoResults(Exception):
     pass
+
+
+class JSONResponseMixin(object):
+    response_class = HttpResponse
+
+    def render_to_response(self, context, **response_kwargs):
+        response_kwargs['content_type'] = 'application/json'
+        return self.response_class(
+            self.convert_context_to_json(context),
+            **response_kwargs
+        )
+
+    def convert_context_to_json(self, context):
+        # TODO Add support for objects that cannot be serialized directly
+        return json.dumps(context)
 
 
 def get_journal_docs(db=None):
@@ -56,55 +71,94 @@ def clean_journal(s):
 
 journal_doc_cache = get_journal_docs()
 
-@csrf_exempt
-def save_search(request):
-    """
-    Stores searches that the user explicitly requests to be saved
-    """
-    query_str = request.POST.get('query')
 
-    if not query_str:
-        # Without a query to save, this is a bad request
-        return HttpResponse(status=400)
+class SavedSearchMixin(object):
+    def get_saved_searches(self):
+        """
+        Return dict of saved searches and the AkornUser object (or None)
+        """
+        user = self.request.user
+        if user.is_authenticated():
+            return user.settings, user
+        else:
+            return self.request.session.get('saved_searches', {}), None
 
-    query = json.loads(query_str)
+    def set_saved_searches(self, saved_searches, user):
+        """
+        Save the saved searches against the AkornUser or against the session
 
-    saved_searches = request.session.get('saved_searches', None)
-    # Check the user has a saved search list
-    if not saved_searches:
-        # Make an empty list
-        request.session['saved_searches'] = {}
-    # Make an ID for this query
-    query_id = str(uuid.uuid4())
-    # Add the query to the users saved_search list
-    request.session['saved_searches'][query_id] = query
-    # Make sure sessions is saved
-    request.session.modified = True
-    # Success, and return the saved query's id
-    return HttpResponse(json.dumps({'query_id': query_id}), mimetype="application/json", status=200)
+        Arguments:
+            saved_searches -- dict, the saved searches
+            user -- AkornUser instance, the user to save against
+        """
+        if user:
+            user.settings = saved_searches
+            user.save()
+        else:
+            session = self.request.session
+            session['saved_searches'] = saved_searches
+            session.modified = True
 
-def del_saved_search(request):
-    """
-    Removes a users stored search
-    """
-    query_id = request.GET.get('query_id')
-    if not query_id:
-        # Without a query this is a bad request
-        return HttpResponse(status=400)
-    # Get the list of searches
-    saved_searches = request.session.get('saved_searches')
-    if not saved_searches:
-        return HttpResponse(status=404)
-    # Rip out the query if it exists
-    try:
-        del request.session['saved_searches'][query_id]
-        # Raises a KeyError if item does not exist
-    except KeyError:
-        return HttpResponse(status=400)
-    # Make sure session is saved
-    request.session.modified = True
-    # Success but no content
-    return HttpResponse(status=204)
+
+class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
+    def process_query(self, query):
+        """
+        Return a unique ID for the query, having saved it
+
+        Arguments:
+            query -- dict, deserialised representation of the query
+        """
+        # Check the user has a saved search list
+        searches, user = self.get_saved_searches()
+        # Make an ID for this query
+        query_id = str(uuid.uuid4())
+        # Add the query to the saved_search dict
+        searches[query_id] = query
+        # Save
+        self.set_saved_searches(searches, user)
+        # Return the saved query's id
+        return query_id
+
+    @method_decorator(csrf_exempt)
+    def post(self, request, **kwargs):
+        """
+        Stores searches that the user explicitly requests to be saved
+        """
+        query_str = request.POST.get('query')
+        if not query_str:
+            # Without a query to save, this is a bad request
+            return HttpResponse(status=400)
+        # Deserialise the give payload
+        query = json.loads(query_str)
+        # Add the given query
+        query_id = self.process_query(query)
+        return self.render_to_response({'query_id': query_id})
+
+
+class DeleteSavedSearchView(SavedSearchMixin, View):
+    def get(self, request, *args, **kwargs):
+        """
+        Removes a users stored search
+        """
+        query_id = request.GET.get('query_id')
+        if not query_id:
+            # Without a query this is a bad request
+            return HttpResponse(status=400)
+        # Get the list of searches
+        saved_searches, user = self.get_saved_searches()
+        # If there are no saved searches yet
+        if not saved_searches:
+            return HttpResponse(status=404)
+        try:
+            # Rip out the query if it exists
+            del saved_searches[query_id]
+            # Save the modified saved_searches dict
+            self.set_saved_searches(saved_searches, user)
+        except KeyError:
+            # If item does not exist then it is a bad request
+            return HttpResponse(status=400)
+        # Success but no content
+        return HttpResponse(status=204)
 
 
 class ArticlesView(TemplateView):
@@ -299,20 +353,6 @@ def latest(request, num):
 
     return render_to_response('search/article_list.html', {'docs': docs, 'last_ids_json': last_ids_json})
 
-def journals(request):
-  db = db_store
- 
-  rows = db.view('index/journals', group=True)
-
-  if 'term' in request.GET:
-    filter = clean_journal(request.GET['term'])
-  else:
-    filter = None
-
-  return HttpResponse(json.dumps([row.key for row in rows if filter is None or
-                                  filter in clean_journal(row.key)]),
-                      content_type='application/json')
-
 def journals_new(request):
   if 'term' in request.GET:
     filter = clean_journal(request.GET['term'])
@@ -333,21 +373,6 @@ def journals_new(request):
         journals.append((doc['name'], alias[1], doc.id))
         break
   return HttpResponse(json.dumps(journals), content_type='application/json')
-
-
-class JSONResponseMixin(object):
-    response_class = HttpResponse
-
-    def render_to_response(self, context, **response_kwargs):
-        response_kwargs['content_type'] = 'application/json'
-        return self.response_class(
-            self.convert_context_to_json(context),
-            **response_kwargs
-        )
-
-    def convert_context_to_json(self, context):
-        # TODO Add support for objects that cannot be serialized directly
-        return json.dumps(context)
 
 def articles_since(journals, timestamp=None):
     """

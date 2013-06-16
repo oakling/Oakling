@@ -87,6 +87,48 @@ p.lead {
     background-image: -o-linear-gradient(top, $header_top, $header_bottom);
 }
 
+#account-bar {
+    float: right;
+    clear: both;
+    margin-right: 1.5em;
+
+    li {
+        display: inline;
+        list-style-type: none;
+        padding: 0 0.8em;
+        margin: 0;
+        border-left: 1px solid $nav_text;
+
+        /* Turn off border separator for first item */
+        &:first-child {
+            border-left: none;
+        }
+    }
+}
+
+#login, #signup {
+    margin: 2em auto 0 auto;
+    width: 22%;
+    text-align: center;
+
+    .errorlist {
+        display: none;
+    }
+
+    input {
+        width: 100%;
+        font-size: 110%;
+
+        &[type="submit"] {
+            width: 20%;
+        }
+    }
+
+    label {
+        font-weight: bold;
+        text-align: left;
+    }
+}
 
 @mixin triangle($color, $size) {
     /* Stick to the list border */
