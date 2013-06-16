@@ -1,4 +1,8 @@
+import json
+
 from django.contrib.auth.models import AnonymousUser
+from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.test import TestCase, Client
 from django.test.client import RequestFactory
 from django.utils.importlib import import_module
@@ -81,7 +85,6 @@ class AnonSavedSearchMixinTestCase(TestCase):
         Got session setup from http://stackoverflow.com/a/7722483/2196754
         """
         self.factory = RequestFactory()
-        self.client = Client()
 
         engine = import_module('django.contrib.sessions.backends.file')
         # Instantiate session for testing empty session
@@ -140,3 +143,37 @@ class AnonSavedSearchMixinTestCase(TestCase):
         # Get the user again
         self.assertEqual(request.session['saved_searches'],
             self.mock_searches)
+
+
+class SavedSearchViewTestCase(TestCase):
+    mock_searches = '{"mock": "data"}'
+    mock_json = {"mock": "data"}
+
+    def setUp(self):
+        self.url = reverse('api:save_search')
+
+    def test_no_query(self):
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_non_logged_in(self):
+        response = self.client.post(self.url, {'query': self.mock_searches})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/json')
+        # Get the returned query id
+        query_id = json.loads(response.content)['query_id']
+        # Check session for right data associated with query id
+        self.assertEqual(self.client.session['saved_searches'][query_id], self.mock_json)
+
+
+class DeleteSavedSearchView(TestCase):
+    def setUp(self):
+        self.url = reverse('api:remove_search')
+
+    def test_no_query(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_no_searches(self):
+        response = self.client.get(self.url, {'query_id': 'fake'})
+        self.assertEqual(response.status_code, 404)
