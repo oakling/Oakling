@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AnonymousUser
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.test.client import RequestFactory
+from django.utils.importlib import import_module
 
 from apps.accounts.models import AkornUser
 from .views import JSONResponseMixin, SavedSearchMixin
@@ -64,12 +65,35 @@ class LoggedInSavedSearchMixinTestCase(TestCase):
         # Should also return the requesting user
         self.assertEqual(user, self.full)
 
+    def test_saving_searches(self):
+        obj = SavedSearchMixin()
+        obj.set_saved_searches(self.mock_searches, self.empty)
+        # Get the user again
+        modified_user = AkornUser.objects.get(pk=self.empty.pk)
+        self.assertEqual(modified_user.settings, self.mock_searches)
 
+# TODO Should this be split up into separate TestCases?
 class AnonSavedSearchMixinTestCase(TestCase):
-    mock_data = {"mock": "data"}
+    mock_searches = {"mock": "data"}
 
     def setUp(self):
+        """
+        Got session setup from http://stackoverflow.com/a/7722483/2196754
+        """
         self.factory = RequestFactory()
+        self.client = Client()
+
+        engine = import_module('django.contrib.sessions.backends.file')
+        # Instantiate session for testing empty session
+        empty = engine.SessionStore()
+        empty.save()
+        self.empty_session = empty
+        # Instantiate 2nd session for user with existing session data
+        filled = engine.SessionStore()
+        filled.save()
+        self.filled_session = filled
+        self.filled_session['saved_searches'] = self.mock_searches
+        self.filled_session.save()
 
     def test_getting_no_saved_searches(self):
         obj = SavedSearchMixin()
@@ -77,7 +101,7 @@ class AnonSavedSearchMixinTestCase(TestCase):
         request = self.factory.get('/test')
         # Set request properties to mimic no-logged in, without session
         request.user = AnonymousUser()
-        request.session = {}
+        request.session = self.empty_session
         # Set request on mixin instance
         obj.request = request
         # Get saved searches
@@ -91,14 +115,28 @@ class AnonSavedSearchMixinTestCase(TestCase):
         obj = SavedSearchMixin()
         # Set meaningless request on mixin instance
         request = self.factory.get('/test')
-        # Set request properties to mimic no-logged in, without session
+        # Set request properties to mimic no-logged in, with session data
         request.user = AnonymousUser()
-        request.session = {'saved_searches': self.mock_data}
+        request.session = self.filled_session
         # Set request on mixin instance
         obj.request = request
         # Get saved searches
         searches, user = obj.get_saved_searches()
         # No session saved searches should be found
-        self.assertEqual(searches, self.mock_data)
+        self.assertEqual(searches, self.mock_searches)
         # If session data is used then user should be None
         self.assertEqual(user, None)
+
+    def test_saving_searches(self):
+        obj = SavedSearchMixin()
+        # Set meaningless request on mixin instance
+        request = self.factory.get('/test')
+        # Set request properties to mimic no one logged in, with empty session
+        request.user = AnonymousUser()
+        request.session = self.empty_session
+        # Set request on mixin instance
+        obj.request = request
+        obj.set_saved_searches(self.mock_searches, None)
+        # Get the user again
+        self.assertEqual(request.session['saved_searches'],
+            self.mock_searches)
