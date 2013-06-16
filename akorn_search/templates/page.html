@@ -1,4 +1,4 @@
-{% load i18n lazysignup_tags assets %}
+{% load i18n assets %}
 <!DOCTYPE html>
 <html lang="en"> 
     <head> 
@@ -24,11 +24,11 @@
                 </ul>
                 <p class="lead pull-right">{% trans "Research in a nut shell" %}</p>
                 <ul id="account-bar">
-                    {% if not request.user|is_lazy_user and request.user.is_authenticated %}
+                    {% if request.user.is_authenticated %}
                     <li>{{ request.user }}</li>
                     <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
                     {% else %}
-                    <li><a href="{% url "lazysignup_convert" %}">{% trans "Sign up" %}</a></li>
+                    <li><a href="{% url "accounts:register" %}">{% trans "Sign up" %}</a></li>
                     <li><a href="{% url "auth_login" %}?next={{ request.path }}">{% trans "Log in" %}</a></li>
                     {% endif %}
                 </ul>

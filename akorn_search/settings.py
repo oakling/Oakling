@@ -1,5 +1,3 @@
-# Django settings for akorn project.
-
 import os.path
 
 BASE_PATH = os.path.normpath(os.path.dirname(__file__))
@@ -116,7 +114,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'django.contrib.admin',
     'django_assets',
-    'lazysignup',
+    'akorn_search.apps.accounts',
     'akorn_search.apps.search',
     'akorn_search.apps.api',
     'akorn_search.apps.panes',
@@ -124,7 +122,6 @@ INSTALLED_APPS = (
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'lazysignup.backends.LazySignupBackend',
     )
 
 # A sample logging configuration. The only tangible logging
@@ -185,6 +182,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # Point to the login URL
 LOGIN_URL = 'auth_login'
 LOGIN_REDIRECT_URL = 'main'
+
+AUTH_USER_MODEL = 'accounts.AkornUser'
 
 try:
     from local_settings import *
