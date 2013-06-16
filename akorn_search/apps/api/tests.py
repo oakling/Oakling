@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
 from django.test.client import RequestFactory
 
@@ -62,3 +63,42 @@ class LoggedInSavedSearchMixinTestCase(TestCase):
         self.assertEqual(searches, self.mock_searches)
         # Should also return the requesting user
         self.assertEqual(user, self.full)
+
+
+class AnonSavedSearchMixinTestCase(TestCase):
+    mock_data = {"mock": "data"}
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_getting_no_saved_searches(self):
+        obj = SavedSearchMixin()
+        # Set meaningless request on mixin instance
+        request = self.factory.get('/test')
+        # Set request properties to mimic no-logged in, without session
+        request.user = AnonymousUser()
+        request.session = {}
+        # Set request on mixin instance
+        obj.request = request
+        # Get saved searches
+        searches, user = obj.get_saved_searches()
+        # No session saved searches should be found
+        self.assertEqual(searches, {})
+        # If session data is used then user should be None
+        self.assertEqual(user, None)
+
+    def test_getting_saved_searches(self):
+        obj = SavedSearchMixin()
+        # Set meaningless request on mixin instance
+        request = self.factory.get('/test')
+        # Set request properties to mimic no-logged in, without session
+        request.user = AnonymousUser()
+        request.session = {'saved_searches': self.mock_data}
+        # Set request on mixin instance
+        obj.request = request
+        # Get saved searches
+        searches, user = obj.get_saved_searches()
+        # No session saved searches should be found
+        self.assertEqual(searches, self.mock_data)
+        # If session data is used then user should be None
+        self.assertEqual(user, None)
