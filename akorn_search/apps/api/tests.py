@@ -166,14 +166,43 @@ class SavedSearchViewTestCase(TestCase):
         self.assertEqual(self.client.session['saved_searches'][query_id], self.mock_json)
 
 
+# TODO Should probably be separate test cases
+# TODO Missing tests for successfully removing searches from session
 class DeleteSavedSearchView(TestCase):
+    mock_data = {'test': {'fish': 'horse'}}
+
     def setUp(self):
         self.url = reverse('api:remove_search')
+        # Create a user without saved searches
+        self.empty = AkornUser.objects.create_user('empty@fish.com', 'fish')
+        # Create a user with saved searches
+        self.full = AkornUser.objects.create_user('full@fish.com', 'fish')
+        self.full.settings = self.mock_data
+        self.full.save()
 
     def test_no_query(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 400)
 
-    def test_no_searches(self):
+    def test_no_searches_anon(self):
         response = self.client.get(self.url, {'query_id': 'fake'})
         self.assertEqual(response.status_code, 404)
+
+    def test_no_searches_user(self):
+        self.client.login(email='empty@fish.com', password='fish')
+        response = self.client.get(self.url, {'query_id': 'test'})
+        self.assertEqual(response.status_code, 404)
+
+    def test_success_user(self):
+        self.client.login(email='full@fish.com', password='fish')
+        response = self.client.get(self.url, {'query_id': 'test'})
+        self.assertEqual(response.status_code, 204)
+        # Get user from db
+        user = AkornUser.objects.get(pk=self.full.pk)
+        # Have only added one search, so this should be empty
+        self.assertEqual(user.settings, {})
+
+    def test_missing_search_user(self):
+        self.client.login(email='full@fish.com', password='fish')
+        response = self.client.get(self.url, {'query_id': 'not_there'})
+        self.assertEqual(response.status_code, 400)
