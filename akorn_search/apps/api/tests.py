@@ -9,6 +9,7 @@ from django.utils.importlib import import_module
 
 from apps.accounts.models import AkornUser
 from .views import JSONResponseMixin, SavedSearchMixin
+import apps.api.views as views
 
 class JSONMixinTestCase(TestCase):
     example = {"fish": "horse"}
@@ -206,3 +207,38 @@ class DeleteSavedSearchView(TestCase):
         self.client.login(email='full@fish.com', password='fish')
         response = self.client.get(self.url, {'query_id': 'not_there'})
         self.assertEqual(response.status_code, 400)
+
+
+class MockJournalDocument(dict):
+    id = None
+
+
+class JournalsViewTestCase(TestCase):
+    journal_out = ("Test", "Test", "f45f136fbd14caa156e5b4b8467e6521")
+    journal2_out = ("House", "Fish", "f45f136fbd14caa156e5b4b84611bba5")
+
+    def setUp(self):
+        journal = MockJournalDocument()
+        journal.id = "f45f136fbd14caa156e5b4b8467e6521"
+        journal["name"] = "Test"
+        journal["sorted_aliases"] = [['test', 'Test']]
+
+        journal2 = MockJournalDocument()
+        journal2.id = "f45f136fbd14caa156e5b4b84611bba5"
+        journal2["name"] = "House"
+        journal2["sorted_aliases"] = [['fish', 'Fish']]
+
+        # Hack because of global variable use
+        views.journal_doc_cache = [journal, journal2]
+
+    def test_journals_returned(self):
+        out = views.JournalAutoCompleteView.find_journals(None)
+        self.assertEqual(out, [self.journal_out, self.journal2_out])
+
+    def test_journals_partial(self):
+        out = views.JournalAutoCompleteView.find_journals('te')
+        self.assertEqual(out, [self.journal_out])
+
+    def test_journals_none(self):
+        out = views.JournalAutoCompleteView.find_journals('not')
+        self.assertEqual(out, [])

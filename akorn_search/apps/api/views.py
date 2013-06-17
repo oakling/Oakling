@@ -259,7 +259,7 @@ class ArticlesView(TemplateView):
         Return the context to the template
         """
         docs = self.process_docs(self.lucene_search())
-	if not docs:
+        if not docs:
             raise NoResults()
         # Create the context structure
         context = {'docs': docs}
@@ -353,26 +353,31 @@ def latest(request, num):
 
     return render_to_response('search/article_list.html', {'docs': docs, 'last_ids_json': last_ids_json})
 
-def journals_new(request):
-  if 'term' in request.GET:
-    filter = clean_journal(request.GET['term'])
-  else:
-    filter = None
 
-  journals = []
+class JournalAutoCompleteView(JSONResponseMixin, View):
+    @staticmethod
+    def find_journals(query):
+        # Set up empty list to store what we want to return
+        journals = []
+        for doc in journal_doc_cache:
+            try:
+                for alias in doc['sorted_aliases']:
+                    if query and query in alias[0]:
+                        journals.append((doc['name'], alias[1], doc.id))
+                        break
+                    elif not query:
+                        journals.append((doc['name'], alias[1], doc.id))
+                        break
+            except KeyError:
+                # If the journal has no name, skip it
+                continue
+        return journals
 
-  for doc in journal_doc_cache:
-    if 'name' not in doc:
-      continue
-
-    for alias in doc['sorted_aliases']:
-      if filter is not None and filter in alias[0]:
-        journals.append((doc['name'], alias[1], doc.id))
-        break
-      elif filter is None:
-        journals.append((doc['name'], alias[1], doc.id))
-        break
-  return HttpResponse(json.dumps(journals), content_type='application/json')
+    def get(self, request, *args, **kwargs):
+        # Get string to look for
+        query = clean_journal(request.GET.get('term'))
+        found = self.find_journals(query)
+        return self.render_to_response(found)
 
 def articles_since(journals, timestamp=None):
     """

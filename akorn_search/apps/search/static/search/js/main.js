@@ -358,7 +358,7 @@ var akorn = {
             },
             source: function(search, showChoices) {
                 $.ajax({
-                        url: "/api/journals_new",
+                        url: "/api/journals",
                         data: {'term': search.term},
                         dateType: "json",
                         // TODO Copy and paste code, should be possible to improve
