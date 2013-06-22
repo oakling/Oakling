@@ -4,7 +4,6 @@ from .views import latest, JournalAutoCompleteView, DeleteSavedSearchView,\
     ArticlesView, SavedSearchView, ArticleCountView
 
 urlpatterns = patterns('',
-    url(r'^latest/(?P<num>[0-9]+)$', latest, name='latest'),
     url(r'^journals$', JournalAutoCompleteView.as_view(), name='journals'),
     url(r'^articles$', ArticlesView.as_view(), name='articles'),
     url(r'^save_search$', SavedSearchView.as_view(), name='save_search'),
