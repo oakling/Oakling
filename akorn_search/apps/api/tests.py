@@ -244,11 +244,7 @@ class JournalsViewTestCase(TestCase):
         self.assertEqual(out, [])
 
 
-class ArticlesTestCase(TestCase):
-
-    def setUp(self):
-        self.factory = RequestFactory()
-
+class ArticlesViewSplitArgTestCase(TestCase):
     def test_lucene_split_args(self):
         args = "FishDogHorse"
         bits = views.ArticlesView.lucene_split_arg(args)
@@ -259,8 +255,61 @@ class ArticlesTestCase(TestCase):
         bits = views.ArticlesView.lucene_split_arg(args)
         self.assertEqual(["Fish", "Dog", "Horse"], bits)
 
+
+class ArticlesViewQueryTestCase(TestCase):
     def test_make_full_query(self):
-        out = views.ArticlesView.lucene_get_query(['Word', 'Fish'],
-            ['21412412', '1241525211'])
+        out = views.ArticlesView.lucene_get_query(keywords=['Word', 'Fish'],
+            journals=['21412412', '1241525211'])
         expected = "Word AND Fish* AND journalID:(21412412 OR 1241525211)"
         self.assertEqual(out, expected)
+
+    def test_make_keyword_query(self):
+        out = views.ArticlesView.lucene_get_query(keywords=['Word', 'Fish'])
+        expected = "Word AND Fish*"
+        self.assertEqual(out, expected)
+
+    def test_make_journal_query(self):
+        out = views.ArticlesView.lucene_get_query(
+            journals=['312452341', '211241412'])
+        expected = "journalID:(312452341 OR 211241412)"
+        self.assertEqual(out, expected)
+
+
+class ArticlesViewLimitTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_no_limit(self):
+        view = views.ArticlesView()
+        view.request = self.factory.get('/api/articles')
+        self.assertEqual(view.doc_limit, view.max_limit)
+
+    def test_limit(self):
+        view = views.ArticlesView()
+        view.request = self.factory.get('/api/articles', {'limit': '10'})
+        self.assertEqual(view.doc_limit, 10)
+
+    def test_bad_limit(self):
+        view = views.ArticlesView()
+        view.request = self.factory.get('/api/articles', {'limit': 'fish'})
+        self.assertRaises(views.BadRequest, getattr, view, 'doc_limit')
+
+
+class ArticlesViewSkipTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_no_skip(self):
+        view = views.ArticlesView()
+        view.request = self.factory.get('/api/articles')
+        self.assertEqual(view.doc_skip, None)
+
+    def test_skip(self):
+        view = views.ArticlesView()
+        view.request = self.factory.get('/api/articles', {'skip': '10'})
+        self.assertEqual(view.doc_skip, 10)
+
+    def test_bad_skip(self):
+        view = views.ArticlesView()
+        view.request = self.factory.get('/api/articles', {'skip': "fish"})
+        self.assertRaises(views.BadRequest, getattr, view, 'doc_skip')

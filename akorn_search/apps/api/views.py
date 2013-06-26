@@ -169,22 +169,32 @@ class ArticlesView(TemplateView):
     lucene_url = settings.LUCENE_URL
     max_limit = 50
 
-    def lucene_request(self, query, skip=None):
+    @property
+    def doc_limit(self):
+        try:
+            return int(self.request.GET.get('limit', self.max_limit))
+        except ValueError:
+            raise BadRequest('Invalid value supplied for limit')
+
+    @property
+    def doc_skip(self):
+        try:
+            return int(self.request.GET.get('skip'))
+        except TypeError:
+            return None
+        except ValueError:
+            raise BadRequest('Invalid value supplied for skip')
+
+    def lucene_request(self, query):
         options = {
             'q': query,
             'include_docs': 'true',
-            'stale': 'ok'
+            'stale': 'ok',
+            'limit': self.doc_limit
             }
-        # Check if a limit has been specified
-        limit = int(self.request.GET.get('limit'))
-        if limit and limit < self.max_limit:
-            options['limit'] = limit
-        else:
-            options['limit'] = self.max_limit
         # Check if a number of articles to skip has been specified
-        skip = self.request.GET.get('skip')
-        if skip:
-            options['skip'] = int(skip)
+        if self.doc_skip:
+            options['skip'] = self.doc_skip
         try:
             return requests.get(self.lucene_url, params=options).json()
         except ValueError as e:
@@ -205,7 +215,7 @@ class ArticlesView(TemplateView):
             return []
 
     @staticmethod
-    def lucene_get_query(keywords, journals):
+    def lucene_get_query(keywords=[], journals=[]):
         # Creating some empty strings
         keywords_str = ''
         journals_str = ''
