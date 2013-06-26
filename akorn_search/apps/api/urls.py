@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 
-from .views import latest, JournalAutoCompleteView, DeleteSavedSearchView,\
+from .views import JournalAutoCompleteView, DeleteSavedSearchView,\
     ArticlesView, SavedSearchView, ArticleCountView
 
 urlpatterns = patterns('',
