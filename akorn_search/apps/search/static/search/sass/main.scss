@@ -18,11 +18,32 @@ a {
     background-color: $background;
 }
 
-.search {
-    width: 100%;
+#search_bar {
+    margin-left: 16em;
+
     form {
         margin: 2em 0;
+
+        /* Turn off blue halo */
+        input, input:focus, input:active {
+            background: none;
+            outline: 0px !important;
+            -webkit-appearance: none !important;
+            border: none !important;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+        }
+
+        button {
+            margin-left: 1em;
+        }
     }
+
+    .tagit {
+        float:left;
+    }
+
     ul {
         background: #fff;
         width: 50%;
@@ -122,8 +143,6 @@ p.lead {
 }
 
 #latest_articles {
-    margin-left: 5em;
-
     h2 {
         font-size: 150%;
         color: $main_text;
@@ -179,8 +198,8 @@ p.lead {
         position: relative;
         list-style-type: none;
         @include gradient($cards_top, $cards_bottom);
-        width: 15em;
-        height: 15em;
+        width: 10em;
+        height: 10em;
         margin: 0.5em;
         padding: 0.5em;
         color: $white;
@@ -188,16 +207,21 @@ p.lead {
         .count {
             font-size: 500%;
             position: relative;
-            top: 0.5em;
-            left: 0.2em;
+            top: 0.3em;
         }
         .delete {
             font-size: 300%;
+            color: $cards_bottom;
             float: right;
             cursor: pointer;
+            margin-top: 0.1em;
+            &:hover {
+                color: $white;
+            }
         }
         .terms {
             position: absolute;
+            left: 1em;
             bottom: 0px;
         }
     }

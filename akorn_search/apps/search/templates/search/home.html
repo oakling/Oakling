@@ -16,9 +16,18 @@ $(document).ready(akorn.init);
 </script>
 {% endblock %}
 
-{% block content %}
+{% block container %}
 <div class="row-fluid">
-    <div class="span3">
+    <div class="span9 search" id="search_bar">
+        <form action="/search/" method="get" class="form-inline">
+            <input type="text" name="q" placeholder="Search" id="search">
+            <button id="save_search" class="btn btn-primary" disabled="disabled" title="Save this search">Save filter</button>
+        </form>
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="span2">
         <ul id="saved_searches">
             {% for q_id, q in saved_searches.items %}
                 {% spaceless %}
@@ -34,12 +43,7 @@ $(document).ready(akorn.init);
         </ul>
     </div>
 
-    <div class="span9 search">
-        <form action="/search/" method="get" class="form-inline">
-            <input type="text" name="q" placeholder="Search" id="search"><button id="save_search" class="btn btn-primary" disabled="disabled" title="Save this search">Add <i class="icon-ok icon-white"></i></button>
-        </form>
-        <hr />
-
+    <div class="span10">
         <ul id="latest_articles">
         </ul>
     </div>
