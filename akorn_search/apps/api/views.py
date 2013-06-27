@@ -6,7 +6,7 @@ import Queue
 import threading
 import itertools
 import couchdb
-import datetime
+from datetime import datetime, date
 import string
 import requests
 
@@ -245,7 +245,8 @@ class ArticlesView(TemplateView):
         return self.lucene_process(resp)
 
     # TODO Behaviour of this method should be in scrapers/couch views
-    def process_docs(self, lucene_docs):
+    @staticmethod
+    def process_docs(lucene_docs):
         for d in lucene_docs:
             # Cannot use _id inside a Django template
             d['docid'] = d['_id']
@@ -253,15 +254,15 @@ class ArticlesView(TemplateView):
             # TODO Need a reliable property to access for date
             try:
               if d.has_key('date_published') and d['date_published'] is not None:
-                  d['date'] = datetime.datetime.fromtimestamp(d['date_published'])
+                  d['date'] = datetime.fromtimestamp(d['date_published'])
               elif d.has_key('date_revised') and d['date_revised'] is not None:
-                  d['date'] = datetime.datetime.fromtimestamp(d['date_revised'])
+                  d['date'] = datetime.fromtimestamp(d['date_revised'])
               elif d.has_key('date_received') and d['date_received'] is not None:
-                  d['date'] = datetime.datetime.fromtimestamp(d['date_received'])
+                  d['date'] = datetime.fromtimestamp(d['date_received'])
               else:
-                  d['date'] = datetime.datetime.now()
+                  d['date'] = datetime.now()
             except TypeError:
-              d['date'] = datetime.datetime.now()
+              d['date'] = datetime.now()
 
             if 'citation' in d and 'journal' in d['citation']:
               d['journal'] = d['citation']['journal']
@@ -329,7 +330,7 @@ def articles_since(journals, timestamp=None):
     output = {}
 
     #if timestamp is not None:
-    timestamp = time.mktime(datetime.date.today().timetuple())
+    timestamp = time.mktime(date.today().timetuple())
 
     # TODO Do this with one couch query?
     for journal_id in journals:

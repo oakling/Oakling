@@ -1,4 +1,6 @@
+from datetime import datetime
 import json
+import mock
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
@@ -313,3 +315,86 @@ class ArticlesViewSkipTestCase(TestCase):
         view = views.ArticlesView()
         view.request = self.factory.get('/api/articles', {'skip': "fish"})
         self.assertRaises(views.BadRequest, getattr, view, 'doc_skip')
+
+
+class FakeDateTime(datetime):
+    def __new__(cls, *args, **kwargs):
+        return datetime.__new__(datetime, *args, **kwargs)
+
+
+class ArticlesViewProcessDocs(TestCase):
+    docs = [
+        {
+            '_id': 'some random id',
+            'date_published': 1372274046.607653,
+            'date_revised': 1372274070.96599,
+            'date_received': 1372274197.663496,
+            'citation': {
+                'journal': 'some journal id'
+            }
+        },
+        {
+            '_id': 'another id',
+            'date_revised': 1372274070.96599,
+            'date_received': 1372274197.663496,
+            'categories': {
+                'arxiv': [
+                    'arxiv id'
+                ]
+            }
+        },
+        {
+            '_id': 'a third id',
+            'date_received': 1372274197.663496,
+            'citation': {
+                'journal': 'third journal id'
+            },
+            'categories': {
+                'arxiv': [
+                    'arxiv id'
+                ]
+            }
+        },
+        {
+            '_id': 'a fourth id',
+        }
+    ]
+
+    @mock.patch('apps.api.views.datetime', FakeDateTime)
+    def test_process_docs(self):
+        from datetime import datetime
+        # now method will return fixed datetime
+        FakeDateTime.now = classmethod(lambda cls: datetime(2013, 6, 22, 10, 11, 50))
+
+        out = views.ArticlesView.process_docs(self.docs)
+        d1_keys = out[0].keys()
+        self.assertIn('docid', d1_keys)
+        self.assertIn('date', d1_keys)
+        self.assertIn('journal', d1_keys)
+        self.assertEqual(out[0]['docid'], 'some random id')
+        self.assertEqual(out[0]['date'], datetime.fromtimestamp(1372274046.607653))
+        self.assertEqual(out[0]['journal'], 'some journal id')
+
+        d2_keys = out[1].keys()
+        self.assertIn('docid', d2_keys)
+        self.assertIn('date', d2_keys)
+        self.assertIn('journal', d2_keys)
+        self.assertEqual(out[1]['docid'], 'another id')
+        self.assertEqual(out[1]['date'], datetime.fromtimestamp(1372274070.96599))
+        self.assertEqual(out[1]['journal'], 'arxiv id (arxiv)')
+
+        d3_keys = out[2].keys()
+        self.assertIn('docid', d3_keys)
+        self.assertIn('date', d3_keys)
+        self.assertIn('journal', d3_keys)
+        self.assertEqual(out[2]['docid'], 'a third id')
+        self.assertEqual(out[2]['date'], datetime.fromtimestamp(1372274197.663496))
+        self.assertEqual(out[2]['journal'], 'third journal id')
+
+        d4_keys = out[3].keys()
+        self.assertIn('docid', d4_keys)
+        self.assertIn('date', d4_keys)
+        self.assertNotIn('journal', d4_keys)
+        self.assertEqual(out[3]['docid'], 'a fourth id')
+        # Should return value of datetime.now, which has been mocked
+        self.assertEqual(out[3]['date'], datetime(2013, 6, 22, 10, 11, 50))
