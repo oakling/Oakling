@@ -1,4 +1,5 @@
 @import "colors.scss";
+@import "mixins.scss";
 
 body {
     color: $main_text;
@@ -74,17 +75,7 @@ p.lead {
 }
 
 .navbar-inner {
-    background-image: linear-gradient(top, $header_top, $header_bottom);
-    /* Safari 4+, Chrome 1-9 */
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($header_top), to($header_bottom));
-    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
-    background-image: -webkit-linear-gradient(top, $header_top, $header_bottom);
-    /* Firefox 3.6+ */
-    background-image: -moz-linear-gradient(top, $header_top, $header_bottom);
-    /* IE 10+ */
-    background-image: -ms-linear-gradient(top, $header_top, $header_bottom);
-    /* Opera 11.10+ */
-    background-image: -o-linear-gradient(top, $header_top, $header_bottom);
+   @include gradient($header_top, $header_bottom);
 }
 
 #account-bar {
@@ -127,27 +118,6 @@ p.lead {
     label {
         font-weight: bold;
         text-align: left;
-    }
-}
-
-@mixin triangle($color, $size) {
-    /* Stick to the list border */
-    margin-left: -2em;
-    /* Make the triangle */
-    display: block;
-    width: 0px;
-    height: 0px;
-    border-right: $size solid transparent;
-    border-top: $size solid $color;
-    border-left: $size solid $color;
-    border-bottom: $size solid transparent;
-
-    i {
-        position: relative;
-        top: -15px;
-        left: -13px;
-        font-size: 90%;
-        color: $white;
     }
 }
 
@@ -199,6 +169,36 @@ p.lead {
 
         span.journal {
             font-style: italic;
+        }
+    }
+}
+
+#saved_searches {
+    li {
+        /* Setting position to allow bottom position of terms */
+        position: relative;
+        list-style-type: none;
+        @include gradient($cards_top, $cards_bottom);
+        width: 15em;
+        height: 15em;
+        margin: 0.5em;
+        padding: 0.5em;
+        color: $white;
+
+        .count {
+            font-size: 500%;
+            position: relative;
+            top: 0.5em;
+            left: 0.2em;
+        }
+        .delete {
+            font-size: 300%;
+            float: right;
+            cursor: pointer;
+        }
+        .terms {
+            position: absolute;
+            bottom: 0px;
         }
     }
 }

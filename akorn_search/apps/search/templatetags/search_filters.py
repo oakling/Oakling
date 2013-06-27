@@ -22,9 +22,9 @@ def short_label(query_obj):
     for query in query_obj['queries'].itervalues():
         b = query.get('label','')
         # Check if the journal name is longer than we want
-        if len(b) <= 42:
+        if len(b) <= 22:
                 output.append(esc(b))
         else:
             output.append(''.join(['<span title="',esc(b),'">',
-                esc(b[0:40]),'&hellip;</span>']))
+                esc(b[0:20]),'&hellip;</span>']))
     return mark_safe(' +<br />'.join(output))

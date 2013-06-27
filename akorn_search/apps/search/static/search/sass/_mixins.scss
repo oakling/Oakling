@@ -1,0 +1,34 @@
+@mixin gradient($top, $bottom) {
+    background-image: linear-gradient(top, $top, $bottom);
+    /* Safari 4+, Chrome 1-9 */
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($top), to($bottom));
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, $top, $bottom);
+    /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, $top, $bottom);
+    /* IE 10+ */
+    background-image: -ms-linear-gradient(top, $top, $bottom);
+    /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, $top, $bottom);
+}
+
+@mixin triangle($color, $size) {
+    /* Stick to the list border */
+    margin-left: -2em;
+    /* Make the triangle */
+    display: block;
+    width: 0px;
+    height: 0px;
+    border-right: $size solid transparent;
+    border-top: $size solid $color;
+    border-left: $size solid $color;
+    border-bottom: $size solid transparent;
+
+    i {
+        position: relative;
+        top: -15px;
+        left: -13px;
+        font-size: 90%;
+        color: $white;
+    }
+}
