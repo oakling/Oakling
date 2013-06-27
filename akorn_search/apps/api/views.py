@@ -244,25 +244,12 @@ class ArticlesView(TemplateView):
         resp = self.lucene_request(query)
         return self.lucene_process(resp)
 
-    # TODO Behaviour of this method should be in scrapers/couch views
-    @staticmethod
-    def process_docs(lucene_docs):
+    def process_docs(self, lucene_docs):
         for d in lucene_docs:
             # Cannot use _id inside a Django template
             d['docid'] = d['_id']
-            # Process the timestamp to produce a usable datetime object
-            # TODO Need a reliable property to access for date
-            try:
-              if d.has_key('date_published') and d['date_published'] is not None:
-                  d['date'] = datetime.fromtimestamp(d['date_published'])
-              elif d.has_key('date_revised') and d['date_revised'] is not None:
-                  d['date'] = datetime.fromtimestamp(d['date_revised'])
-              elif d.has_key('date_received') and d['date_received'] is not None:
-                  d['date'] = datetime.fromtimestamp(d['date_received'])
-              else:
-                  d['date'] = datetime.now()
-            except TypeError:
-              d['date'] = datetime.now()
+
+            d['date'] = self.get_doc_date(d)
 
             if 'citation' in d and 'journal' in d['citation']:
               d['journal'] = d['citation']['journal']
@@ -270,6 +257,24 @@ class ArticlesView(TemplateView):
               d['journal'] = d['categories']['arxiv'][0] + " (arxiv)"
 
         return lucene_docs
+
+    # TODO Behaviour of this method should be in scrapers/couch views
+    @staticmethod
+    def get_doc_date(doc):
+        """
+        Select the most relevant date from the ones available
+        """
+        # TODO Need a reliable property to access for date
+        date_props = ['date_published', 'date_revised', 'date_received']
+        try:
+            for prop in date_props:
+                timestamp = doc.get(prop)
+                if timestamp:
+                    # Process the timestamp to produce a datetime
+                    return datetime.fromtimestamp(timestamp)
+            return datetime.now()
+        except TypeError:
+            return datetime.now()
 
     def get_context_data(self, **kwargs):
         """
