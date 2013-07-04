@@ -310,10 +310,10 @@ class JournalAutoCompleteView(JSONResponseMixin, View):
             try:
                 for alias in doc['sorted_aliases']:
                     if query and query in alias[0]:
-                        journals.append((doc['name'], alias[1], doc.id))
+                        journals.append({'full': doc['name'], 'text': alias[1], 'id': doc.id, 'type': 'journal'})
                         break
                     elif not query:
-                        journals.append((doc['name'], alias[1], doc.id))
+                        journals.append({'full': doc['name'], 'text': alias[1], 'id':doc.id, 'type': 'journal'})
                         break
             except KeyError:
                 # If the journal has no name, skip it
