@@ -2,6 +2,7 @@
 @import "mixins.scss";
 
 body {
+    @include gradient($background, $white);
     color: $main_text;
 }
 
@@ -203,6 +204,11 @@ p.lead {
         margin: 0.5em;
         padding: 0.5em;
         color: $white;
+
+        &:hover, &.selected {
+            color: $black;
+            @include gradient($white, $background);
+        }
 
         .count {
             font-size: 500%;
