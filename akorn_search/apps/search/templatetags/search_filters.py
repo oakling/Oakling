@@ -28,3 +28,10 @@ def short_label(query_obj):
             output.append(''.join(['<span title="',esc(b),'">',
                 esc(b[0:20]),'&hellip;</span>']))
     return mark_safe(' +<br />'.join(output))
+
+@register.filter
+def query_count(count):
+    """
+    Prefix single digits with a 0
+    """
+    return "{0:0=2d}".format(count)

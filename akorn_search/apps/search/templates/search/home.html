@@ -32,7 +32,11 @@ $(document).ready(akorn.init);
             {% for q_id, q in saved_searches.items %}
                 {% spaceless %}
                 <li data-query="{{ q.queries|to_json|escapejs }}" id="{{ q_id }}">
-                <span class="count">15</span>
+                <span class="count">
+                    {% if q.count > 0 %}
+                        {{ q.count|query_count }}
+                    {% endif %}
+                </span>
                 <span data-queryid="{{ q_id }}" class="delete">&times;</span>
                 <div class="terms">
                     <p>{{ q|short_label }}</p>
