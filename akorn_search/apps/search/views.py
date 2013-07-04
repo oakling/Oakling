@@ -30,7 +30,7 @@ class HomeView(TemplateView):
         saved_searches = self.get_saved_searches()
         # Check journals in each saved search for number of recent articles
         query_objs = {}
-        for query_id, search in saved_searches.items():
+        for query_id, search in saved_searches.iteritems():
             article_counts = apps.api.views.articles_since(search.keys())
 
             query_objs[query_id] = {'count':sum(article_counts.values()),
@@ -54,7 +54,7 @@ class DocView(TemplateView):
 
         # Process the IDs to make them usable in URLS
         # TODO Make this more robust, but retain slash to underscore behaviour
-        pane_doc_ids = {k: v.replace('/', '_') for k, v in doc['ids'].items()}
+        pane_doc_ids = {k: v.replace('/', '_') for k, v in doc['ids'].iteritems()}
 
         panes = apps.panes.models.Pane.objects.all()
         valid_panes = []
