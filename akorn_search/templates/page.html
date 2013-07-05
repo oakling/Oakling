@@ -1,14 +1,14 @@
-{% load i18n assets %}<!DOCTYPE html>
+{% load i18n assets %}{% load static from staticfiles %}<!DOCTYPE html>
 <html lang="en"> 
     <head> 
         <meta charset="utf-8"> 
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/bootstrap.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/ui-lightness/jquery-ui-1.8.22.custom.css">
-
-        {% assets "search_css" %}
-        <link rel="stylesheet" href="{{ ASSET_URL }}">
-        {% endassets %}
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/jquery.tagit.css">
+        {% block style %}
+            {% assets "search_css" %}
+            <link rel="stylesheet" href="{{ ASSET_URL }}">
+            {% endassets %}
+            <link rel="stylesheet" href="{% static "search/fontello/css/fontello.css" %}">
+            <link rel="stylesheet" href="{% static "search/select2/select2.css" %}">
+        {% endblock %}
         <title>Akorn {% block pagetitle %}{% trans "open science" %}{% endblock %}</title>
         {% block canonical %}{% endblock %}
         {% block og_meta %}{% endblock %}

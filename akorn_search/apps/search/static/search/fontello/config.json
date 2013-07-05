@@ -1,0 +1,25 @@
+{
+  "name": "",
+  "css_prefix_text": "icon-",
+  "css_use_suffix": false,
+  "glyphs": [
+    {
+      "uid": "ab95e1351ebaec5850101097cbf7097f",
+      "css": "keyword",
+      "code": 59392,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "9755f76110ae4d12ac5f9466c9152031",
+      "css": "journal",
+      "code": 59393,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "11e664deed5b2587456a4f9c01d720b6",
+      "css": "cancel",
+      "code": 59394,
+      "src": "iconic"
+    }
+  ]
+}

@@ -1,8 +1,37 @@
+var format = function(state, len) {
+        var text = state.text;
+        if (text.length-3 > len) {
+            text = text.substring(0, len)+'…';
+        }
+
+        return ['<i class="icon-',
+            state.type,
+            '"></i>',
+            '<span title="',
+            state.text,
+            '">',
+            text,
+            '</span>'
+        ].join('');
+    }
+
+var select_format = function(state) {
+        return format(state, 70);
+    }
+
+var tag_format = function(state) {
+        return format(state, 25);
+    }
+
 var select2_options = {
     tags: true,
     multiple: true,
-    width: 'off',
+    width: "off",
+    placeholder: "Search for journals ...",
     minimumInputLength: 2,
+    formatResult: select_format,
+    formatSelection: tag_format,
+    escapeMarkup: function(m) { return m; },
     createSearchChoice: function(term, data) {
         // Check whether user supplied term matches a choice
         if ($(data).filter(function() {
