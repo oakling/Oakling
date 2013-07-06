@@ -31,7 +31,8 @@ class HomeView(TemplateView):
         # Check journals in each saved search for number of recent articles
         query_objs = {}
         for query_id, search in saved_searches.iteritems():
-            article_counts = apps.api.views.articles_since(search.keys())
+            journals = [item['id'] for item in search if item['type'] == 'journal']
+            article_counts = apps.api.views.articles_since(journals)
 
             query_objs[query_id] = {'count':sum(article_counts.values()),
                 'queries': search}

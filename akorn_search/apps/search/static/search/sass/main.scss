@@ -251,7 +251,7 @@ p.lead {
 
 #saved_searches {
     li {
-        /* Setting position to allow bottom position of terms */
+        /* Setting position to allow bottom position  terms */
         position: relative;
         list-style-type: none;
         @include gradient($cards_top, $cards_bottom);
@@ -283,8 +283,12 @@ p.lead {
         }
         .terms {
             position: absolute;
-            left: 1em;
+            left: 0.2em;
             bottom: 0px;
+
+            i {
+                margin-right: 8px;
+            }
         }
     }
 }

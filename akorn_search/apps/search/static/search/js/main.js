@@ -114,25 +114,27 @@ var akorn = {
         // Stick a delay in to mitigate scrollbar glitches
         window.setTimeout('akorn.pause_updates = false', 400);
     },
-    make_keyword_query: function(query_obj) {
+    make_keyword_query: function(query) {
     // Take a query object and return a string for use in get_articles
-        queries = [];
-        for(q in query_obj) {
-            if (query_obj[q]['type'] === 'keyword') {
-                queries.push(q);
+        var query_bit, article_query = [];
+        for(var i=0, len=query.length; i<len; i++) {
+            query_bit = query[i];
+            if (query_bit['type'] === 'keyword') {
+                article_query.push(query_bit['id']);
             }
         }
-        return queries.join('+');
+        return article_query.join('+');
     },
-    make_journal_query: function(query_obj) {
+    make_journal_query: function(query) {
     // Take a query object and return a string for use in get_articles
-        queries = [];
-        for(q in query_obj) {
-            if (query_obj[q]['type'] === 'journal') {
-                queries.push(q);
+        var query_bit, article_query = [];
+        for(var i=0, len=query.length; i<len; i++) {
+            query_bit = query[i];
+            if (query_bit['type'] === 'journal') {
+                article_query.push(query_bit['id']);
             }
         }
-        return queries.join('+');
+        return article_query.join('+');
     },
     // Get a specified number of articles
     get_articles: function(query, clear) {
@@ -156,11 +158,11 @@ var akorn = {
         };
 
         if(query !== undefined && query) {
-            var keyword_str = akorn.make_keyword_query(query);
+            var keyword_str = ak.make_keyword_query(query);
             if(keyword_str !== '') {
                 params['k'] = keyword_str;
             }
-            var journal_str = akorn.make_journal_query(query);
+            var journal_str = ak.make_journal_query(query);
             if(journal_str !== '') {
                 params['j'] = journal_str;
             }
@@ -318,28 +320,18 @@ var akorn = {
             return true;
         }
     },
-    get_articles_from_search: function() {
+    get_articles_for_query: function() {
     // Get articles based on tags in search box
         var ak = akorn;
         var tags = ak.search_box.select2("data");
-        var query = ak.make_query_from_tags(tags);
-        ak.get_articles(query, true);
+        ak.get_articles(tags, true);
     },
     populate_search_from_query: function(query_obj) {
         var ak = akorn;
         // Clean the search box
         ak.search_box.select2("val", "");
         // Create each in order
-        var bits = [];
-        for(bit in query_obj) {
-            query_bit = query_obj[bit];
-            bits.push({
-                'id': bit,
-                'text': query_bit['label'],
-                'type': query_bit['type']
-            });
-        }
-        ak.search_box.select2("data", bits);
+        ak.search_box.select2("data", query_obj);
         return this;
     },
     decode_unicode: function(encoded_str) {
@@ -382,21 +374,13 @@ var akorn = {
     },
     shorten_query: function(query_obj) {
     // Takes a query string and produces a pretty HTML rendering of it
-        var b;
         var output = [];
         // Split the query into each journal
-        for(keyword in query_obj) {
-            b = query_obj[keyword]['label'];
-            // Check if the journal name is longer than we want
-            if(b.length <= 42) {
-                output.push(b);
-            }
-            else {
-                output.push(['<span title="',b,'">',
-                    b.substr(0,40),'&hellip;</span>'].join(''));
-            }
+        for(var i=0, len=query_obj.length; i<len; i++) {
+            // Format the name
+            output.push(format(query_obj[i], 13));
         }
-        return output.join(' +<br />');
+        return output.join('<br />');
     },
     add_saved_search: function(query, query_id) {
         var ak = akorn;
@@ -410,7 +394,7 @@ var akorn = {
                     '</p></div></li>'].join(''));
         el.children('a').data('query', $.extend(true, {}, query));
         // Add to list of saved searches
-        ak.saved_searches.append(el);
+        ak.saved_searches.prepend(el);
     },
     post_saved_search: function(query) {
     // Take a given query and save it to the server
@@ -420,27 +404,13 @@ var akorn = {
                 akorn.add_saved_search(query, data['query_id']);
             }, 'json');
     },
-    make_query_from_tags: function(tags) {
-    // Convert the tags populated in the search bar into an articles query
-        var query = {}
-        for(var i=0, len=tags.length; i<len; i++) {
-            var tag = tags[i];
-            query[tag['id']] = {
-                'query': tag['id'],
-                'type': tag['type'],
-                'label': tag['text']
-            };
-        }
-        return query;
-    },
     save_search_handler: function(e) {
     // Handles clicks on the save this query button
         var ak = akorn;
+        // Get the tags
         var tags = ak.search_box.select2("data");
-        // Convert the tags into a query
-        var query = ak.make_query_from_tags(tags)
-        // Get the search terms
-        ak.post_saved_search(query);
+        // Save the search
+        ak.post_saved_search(tags);
         return false;
     },
     activate_search_box: function() {
@@ -462,7 +432,7 @@ var akorn = {
         search_box.select2(select2_options);
         ak.search_box = search_box;
         // Listen for changes on search box
-        search_box.on('change', ak.get_articles_from_search);
+        search_box.on('change', ak.get_articles_for_query);
     },
     state: function() {
         return {'query': akorn.query};

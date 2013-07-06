@@ -18,16 +18,23 @@ def to_json(query_obj):
 def short_label(query_obj):
     # Collect the output
     output = []
+    icon = '<i class="icon-{}"></i>'
     # Split the query into each journal
-    for query in query_obj['queries'].itervalues():
-        b = query.get('label','')
+    for query in query_obj['queries']:
+        text = query.get('text','')
+        line_bits = [icon.format(esc(query.get('type', '')))]
         # Check if the journal name is longer than we want
-        if len(b) <= 22:
-                output.append(esc(b))
+        if len(text) <= 15:
+            line_bits.append(esc(text))
         else:
-            output.append(''.join(['<span title="',esc(b),'">',
-                esc(b[0:20]),'&hellip;</span>']))
-    return mark_safe(' +<br />'.join(output))
+            line_bits.extend([
+                '<span title="',
+                esc(text),
+                '">',
+                esc(text[0:13]),
+                '&hellip;</span>'])
+        output.append(''.join(line_bits))
+    return mark_safe('<br />'.join(output))
 
 @register.filter
 def query_count(count):
