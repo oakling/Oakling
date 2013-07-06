@@ -137,15 +137,15 @@ var akorn = {
         return article_query.join('+');
     },
     // Get a specified number of articles
-    get_articles: function(query, clear) {
+    get_articles: function(query, replace) {
         // Optionally pass a flag as the 2nd argument
         //      Function will switch from appending to replacing articles
         var ak = akorn;
         var callback;
 
-        if(clear !== undefined && clear) {
+        if(replace !== undefined && replace) {
             callback = ak.replace_articles;
-            // We are clearing, to reset the skip counter
+            // We are clearing, so reset the skip counter
             ak.skip = 0;
         }
         else {
@@ -178,7 +178,8 @@ var akorn = {
             ak.prev_article = ak.articles_container
                 .find('li:last-child');
             // Get articles after the current last article
-            ak.get_articles(ak.query);
+            var tags = ak.search_box.select2("data");
+            ak.get_articles(tags);
     },
     insert_date_line: function(date_str, latest_article) {
         var content = 'Today';
