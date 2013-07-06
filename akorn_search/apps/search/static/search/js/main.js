@@ -27,7 +27,6 @@ var select2_options = {
     tags: true,
     multiple: true,
     width: "off",
-    placeholder: "Search for journals ...",
     minimumInputLength: 2,
     formatResult: select_format,
     formatSelection: tag_format,
