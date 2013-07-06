@@ -9,7 +9,7 @@ $(document).ready(function() {
         var ak = akorn;
         var query = "{{ journal.id }}";
         ak.query = query;
-        ak.articles_container = $('#latest_articles');
+        ak.articles_container = $('#articles');
         ak.get_articles(20, undefined, query, true);
         $(window).scroll(ak.throttle(function() {
             ak.check_position();

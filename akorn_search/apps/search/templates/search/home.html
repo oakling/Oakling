@@ -24,7 +24,7 @@ $(document).ready(akorn.init);
     </div>
 </div>
 
-<div class="row-fluid">
+<div id="main_row" class="row-fluid">
     <div class="span2">
         <ul id="saved_searches">
             {% for q_id, q in saved_searches.items %}
@@ -45,8 +45,8 @@ $(document).ready(akorn.init);
         </ul>
     </div>
 
-    <div class="span10">
-        <ul id="latest_articles">
+    <div id="articles_container" class="span10">
+        <ul id="articles">
         </ul>
     </div>
 </div>

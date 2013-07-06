@@ -2,13 +2,11 @@ $white: #fff;
 $black: #000;
 
 $main_text: #666666;
-$link_text: #3ddad3;
-$header_text: #4d4d4d;
 $feature_color: #009bf7;
+$link_text: $feature_color;
+$header_text: #4d4d4d;
 $background: #f2f2f2;
 $nav_text: $white;
-
-$tagit_background: $white;
 
 $hr_indent: #e2e2e2;
 $hr_highlight: $white;
@@ -20,3 +18,5 @@ $flag_color: $feature_color;
 
 $cards_bottom: #717171;
 $cards_top: #9e9e9e;
+
+$date_block: #cccccc;

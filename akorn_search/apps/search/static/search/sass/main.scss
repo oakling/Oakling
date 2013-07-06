@@ -1,8 +1,8 @@
 @import "colors.scss";
 @import "mixins.scss";
 
-body {
-    @include gradient($background, $white);
+html, body {
+    background: $background;
     color: $main_text;
 }
 
@@ -74,6 +74,7 @@ a {
     .select2-choices {
         border: 1px solid $hr_indent;
         box-shadow: none;
+        min-height: 33px;
     }
 
     .select2-search-choice {
@@ -105,12 +106,6 @@ a {
         right: 3px;
         top: 5px;
     }
-}
-
-hr {
-    border-top: 1px solid $hr_indent;
-    background: $hr_highlight;
-    height: 1px;
 }
 
 .btn-primary {
@@ -199,13 +194,29 @@ p.lead {
     }
 }
 
-#latest_articles {
+#articles {
+    border-left: 1px solid $hr_indent;
+
     h2 {
-        font-size: 150%;
-        color: $main_text;
-        margin: 1em 0;
-        padding: 0;
+        color: $white;
+        background: $date_block;
+        padding: 0.3em 0;
         line-height: 1;
+        float: left;
+        width: 2.5em;
+        margin-left: -2.5em;
+
+        span {
+            width: 100%;
+            text-align: center;
+            float:left;
+            &.month {
+                font-size: 60%;
+            }
+            &.day {
+                font-size: 120%;
+            }
+        }
     }
 
     li {
@@ -213,7 +224,6 @@ p.lead {
         min-height: 4em;
         list-style: none;
         margin-bottom: 1.2em;
-        border-left: 1px solid $feature_color;
 
         $triangle_size: 15px;
     
@@ -234,7 +244,7 @@ p.lead {
         h3 {
             font-size: 120%;
             a {
-               color: $main_text; 
+               color: $feature_color;
             }
         }
 

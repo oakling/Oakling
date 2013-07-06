@@ -64,8 +64,8 @@ var akorn = {
     limit: 10,
     skip: 0,
     // Storing set nice names for months
-    month_names: [ "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December" ],
+    month_names: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
     load_pane: function(pane_url, pane_el) {
         var ak = akorn;
         var container = pane_el.find('.accordion-inner');
@@ -181,18 +181,19 @@ var akorn = {
             ak.get_articles(ak.query);
     },
     insert_date_line: function(date_str, latest_article) {
-        var content = 'Today';
+        var content = 'Today', month, day;
         // Is it today?
         if(arguments[2] === undefined || !arguments[2]) {
             var date_bits = date_str.split('-');
-            content = [date_bits[2],
-            ' ',
-            akorn.month_names[parseInt(date_bits[1])-1]].join('');
+            day = date_bits[2];
+            month = akorn.month_names[parseInt(date_bits[1])-1];
         }
         // Make a date line
-        date_added = $(['<h2>',
-            content,
-            '</h2>']
+        date_added = $(['<h2><span class="month">',
+            month,
+            '</span><span class="day">',
+            day,
+            '</span></h2>']
             .join(''));
         date_added.insertBefore(latest_article);
         return;
@@ -458,7 +459,7 @@ var akorn = {
         var ak = akorn;
         // Get the place to stick articles
         // Set it as a static property to be accessible across instances
-        ak.articles_container = $('#latest_articles');
+        ak.articles_container = $('#articles');
         // Activate search box
         ak.activate_search_box();
 
