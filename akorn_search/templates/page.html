@@ -16,23 +16,21 @@
     <body>
         <div class="navbar">
             <div class="navbar-inner">
-                <a class="brand" href="{% url "main" %}">AKORN</a>
-                <ul class="nav">
-                    <li><a href="{% url "about" %}">{% trans "About" %}</a></li>
-                    <li><a href="http://blog.akorn.org/">{% trans "Blog" %}</a></li>
-                </ul>
-                <p class="lead pull-right">{% trans "Research in a nut shell" %}</p>
-                <ul id="account-bar">
-                    {% if request.user.is_authenticated %}
-                    <li>{{ request.user }}</li>
-                    <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
-                    {% else %}
-                    <li><a href="{% url "accounts:register" %}">{% trans "Sign up" %}</a></li>
-                    <li><a href="{% url "auth_login" %}?next={{ request.path }}">{% trans "Log in" %}</a></li>
-                    {% endif %}
-                </ul>
+                <a class="brand" href="{% url "main" %}">Akorn</a>
+                <nav id="menu">
+                    <ul>
+                        <li><a href="{% url "about" %}">{% trans "About" %}</a></li>
+                        <li><a href="http://blog.akorn.org/">{% trans "Blog" %}</a></li>
+                        {% if request.user.is_authenticated %}
+                        <li><a href="#">{% trans "Account" %}</a></li>
+                        <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
+                        {% else %}
+                        <li><a href="{% url "accounts:register" %}">{% trans "Sign up" %}</a></li>
+                        <li><a href="{% url "auth_login" %}?next={{ request.path }}">{% trans "Log in" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
-
         </div>
 
         {% block container %}
