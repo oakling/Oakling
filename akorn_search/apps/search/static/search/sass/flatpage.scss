@@ -1,7 +1,22 @@
 .flatpage {
     margin-left: 3em !important;
     margin-top: 2em;
-}
-.flatpage h2 {
-    margin-bottom: 0.5em;
+
+    h2 {
+        margin-bottom: 0.5em;
+    }
+
+    .banner {
+        margin-top: 5em;
+        width: 100%;
+        text-align: center;
+        h2 {
+            text-align: center;
+            font-size: 400%;
+            text-transform: uppercase;
+        }
+        p {
+            font-size: 200%;
+        }
+    }
 }

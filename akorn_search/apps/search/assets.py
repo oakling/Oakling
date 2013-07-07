@@ -3,6 +3,7 @@ from django_assets import Bundle, register
 # Compile sass files to css and squash
 sass = Bundle('search/sass/main.scss',\
     'search/sass/index.scss',\
+    'search/sass/flatpage.scss',\
     'search/sass/recruitment.scss',\
     filters='scss,cssmin')
 
