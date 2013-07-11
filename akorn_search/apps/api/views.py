@@ -190,7 +190,8 @@ class ArticlesView(TemplateView):
             'q': query,
             'include_docs': 'true',
             'stale': 'ok',
-            'limit': self.doc_limit
+            'limit': self.doc_limit,
+            'sort': '\sort_date'
             }
         # Check if a number of articles to skip has been specified
         if self.doc_skip:
