@@ -14,6 +14,7 @@ css = Bundle(
 
 # Pack js libraries
 libs = Bundle('search/js/jquery.min.js',\
+    'search/js/jquery.history.js',\
     'search/js/bootstrap.min.js',\
     'search/select2/select2.js',\
     output='gen/packed.js')
