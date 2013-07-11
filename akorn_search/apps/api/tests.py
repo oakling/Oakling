@@ -216,8 +216,8 @@ class MockJournalDocument(dict):
 
 
 class JournalsViewTestCase(TestCase):
-    journal_out = ("Test", "Test", "f45f136fbd14caa156e5b4b8467e6521")
-    journal2_out = ("House", "Fish", "f45f136fbd14caa156e5b4b84611bba5")
+    journal_out = {"text": "Test", "full": "Test", "id": "f45f136fbd14caa156e5b4b8467e6521", "type": "journal"}
+    journal2_out = {"text": "Fish", "full": "House", "id": "f45f136fbd14caa156e5b4b84611bba5", "type": "journal"}
 
     def setUp(self):
         journal = MockJournalDocument()
