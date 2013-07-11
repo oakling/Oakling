@@ -205,12 +205,23 @@ class ArticlesView(TemplateView):
         return [x['doc'] for x in response['rows']]
 
     @staticmethod
+    def lucene_split_keywords(arg):
+        try:
+            arg = arg.strip()
+            if not arg:
+                return []
+            args = arg.split('|')
+            return [_.split(' ') for _ in args]
+        except AttributeError:
+            return []
+
+    @staticmethod
     def lucene_split_arg(arg):
         try:
             arg = arg.strip()
             if not arg:
                 return []
-            return arg.split('+')
+            return arg.split('|')
         except AttributeError:
             return []
 
@@ -225,7 +236,7 @@ class ArticlesView(TemplateView):
         if keywords:
             # AND between all keywords
             # The last word may not be complete - add a wildcard character
-            keywords_str = ' AND '.join(keywords)+'*';
+            keywords_str = "(" + " OR ".join(["\"" + " ".join(_) + "\"" for _ in keywords]) + ")"
         # Deal with the case that there are no journals to be filtered by
         if journals:
            journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])
@@ -236,7 +247,7 @@ class ArticlesView(TemplateView):
 
     def lucene_search(self):
         # Get keywords from request parameters
-        keywords = self.lucene_split_arg(self.request.GET.get('k'))
+        keywords = self.lucene_split_keywords(self.request.GET.get('k'))
         # Get journals from request parameters
         journals = self.lucene_split_arg(self.request.GET.get('j'))
         # Construct the lucene query

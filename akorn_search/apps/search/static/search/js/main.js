@@ -123,7 +123,7 @@ var akorn = {
                 article_query.push(query_bit['id']);
             }
         }
-        return article_query.join('+');
+        return article_query.join('|');
     },
     make_journal_query: function(query) {
     // Take a query object and return a string for use in get_articles
@@ -134,7 +134,7 @@ var akorn = {
                 article_query.push(query_bit['id']);
             }
         }
-        return article_query.join('+');
+        return article_query.join('|');
     },
     // Get a specified number of articles
     get_articles: function(query, replace) {
