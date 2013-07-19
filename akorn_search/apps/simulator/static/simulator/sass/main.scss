@@ -1,0 +1,38 @@
+#config {
+    margin-left: 3em;
+
+    label[for=id_scraper_config] {
+        display: none;
+    }
+
+    textarea, input {
+        width: 80%;
+    }
+
+    textarea {
+        height: 450px;
+    }
+}
+
+#preview {
+    padding-left: 3em;
+    dd {
+        text-align: justify;
+    }
+
+    > dl {
+        padding: 0.7em 1.7em 0.7em 0.7em;
+        border: 1px solid silver;
+        border-radius: 3px;
+        background: #fff;
+    }
+
+    dl {
+
+        margin-top: 0.2em;
+        margin-bottom: 0.2em;
+    }
+    dl dl{
+        margin-left: 1em;
+    }
+}
