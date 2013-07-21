@@ -10,21 +10,21 @@
 
 {% block content %}
 <div id="config" class="span5">
-    <h2>Config</h2>
+    <h2>{% trans "Config" %}</h2>
     {{ form.errors }}
     <form name="config" action="." method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <p>
-        <input class="btn-primary btn-large" type="submit" value="Run" />
+        <input class="btn-primary btn-large" type="submit" value="{% trans "Run" %}" />
         </p>
     </form>
 </div>
 <div id="preview" class="span5">
-    <h2>Preview</h2>
+    <h2>{% trans "Preview" %}</h2>
     {% if error %}
         <div class="alert alert-error">
-        <h4>Error</h4>
+            <h4>{% trans "Error" %}</h4>
         <p>{{ error }}</p>
         </div>
     {% else %}
