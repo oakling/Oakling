@@ -260,27 +260,20 @@ class ArticlesView(TemplateView):
         for d in lucene_docs:
             # Cannot use _id inside a Django template
             d['docid'] = d['_id']
-
+            # Convert unix timestamp to date object
             d['date'] = self.get_doc_date(d)
         return lucene_docs
 
-    # TODO Behaviour of this method should be in scrapers/couch views
     @staticmethod
     def get_doc_date(doc):
         """
         Select the most relevant date from the ones available
         """
-        # TODO Need a reliable property to access for date
-        date_props = ['date_published', 'date_revised', 'date_received']
-        try:
-            for prop in date_props:
-                timestamp = doc.get(prop)
-                if timestamp:
-                    # Process the timestamp to produce a datetime
-                    return datetime.fromtimestamp(timestamp)
-            return datetime.now()
-        except TypeError:
-            return datetime.now()
+        timestamp = doc.get('date_scraped')
+        if timestamp:
+            # Process the timestamp to produce a datetime
+            return datetime.fromtimestamp(timestamp)
+        return None
 
     def get_context_data(self, **kwargs):
         """
