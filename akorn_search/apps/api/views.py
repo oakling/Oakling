@@ -26,6 +26,9 @@ from couch import db_store, db_journals
 class BadRequest(Exception):
     pass
 
+class LuceneFailed(Exception):
+    pass
+
 class NoResults(Exception):
     pass
 
