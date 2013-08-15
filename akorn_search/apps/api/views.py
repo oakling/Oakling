@@ -9,6 +9,7 @@ import couchdb
 from datetime import datetime, date
 import string
 import requests
+from requests.exceptions import ConnectionError
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -25,14 +26,8 @@ from couch import db_store, db_journals
 class BadRequest(Exception):
     pass
 
-
-class LuceneFailed(Exception):
-    pass
-
-
 class NoResults(Exception):
     pass
-
 
 class JSONResponseMixin(object):
     response_class = HttpResponse
@@ -196,10 +191,10 @@ class ArticlesView(TemplateView):
         # Check if a number of articles to skip has been specified
         if self.doc_skip:
             options['skip'] = self.doc_skip
-        try:
-            return requests.get(self.lucene_url, params=options).json()
-        except ValueError as e:
-            raise LuceneFailed(e.message)
+        response = requests.get(self.lucene_url, params=options)
+        if response.status_code == 404:
+            raise ConnectionError('Lucene not found')
+        return response.json()
 
     @staticmethod
     def lucene_process(response):
