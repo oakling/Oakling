@@ -6,14 +6,17 @@ from django import forms
 
 from .forms import SimulatorForm
 
-from akorn.scrapers.base import BaseScraper
+from akorn.scrapers.base import BaseScraper, Config
 
 class SimulatedScraper(BaseScraper):
-    def __init__(self, config_xml_str):
+    def __init__(self, config_str):
         """
         Overload BaseScraper.__init__, to load config from param not file
         """
-        self.config_data = lxml.etree.fromstring(config_xml_str)
+        self.config = Config()
+        parsed = self.config.parse_config(config_str)
+        self.config.config = self.config.compile_config(parsed)
+
 
 class SimulatorView(FormView):
     template_name = 'simulator/simulator.html'
