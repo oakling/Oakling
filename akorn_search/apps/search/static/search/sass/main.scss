@@ -270,6 +270,10 @@ p.lead {
             @include gradient($white, $background);
         }
 
+        &:first-child {
+            margin-top: 0;
+        }
+
         .count {
             font-size: 500%;
             position: relative;
