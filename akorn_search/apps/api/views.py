@@ -262,12 +262,6 @@ class ArticlesView(TemplateView):
             d['docid'] = d['_id']
 
             d['date'] = self.get_doc_date(d)
-
-            if 'citation' in d and 'journal' in d['citation']:
-              d['journal'] = d['citation']['journal']
-            elif 'categories' in d and 'arxiv' in d['categories']:
-              d['journal'] = d['categories']['arxiv'][0] + " (arxiv)"
-
         return lucene_docs
 
     # TODO Behaviour of this method should be in scrapers/couch views
