@@ -12,6 +12,26 @@
 <div id="config" class="span5">
     <h2>{% trans "Config" %}</h2>
     {{ form.errors }}
+    {% if config.missing %}
+            <div class="alert alert-error">
+                <h4>{% trans "Missing:" %}</h4>
+                <ul>{{ config.missing|unordered_list }}</ul>
+            </div>
+    {% endif %}
+
+    {% if config.not_allowed %}
+            <div class="alert alert-error">
+                <h4>{% trans "Invalid properties:" %}</h4>
+                <ul>{{ config.not_allowed|unordered_list }}</ul>
+            </div>
+    {% endif %}
+
+    {% if config.unused %}
+            <div class="alert alert-info">
+                <h4>{% trans "Consider adding:" %}</h4>
+                <ul>{{ config.unused|unordered_list }}</ul>
+            </div>
+    {% endif %}
     <form name="config" action="." method="post">
         {% csrf_token %}
         {{ form.as_p }}
@@ -22,12 +42,18 @@
 </div>
 <div id="preview" class="span5">
     <h2>{% trans "Preview" %}</h2>
-    {% if error %}
+    {% if out_error %}
         <div class="alert alert-error">
             <h4>{% trans "Error" %}</h4>
-        <p>{{ error }}</p>
+        <p>{{ out_error }}</p>
         </div>
     {% else %}
+        {% if out_missing %}
+            <div class="alert alert-error">
+                <h4>{% trans "Missing properties" %}</h4>
+                <p>{{ out_missing|join:", " }}</p>
+            </div>
+        {% endif %}
         {{ scraped|to_dl }}
     {% endif%}
 </div>

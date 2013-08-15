@@ -9,6 +9,8 @@ def to_dl(input_dict, safe=True):
     if not input_dict:
         return ''
     for key, value in input_dict.items():
+        if not value:
+            continue
         output.extend(['<dt>', key, '<dt>'])
         output.append('<dd>')
         val_type = type(value)
