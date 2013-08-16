@@ -108,6 +108,8 @@ var akorn = {
         ak.unpause_updates();
         // Increment the skip counter
         ak.skip += ak.limit;
+        // Trigger loaded event
+        ak.articles_container.trigger('akorn.loaded');
     },
     // Stop the scroll updates
     unpause_updates: function() {
@@ -164,9 +166,18 @@ var akorn = {
                 params['j'] = journal_str;
             }
         }
+        // Trigger loading event
+        ak.articles_container.trigger('akorn.loading');
+        // Request the articles
         $.get('/api/articles', params, callback, 'html');
         // Save the query state
         ak.save_state();
+    },
+    show_article_loading: function() {
+        $('#loading').show();
+    },
+    hide_article_loading: function() {
+        $('#loading').hide();
     },
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
@@ -460,6 +471,10 @@ var akorn = {
         ak.articles_container = $('#articles');
         // Activate search box
         ak.activate_search_box();
+
+        // Add handlers for loading box
+        ak.articles_container.on('akorn.loading', ak.show_article_loading);
+        ak.articles_container.on('akorn.loaded', ak.hide_article_loading);
 
         // Listen to window scroll events
         // Reduce spurious calls by adding a 250 ms delay between triggers

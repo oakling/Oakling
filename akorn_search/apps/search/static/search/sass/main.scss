@@ -253,6 +253,25 @@ p.lead {
     }
 }
 
+#loading {
+    width: 50%;
+    margin: 0 auto 1.5em auto;
+    padding: 1em 0;
+    background: $light_grey;
+    border: 1px solid $dark_grey;
+
+    p {
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        font-size: 120%;
+
+        i {
+            margin-right: 0.5em;
+        }
+    }
+}
+
 #saved_searches {
     li {
         /* Setting position to allow bottom position  terms */
