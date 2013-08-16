@@ -116,21 +116,18 @@ var akorn = {
     },
     make_keyword_query: function(query) {
     // Take a query object and return a string for use in get_articles
-        var query_bit, article_query = [];
-        for(var i=0, len=query.length; i<len; i++) {
-            query_bit = query[i];
-            if (query_bit['type'] === 'keyword') {
-                article_query.push(query_bit['id']);
-            }
-        }
-        return article_query.join('|');
+        return this.make_query(query, 'keyword');
     },
     make_journal_query: function(query) {
+    // Take a query object and return a string for use in get_articles
+        return this.make_query(query, 'journal');
+    },
+    make_query: function(query, type) {
     // Take a query object and return a string for use in get_articles
         var query_bit, article_query = [];
         for(var i=0, len=query.length; i<len; i++) {
             query_bit = query[i];
-            if (query_bit['type'] === 'journal') {
+            if (query_bit['type'] === type) {
                 article_query.push(query_bit['id']);
             }
         }
