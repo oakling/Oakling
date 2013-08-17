@@ -215,11 +215,9 @@ class MockJournalDocument(dict):
     id = None
 
 
-class JournalsViewTestCase(TestCase):
-    journal_out = {"text": "Test", "full": "Test", "id": "f45f136fbd14caa156e5b4b8467e6521", "type": "journal"}
-    journal2_out = {"text": "Fish", "full": "House", "id": "f45f136fbd14caa156e5b4b84611bba5", "type": "journal"}
-
-    def setUp(self):
+class MockJournalAutoCompleteView(views.JournalAutoCompleteView):
+    @classmethod
+    def get_journal_docs(cls, db=None):
         journal = MockJournalDocument()
         journal.id = "f45f136fbd14caa156e5b4b8467e6521"
         journal["name"] = "Test"
@@ -230,19 +228,23 @@ class JournalsViewTestCase(TestCase):
         journal2["name"] = "House"
         journal2["sorted_aliases"] = [['fish', 'Fish']]
 
-        # Hack because of global variable use
-        views.journal_doc_cache = [journal, journal2]
+        return [journal, journal2]
+
+
+class JournalsViewTestCase(TestCase):
+    journal_out = {"text": "Test", "full": "Test", "id": "f45f136fbd14caa156e5b4b8467e6521", "type": "journal"}
+    journal2_out = {"text": "Fish", "full": "House", "id": "f45f136fbd14caa156e5b4b84611bba5", "type": "journal"}
 
     def test_journals_returned(self):
-        out = views.JournalAutoCompleteView.find_journals(None)
+        out = MockJournalAutoCompleteView.find_journals(None)
         self.assertEqual(out, [self.journal_out, self.journal2_out])
 
     def test_journals_partial(self):
-        out = views.JournalAutoCompleteView.find_journals('te')
+        out = MockJournalAutoCompleteView.find_journals('te')
         self.assertEqual(out, [self.journal_out])
 
     def test_journals_none(self):
-        out = views.JournalAutoCompleteView.find_journals('not')
+        out = MockJournalAutoCompleteView.find_journals('not')
         self.assertEqual(out, [])
 
 

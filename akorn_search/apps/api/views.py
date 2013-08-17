@@ -11,6 +11,7 @@ import string
 import requests
 
 from django.conf import settings
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -47,29 +48,6 @@ class JSONResponseMixin(object):
     def convert_context_to_json(self, context):
         # TODO Add support for objects that cannot be serialized directly
         return json.dumps(context)
-
-
-def get_journal_docs(db=None):
-  db = db_journals
-
-  journal_docs = list([db[doc_id] for doc_id in db])
-
-  for doc in journal_docs:
-    if 'aliases' in doc:
-      doc['sorted_aliases'] = sorted([(clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
-    else:
-      doc['sorted_aliases'] = []
-
-  return journal_docs
-
-def clean_journal(s):
-  # keep only alphanumeric characters for comparison purposes
-  try:
-    return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
-  except:
-    return None
-
-journal_doc_cache = get_journal_docs()
 
 
 class SavedSearchMixin(object):
@@ -301,11 +279,41 @@ class ArticlesView(TemplateView):
 
 
 class JournalAutoCompleteView(JSONResponseMixin, View):
+    @classmethod
+    def get_journal_docs(cls, db=None):
+        cache_key = 'journals'
+        cached = cache.get(cache_key)
+        if cached:
+            return cached
+
+        # If it is not cached then work it out
+        db = db_journals
+        journal_docs = list([db[doc_id] for doc_id in db])
+
+        for doc in journal_docs:
+            if 'aliases' in doc:
+                doc['sorted_aliases'] = sorted([(cls.clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
+            else:
+                doc['sorted_aliases'] = []
+
+        # Set the cache, expiring after 1 day
+        cache.set(cache_key, journal_docs, 86400)
+        return journal_docs
+
     @staticmethod
-    def find_journals(query):
+    def clean_journal(s):
+        # keep only alphanumeric characters for comparison purposes
+        try:
+            return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
+        except:
+            return None
+
+    @classmethod
+    def find_journals(cls, query):
         # Set up empty list to store what we want to return
         journals = []
-        for doc in journal_doc_cache:
+        # Note that get_journal_docs is an expensive call
+        for doc in cls.get_journal_docs():
             try:
                 for alias in doc['sorted_aliases']:
                     if query and query in alias[0]:
@@ -321,7 +329,7 @@ class JournalAutoCompleteView(JSONResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         # Get string to look for
-        query = clean_journal(request.GET.get('term'))
+        query = self.clean_journal(request.GET.get('term'))
         found = self.find_journals(query)
         return self.render_to_response(found)
 
