@@ -1,5 +1,7 @@
+import feedparser
 import functools
 import lxml
+import random
 
 from django.http import HttpResponse
 from django.views.generic import FormView
@@ -41,12 +43,39 @@ class SimulatorView(FormView):
     template_name = 'simulator/simulator.html'
     form_class = SimulatorForm
 
-    def simulate_scrape(self, url, config):
+    def scrape_feed(self, feed_url, url_key='link'):
+        """
+        Return list of article URLS to scrape
+        """
+        items = feedparser.parse(feed_url).get('items')
+        if not items:
+            raise Exception("Failed to scrape feed")
+
+        article_urls = [item.get(url_key) for item in items if url_key in item]
+
+        if not article_urls:
+            raise Exception("Failed to find URLs in feed. Try one of: {}.".format(', '.join(item.keys())))
+
+        return article_urls
+
+    def scrape_article(self, url, scraper):
+        article = {}
+        try:
+            # Record the URL we're attempting to scrape
+            article['url'] = url
+            # Use the supplied config to scrape the given url
+            article['scraped'], scraper = self.simulate_scrape(url, scraper)
+            article['out_missing'] = scraper.missing
+            article['config'] = scraper.config
+        except Exception as e:
+            # Catch other errors and pass to context
+            article['out_error'] = str(e)
+        return article
+
+    def simulate_scrape(self, url, scraper):
         """
         Return dict of scraped article
         """
-        # Instantiate the scraper with the supplied configuration
-        scraper = SimulatedScraper(config)
         # Scrape the given url
         return scraper.scrape_article(url), scraper
 
@@ -56,17 +85,23 @@ class SimulatorView(FormView):
         """
         # Add the supplied form into the context
         context = {'form': form}
-        # Find the form inputs
-        url = form.cleaned_data['article_url']
-        config = form.cleaned_data['scraper_config']
-
         try:
-            # Use the supplied config to scrape the given url
-            context['scraped'], scraper = self.simulate_scrape(url, config)
-            context['out_missing'] = scraper.missing
-            context['config'] = scraper.config
+            # Find the form inputs
+            feed_url = form.cleaned_data['feed_url']
+            url_key = form.cleaned_data['article_tag']
+            config = form.cleaned_data['scraper_config']
+            # Parse the feed and find the article urls
+            articles = self.scrape_feed(feed_url, url_key)
+            # Instantiate the scraper with the supplied configuration
+            scraper = SimulatedScraper(config)
+            # Grab any 2 articles
+            articles = random.sample(articles, 2)
+            # Try to scrape the selected articles
+            context['articles'] = [self.scrape_article(url, scraper) for url in articles]
+        except KeyError as e:
+            context['error'] = 'All fields are required'
         except Exception as e:
-            # Catch other errors and pass to context
-            context['out_error'] = str(e)
+            context['error'] = str(e)
+
         # Render the original template with the new context
         return self.render_to_response(context)

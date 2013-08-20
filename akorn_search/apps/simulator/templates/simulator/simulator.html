@@ -9,6 +9,13 @@
 {% endblock %}
 
 {% block content %}
+
+{% if error %}
+    <div id="error" class="alert alert-error">
+        {{ error }}
+    </div>
+{% endif %}
+
 <div id="config" class="span5">
     <h2>{% trans "Config" %}</h2>
     {{ form.errors }}
@@ -42,19 +49,33 @@
 </div>
 <div id="preview" class="span5">
     <h2>{% trans "Preview" %}</h2>
-    {% if out_error %}
-        <div class="alert alert-error">
-            <h4>{% trans "Error" %}</h4>
-        <p>{{ out_error }}</p>
-        </div>
-    {% else %}
-        {% if out_missing %}
+
+    {% if articles %}
+
+    <p>Tried {{ articles|length }} random articles from the feed:</p>
+    <ul>
+    {% for a in articles %}
+        <li>{{ a.url }}</li>
+    {% endfor %}
+    </ul>
+
+    {% for a in articles %}
+        {% if a.out_error %}
             <div class="alert alert-error">
-                <h4>{% trans "Missing properties" %}</h4>
-                <p>{{ out_missing|join:", " }}</p>
+                <h4>{% trans "Error" %}</h4>
+            <p>{{ a.out_error }}</p>
             </div>
+        {% else %}
+            {% if a.out_missing %}
+                <div class="alert alert-error">
+                    <h4>{% trans "Missing properties" %}</h4>
+                    <p>{{ a.out_missing|join:", " }}</p>
+                </div>
+            {% endif %}
+            {{ a.scraped|to_dl }}
         {% endif %}
-        {{ scraped|to_dl }}
-    {% endif%}
+    {% endfor %}
+
+    {% endif %}
 </div>
 {% endblock %}
