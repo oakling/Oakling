@@ -45,6 +45,12 @@
         <p>
         <input class="btn-primary btn-large" type="submit" value="{% trans "Run" %}" />
         </p>
+
+        {% if articles and not config.not_allowed and not config.missing and not form.errors and not out_missing %}
+        <p>
+        <input class="btn-primary btn-large" name="save" type="submit" value="{% trans "Submit" %}" />
+        </p>
+        {% endif %}
     </form>
 </div>
 <div id="preview" class="span5">

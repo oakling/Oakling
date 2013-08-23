@@ -3,8 +3,10 @@ import functools
 import lxml
 import random
 
+from django.core.mail import mail_managers
 from django.http import HttpResponse
 from django.views.generic import FormView
+from django.template.loader import render_to_string
 from django import forms
 
 from .forms import SimulatorForm
@@ -79,12 +81,14 @@ class SimulatorView(FormView):
         # Scrape the given url
         return scraper.scrape_article(url), scraper
 
-    def form_valid(self, form):
-        """
-        Return template rendered with scraped content or error
-        """
+    def email_config(self, form):
+        # Then email the config and feed definition to Managers
+        mail_managers('Scraper request',
+            render_to_string('simulator/email.txt',
+                {'data': form.cleaned_data, 'user': self.request.user}))
+
+    def run_config(self, form, context):
         # Add the supplied form into the context
-        context = {'form': form}
         try:
             # Find the form inputs
             feed_url = form.cleaned_data['feed_url']
@@ -102,6 +106,19 @@ class SimulatorView(FormView):
             context['error'] = 'All fields are required'
         except Exception as e:
             context['error'] = str(e)
+        return context
+
+    def form_valid(self, form):
+        """
+        Return template rendered with scraped content or error
+        """
+        context = {'form': form}
+
+        # If the user pressed the Save button, rather than run
+        if self.request.POST.get('save'):
+            self.email_config(form)
+        else:
+            context = self.run_config(form, context)
 
         # Render the original template with the new context
         return self.render_to_response(context)

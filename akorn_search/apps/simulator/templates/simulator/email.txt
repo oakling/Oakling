@@ -1,0 +1,12 @@
+Request for new scraper submitted by {{ user }}.
+
+== Config ==
+{{ data.scraper_config|safe }}
+
+== Feed URL ==
+{{ data.feed_url }}
+
+== Article URL tag ==
+{{ data.article_tag }}
+
+Go do stuff!
