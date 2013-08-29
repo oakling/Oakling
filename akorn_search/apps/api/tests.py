@@ -255,21 +255,22 @@ class ArticlesViewSplitArgTestCase(TestCase):
         self.assertEqual([args], bits)
 
     def test_lucene_multiple(self):
-        args = "Fish+Dog+Horse"
+        delimiter = views.ArticlesView.delimiter
+        args = delimiter.join(["Fish", "Dog", "Horse"])
         bits = views.ArticlesView.lucene_split_arg(args)
         self.assertEqual(["Fish", "Dog", "Horse"], bits)
 
 
 class ArticlesViewQueryTestCase(TestCase):
     def test_make_full_query(self):
-        out = views.ArticlesView.lucene_get_query(keywords=['Word', 'Fish'],
+        out = views.ArticlesView.lucene_get_query(keywords=['Word Horse', 'Fish'],
             journals=['21412412', '1241525211'])
-        expected = "Word AND Fish* AND journalID:(21412412 OR 1241525211)"
+        expected = '("Word Horse" OR "Fish") AND journalID:(21412412 OR 1241525211)'
         self.assertEqual(out, expected)
 
     def test_make_keyword_query(self):
         out = views.ArticlesView.lucene_get_query(keywords=['Word', 'Fish'])
-        expected = "Word AND Fish*"
+        expected = '("Word" OR "Fish")'
         self.assertEqual(out, expected)
 
     def test_make_journal_query(self):

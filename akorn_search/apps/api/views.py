@@ -146,6 +146,7 @@ class ArticlesView(TemplateView):
     template_name = 'search/article_list.html'
     lucene_url = settings.LUCENE_URL
     max_limit = 50
+    delimiter = '|'
 
     @property
     def doc_limit(self):
@@ -183,24 +184,24 @@ class ArticlesView(TemplateView):
     def lucene_process(response):
         return [x['doc'] for x in response['rows']]
 
-    @staticmethod
-    def lucene_split_keywords(arg):
+    @classmethod
+    def lucene_split_keywords(cls, arg):
         try:
             arg = arg.strip()
             if not arg:
                 return []
-            args = arg.split('|')
+            args = arg.split(cls.delimiter)
             return [_.split(' ') for _ in args]
         except AttributeError:
             return []
 
-    @staticmethod
-    def lucene_split_arg(arg):
+    @classmethod
+    def lucene_split_arg(cls, arg):
         try:
             arg = arg.strip()
             if not arg:
                 return []
-            return arg.split('|')
+            return arg.split(cls.delimiter)
         except AttributeError:
             return []
 
@@ -215,7 +216,7 @@ class ArticlesView(TemplateView):
         if keywords:
             # AND between all keywords
             # The last word may not be complete - add a wildcard character
-            keywords_str = "(" + " OR ".join(["\"" + " ".join(_) + "\"" for _ in keywords]) + ")"
+            keywords_str = "(" + " OR ".join(["\"" + _ + "\"" for _ in keywords]) + ")"
         # Deal with the case that there are no journals to be filtered by
         if journals:
            journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])
