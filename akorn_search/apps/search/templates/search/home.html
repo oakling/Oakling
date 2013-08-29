@@ -24,8 +24,8 @@ $(document).ready(akorn.init);
     </div>
 </div>
 
-<div id="main_row" class="row-fluid">
-    <div class="span2">
+<div id="main_row" class="row">
+    <div class="span3">
         <ul id="saved_searches">
             {% for q_id, q in saved_searches.items %}
                 {% spaceless %}
@@ -45,9 +45,12 @@ $(document).ready(akorn.init);
         </ul>
     </div>
 
-    <div id="articles_container" class="span10">
+    <div id="articles_container" class="span8">
         <ul id="articles">
         </ul>
+        <div id="loading" style="display: none">
+            <p><i class="icon-loading"></i> Loading…</p>
+        </div>
     </div>
 </div>
 {% endblock %}

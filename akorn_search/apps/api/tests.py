@@ -215,11 +215,9 @@ class MockJournalDocument(dict):
     id = None
 
 
-class JournalsViewTestCase(TestCase):
-    journal_out = {"text": "Test", "full": "Test", "id": "f45f136fbd14caa156e5b4b8467e6521", "type": "journal"}
-    journal2_out = {"text": "Fish", "full": "House", "id": "f45f136fbd14caa156e5b4b84611bba5", "type": "journal"}
-
-    def setUp(self):
+class MockJournalAutoCompleteView(views.JournalAutoCompleteView):
+    @classmethod
+    def get_journal_docs(cls, db=None):
         journal = MockJournalDocument()
         journal.id = "f45f136fbd14caa156e5b4b8467e6521"
         journal["name"] = "Test"
@@ -230,19 +228,23 @@ class JournalsViewTestCase(TestCase):
         journal2["name"] = "House"
         journal2["sorted_aliases"] = [['fish', 'Fish']]
 
-        # Hack because of global variable use
-        views.journal_doc_cache = [journal, journal2]
+        return [journal, journal2]
+
+
+class JournalsViewTestCase(TestCase):
+    journal_out = {"text": "Test", "full": "Test", "id": "f45f136fbd14caa156e5b4b8467e6521", "type": "journal"}
+    journal2_out = {"text": "Fish", "full": "House", "id": "f45f136fbd14caa156e5b4b84611bba5", "type": "journal"}
 
     def test_journals_returned(self):
-        out = views.JournalAutoCompleteView.find_journals(None)
+        out = MockJournalAutoCompleteView.find_journals(None)
         self.assertEqual(out, [self.journal_out, self.journal2_out])
 
     def test_journals_partial(self):
-        out = views.JournalAutoCompleteView.find_journals('te')
+        out = MockJournalAutoCompleteView.find_journals('te')
         self.assertEqual(out, [self.journal_out])
 
     def test_journals_none(self):
-        out = views.JournalAutoCompleteView.find_journals('not')
+        out = MockJournalAutoCompleteView.find_journals('not')
         self.assertEqual(out, [])
 
 
@@ -317,48 +319,38 @@ class ArticlesViewSkipTestCase(TestCase):
         self.assertRaises(views.BadRequest, getattr, view, 'doc_skip')
 
 
-class FakeDateTime(datetime):
-    def __new__(cls, *args, **kwargs):
-        return datetime.__new__(datetime, *args, **kwargs)
-
-
 class ArticlesViewProcessDocs(TestCase):
-    published_doc = {
+    all_doc = {
             '_id': 'some random id',
             'date_published': 1372274046.607653,
             'date_revised': 1372274070.96599,
             'date_received': 1372274197.663496,
+            'date_scraped': 1352274180.663496
         }
     revised_doc = {
             '_id': 'another id',
-            'date_revised': 1372274070.96599,
-            'date_received': 1372274197.663496,
+            'date_revised': 1372274070.96599
         }
-    received_doc = {
+    scraped_doc = {
             '_id': 'a third id',
-            'date_received': 1372274197.663496,
+            'date_scraped': 1352274180.663496
         }
     nothing_doc = {
             '_id': 'a fourth id',
         }
 
-    def test_published_doc(self):
-        doc_date = views.ArticlesView.get_doc_date(self.published_doc)
-        self.assertEqual(doc_date, datetime.fromtimestamp(1372274046.607653))
+    def test_all_doc(self):
+        doc_date = views.ArticlesView.get_doc_date(self.all_doc)
+        self.assertEqual(doc_date, datetime.fromtimestamp(1352274180.663496))
 
     def test_revised_doc(self):
         doc_date = views.ArticlesView.get_doc_date(self.revised_doc)
-        self.assertEqual(doc_date, datetime.fromtimestamp(1372274070.96599))
+        self.assertEqual(doc_date, None)
 
     def test_received_doc(self):
-        doc_date = views.ArticlesView.get_doc_date(self.received_doc)
-        self.assertEqual(doc_date, datetime.fromtimestamp(1372274197.663496))
+        doc_date = views.ArticlesView.get_doc_date(self.scraped_doc)
+        self.assertEqual(doc_date, datetime.fromtimestamp(1352274180.663496))
 
-    @mock.patch('apps.api.views.datetime', FakeDateTime)
     def test_nothing_docs(self):
-        from datetime import datetime
-        # now method will return fixed datetime
-        FakeDateTime.now = classmethod(lambda cls: datetime(2013, 6, 22, 10, 11, 50))
         doc_date = views.ArticlesView.get_doc_date(self.nothing_doc)
-        # Should return value of datetime.now, which has been mocked
-        self.assertEqual(doc_date, datetime(2013, 6, 22, 10, 11, 50))
+        self.assertEqual(doc_date, None)

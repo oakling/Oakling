@@ -1,7 +1,7 @@
 import couchdb
-import local_settings
+import settings
 
-server = couchdb.Server(local_settings.COUCH_SERVER)
+server = couchdb.Server(settings.COUCH_SERVER)
 
 def get_db(db):
   try:

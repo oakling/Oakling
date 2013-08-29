@@ -2,11 +2,18 @@
   "name": "",
   "css_prefix_text": "icon-",
   "css_use_suffix": false,
+  "hinting": true,
   "glyphs": [
     {
       "uid": "ab95e1351ebaec5850101097cbf7097f",
       "css": "keyword",
       "code": 59392,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "598a5f2bcf3521d1615de8e1881ccd17",
+      "css": "loading",
+      "code": 59395,
       "src": "fontawesome"
     },
     {

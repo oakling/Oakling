@@ -108,6 +108,8 @@ var akorn = {
         ak.unpause_updates();
         // Increment the skip counter
         ak.skip += ak.limit;
+        // Trigger loaded event
+        ak.articles_container.trigger('akorn.loaded');
     },
     // Stop the scroll updates
     unpause_updates: function() {
@@ -116,21 +118,18 @@ var akorn = {
     },
     make_keyword_query: function(query) {
     // Take a query object and return a string for use in get_articles
-        var query_bit, article_query = [];
-        for(var i=0, len=query.length; i<len; i++) {
-            query_bit = query[i];
-            if (query_bit['type'] === 'keyword') {
-                article_query.push(query_bit['id']);
-            }
-        }
-        return article_query.join('|');
+        return this.make_query(query, 'keyword');
     },
     make_journal_query: function(query) {
+    // Take a query object and return a string for use in get_articles
+        return this.make_query(query, 'journal');
+    },
+    make_query: function(query, type) {
     // Take a query object and return a string for use in get_articles
         var query_bit, article_query = [];
         for(var i=0, len=query.length; i<len; i++) {
             query_bit = query[i];
-            if (query_bit['type'] === 'journal') {
+            if (query_bit['type'] === type) {
                 article_query.push(query_bit['id']);
             }
         }
@@ -167,9 +166,18 @@ var akorn = {
                 params['j'] = journal_str;
             }
         }
+        // Trigger loading event
+        ak.articles_container.trigger('akorn.loading');
+        // Request the articles
         $.get('/api/articles', params, callback, 'html');
         // Save the query state
         ak.save_state();
+    },
+    show_article_loading: function() {
+        $('#loading').show();
+    },
+    hide_article_loading: function() {
+        $('#loading').hide();
     },
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
@@ -463,6 +471,10 @@ var akorn = {
         ak.articles_container = $('#articles');
         // Activate search box
         ak.activate_search_box();
+
+        // Add handlers for loading box
+        ak.articles_container.on('akorn.loading', ak.show_article_loading);
+        ak.articles_container.on('akorn.loaded', ak.hide_article_loading);
 
         // Listen to window scroll events
         // Reduce spurious calls by adding a 250 ms delay between triggers
