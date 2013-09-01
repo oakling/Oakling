@@ -108,8 +108,6 @@ var akorn = {
         ak.unpause_updates();
         // Increment the skip counter
         ak.skip += ak.limit;
-        // Trigger loaded event
-        ak.articles_container.trigger('akorn.loaded');
     },
     // Stop the scroll updates
     unpause_updates: function() {
@@ -169,7 +167,10 @@ var akorn = {
         // Trigger loading event
         ak.articles_container.trigger('akorn.loading');
         // Request the articles
-        $.get('/api/articles', params, callback, 'html');
+        $.get('/api/articles', params, callback, 'html')
+            .always(function() {
+                ak.articles_container.trigger('akorn.loaded');
+            });
     },
     show_article_loading: function() {
         $('#loading').show();
