@@ -95,6 +95,13 @@ class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
         # Return the saved query's id
         return query_id
 
+    def get(self, request, **kwargs):
+        """
+        Return all saved searches
+        """
+        searches, user = self.get_saved_searches()
+        return self.render_to_response(searches)
+
     @method_decorator(csrf_exempt)
     def post(self, request, **kwargs):
         """

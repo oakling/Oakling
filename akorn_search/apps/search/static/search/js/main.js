@@ -190,13 +190,13 @@ var akorn = {
     },
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
-            var ak = akorn;
-            // Get the last article for use later
-            ak.prev_article = ak.articles_container
-                .find('li:last-child');
-            // Get articles after the current last article
-            var tags = ak.search_box.select2("data");
-            ak.get_articles(tags);
+        var ak = akorn;
+        // Get the last article for use later
+        ak.prev_article = ak.articles_container
+            .find('li:last-child');
+        // Get articles after the current last article
+        var tags = ak.search_box.select2("data");
+        ak.get_articles(tags);
     },
     insert_date_line: function(date_str, latest_article) {
         var content = 'Today', month, day;
@@ -416,11 +416,18 @@ var akorn = {
     },
     post_saved_search: function(query) {
     // Take a given query and save it to the server
-        $.post('/api/save_search', {query: JSON.stringify(query)},
+        $.post('/api/searches', {query: JSON.stringify(query)},
             function(data){
-                console.log('Query saved successfully');
                 akorn.add_saved_search(query, data['query_id']);
             }, 'json');
+    },
+    get_saved_searches: function() {
+        $.getJSON('/api/searches', function(data) {
+            var ak = akorn;
+            for(id in data) {
+                ak.add_saved_search(data[id], id);
+            }
+        });
     },
     save_search_handler: function(e) {
     // Handles clicks on the save this query button
@@ -462,7 +469,6 @@ var akorn = {
         History.replaceState(akorn.state(), "");
     },
     load_state: function(e) {
-        // Set the state using state passed by popstate event
         var state = History.getState();
         // Check for state
         if(state.data === undefined) {
@@ -479,6 +485,8 @@ var akorn = {
         // Get the place to stick articles
         // Set it as a static property to be accessible across instances
         ak.articles_container = $('#articles');
+        // Load saved searches
+        ak.get_saved_searches();
         // Activate search box
         ak.activate_search_box();
 
