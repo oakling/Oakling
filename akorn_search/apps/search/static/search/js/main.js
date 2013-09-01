@@ -410,9 +410,10 @@ var akorn = {
                     '<div class="terms"><p>',
                     ak.shorten_query(query),
                     '</p></div></li>'].join(''));
-        el.children('a').data('query', $.extend(true, {}, query));
         // Add to list of saved searches
         ak.saved_searches.prepend(el);
+        // Add data
+        el.data('query', query);
     },
     post_saved_search: function(query) {
     // Take a given query and save it to the server
