@@ -98,18 +98,18 @@ var akorn = {
     // Replaces the articles with a new set, rather than appending
     replace_articles: function(data) {
         var ak = akorn;
+        // Clear the articles
+        ak.clear_articles();
+        // Call the usual append method
+        ak.append_articles(data);
+    },
+    // Remove any displayed articles
+    clear_articles: function() {
+        var ak = akorn;
         // Remove prev article state
         ak.prev_article = undefined;
         // Replace the current articles with new ones
-        ak.articles_container.html(data);
-        // Add date lines
-        ak.add_date_lines();
-        // Once we have finished adding, stop the pause on updates
-        ak.unpause_updates();
-        // Increment the skip counter
-        ak.skip += ak.limit;
-        // Trigger loaded event
-        ak.articles_container.trigger('akorn.loaded');
+        ak.articles_container.empty();
     },
     // Stop the scroll updates
     unpause_updates: function() {
@@ -166,12 +166,21 @@ var akorn = {
                 params['j'] = journal_str;
             }
         }
+
+        if(params['j'] === undefined && params['k'] === undefined) {
+            // If the search box is blank, then clear any articles
+            ak.clear_articles();
+            // and stop
+            return;
+        }
+
         // Trigger loading event
         ak.articles_container.trigger('akorn.loading');
         // Request the articles
-        $.get('/api/articles', params, callback, 'html');
-        // Save the query state
-        ak.save_state();
+        $.get('/api/articles', params, callback, 'html')
+            .always(function() {
+                ak.articles_container.trigger('akorn.loaded');
+            });
     },
     show_article_loading: function() {
         $('#loading').show();
@@ -181,13 +190,13 @@ var akorn = {
     },
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
-            var ak = akorn;
-            // Get the last article for use later
-            ak.prev_article = ak.articles_container
-                .find('li:last-child');
-            // Get articles after the current last article
-            var tags = ak.search_box.select2("data");
-            ak.get_articles(tags);
+        var ak = akorn;
+        // Get the last article for use later
+        ak.prev_article = ak.articles_container
+            .find('li:last-child');
+        // Get articles after the current last article
+        var tags = ak.search_box.select2("data");
+        ak.get_articles(tags);
     },
     insert_date_line: function(date_str, latest_article) {
         var content = 'Today', month, day;
@@ -342,6 +351,8 @@ var akorn = {
         ak.search_box.select2("val", "");
         // Create each in order
         ak.search_box.select2("data", query_obj);
+        // Trigger change event
+        ak.search_box.trigger("change");
         return this;
     },
     decode_unicode: function(encoded_str) {
@@ -363,11 +374,8 @@ var akorn = {
         if($.type(query) === "string") {
             query = JSON.parse(ak.decode_unicode(query));
         }
-        ak.query = query;
         // Change tags displayed in search box
         ak.populate_search_from_query(query);
-        // Do a new query
-        ak.get_articles(query, true);
         // Stop the event from propagating
         return false;
     },
@@ -408,11 +416,18 @@ var akorn = {
     },
     post_saved_search: function(query) {
     // Take a given query and save it to the server
-        $.post('/api/save_search', {query: JSON.stringify(query)},
+        $.post('/api/searches', {query: JSON.stringify(query)},
             function(data){
-                console.log('Query saved successfully');
                 akorn.add_saved_search(query, data['query_id']);
             }, 'json');
+    },
+    get_saved_searches: function() {
+        $.getJSON('/api/searches', function(data) {
+            var ak = akorn;
+            for(id in data) {
+                ak.add_saved_search(data[id], id);
+            }
+        });
     },
     save_search_handler: function(e) {
     // Handles clicks on the save this query button
@@ -443,25 +458,26 @@ var akorn = {
         ak.search_box = search_box;
         // Listen for changes on search box
         search_box.on('change', ak.get_articles_for_query);
+        search_box.on('change', ak.save_state);
     },
     state: function() {
-        return {'query': akorn.query};
+        return {'query': akorn.search_box.select2("data")};
     },
     save_state: function() {
         // We need to store the query and saved searches
         // This is so we don't break the back button
-        history.replaceState(akorn.state(), "");
-    }, 
+        History.replaceState(akorn.state(), "");
+    },
     load_state: function(e) {
-        // Set the state using state passed by popstate event
-        var state = e.state;
+        var state = History.getState();
         // Check for state
-        if(!state) {
+        if(state.data === undefined) {
             return;
         }
+        var query = state.data.query;
         // Use the query property to get articles
-        if(state.query !== undefined) {
-            akorn.get_articles(state.query, true);
+        if(query !== undefined) {
+            akorn.populate_search_from_query(query);
         }
     },
     init: function() {
@@ -469,6 +485,8 @@ var akorn = {
         // Get the place to stick articles
         // Set it as a static property to be accessible across instances
         ak.articles_container = $('#articles');
+        // Load saved searches
+        ak.get_saved_searches();
         // Activate search box
         ak.activate_search_box();
 
@@ -482,8 +500,8 @@ var akorn = {
             ak.check_position();
         }, 250));
 
-        // Listen to window popstate events
-        $(window).on('popstate', ak.load_state);
+        // Load any saved state
+        ak.load_state();
     }
 };
 
