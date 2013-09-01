@@ -101,13 +101,9 @@ var akorn = {
         // Remove prev article state
         ak.prev_article = undefined;
         // Replace the current articles with new ones
-        ak.articles_container.html(data);
-        // Add date lines
-        ak.add_date_lines();
-        // Once we have finished adding, stop the pause on updates
-        ak.unpause_updates();
-        // Increment the skip counter
-        ak.skip += ak.limit;
+        ak.articles_container.empty();
+        // Call the usual append method
+        ak.append_articles(data);
     },
     // Stop the scroll updates
     unpause_updates: function() {
