@@ -221,7 +221,7 @@ class ArticlesView(TemplateView):
         if keywords:
             # AND between all keywords
             # The last word may not be complete - add a wildcard character
-            keywords_str = "(" + " OR ".join(["\"" + _ + "\"" for _ in keywords]) + ")"
+            keywords_str = "(" + " OR ".join(["\"" + ' '.join(_) + "\"" for _ in keywords]) + ")"
         # Deal with the case that there are no journals to be filtered by
         if journals:
            journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])

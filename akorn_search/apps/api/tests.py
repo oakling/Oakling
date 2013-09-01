@@ -261,15 +261,27 @@ class ArticlesViewSplitArgTestCase(TestCase):
         self.assertEqual(["Fish", "Dog", "Horse"], bits)
 
 
+class ArticlesViewKeywordTestCase(TestCase):
+    def test_lucene_single_keyword_split(self):
+        delimiter = views.ArticlesView.delimiter
+        in_str = "Horse"
+        out_bits = views.ArticlesView.lucene_split_keywords(in_str)
+        self.assertEqual([["Horse"]], out_bits)
+
+    def test_lucene_multiple_keyword_split(self):
+        in_str = "Horse Donkey|Cat|Fish"
+        out_bits = views.ArticlesView.lucene_split_keywords(in_str)
+        self.assertEqual([["Horse", "Donkey"], ["Cat"], ["Fish"]], out_bits)
+
 class ArticlesViewQueryTestCase(TestCase):
     def test_make_full_query(self):
-        out = views.ArticlesView.lucene_get_query(keywords=['Word Horse', 'Fish'],
+        out = views.ArticlesView.lucene_get_query(keywords=[['Word', 'Horse'], ['Fish']],
             journals=['21412412', '1241525211'])
         expected = '("Word Horse" OR "Fish") AND journalID:(21412412 OR 1241525211)'
         self.assertEqual(out, expected)
 
     def test_make_keyword_query(self):
-        out = views.ArticlesView.lucene_get_query(keywords=['Word', 'Fish'])
+        out = views.ArticlesView.lucene_get_query(keywords=[['Word'], ['Fish']])
         expected = '("Word" OR "Fish")'
         self.assertEqual(out, expected)
 
@@ -278,6 +290,14 @@ class ArticlesViewQueryTestCase(TestCase):
             journals=['312452341', '211241412'])
         expected = "journalID:(312452341 OR 211241412)"
         self.assertEqual(out, expected)
+
+    def test_single_keyword_query(self):
+        out = views.ArticlesView.lucene_get_query(keywords=[['Horse']])
+        self.assertEqual(out, '("Horse")')
+
+    def test_single_journal_query(self):
+        out = views.ArticlesView.lucene_get_query(journals=['Horse'])
+        self.assertEqual(out, 'journalID:(Horse)')
 
 
 class ArticlesViewLimitTestCase(TestCase):
