@@ -1,4 +1,5 @@
 
+.icon-attention:before { content: '\e804'; } /* '' */
 .icon-cancel:before { content: '\e802'; } /* '' */
 .icon-keyword:before { content: '\e800'; } /* '' */
 .icon-journal:before { content: '\e801'; } /* '' */

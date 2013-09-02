@@ -177,16 +177,33 @@ var akorn = {
         // Trigger loading event
         ak.articles_container.trigger('akorn.loading');
         // Request the articles
-        $.get('/api/articles', params, callback, 'html')
-            .always(function() {
-                ak.articles_container.trigger('akorn.loaded');
+        var jqxhr = $.ajax({
+                url: '/api/articles',
+                data: params,
+                contentType: 'text/html'
+            })
+            .done(function(data, textStatus, jqxhr) {
+                if(jqxhr.status === 200) {
+                    callback(data);
+                }
+            })
+            .always(function(data, textStatus, jqxhr) {
+                if(jqxhr.status === 204) {
+                    ak.articles_container.trigger('akorn.no_results');
+                }
+                else {
+                    ak.articles_container.trigger('akorn.loaded');
+                }
             });
     },
     show_article_loading: function() {
-        $('#loading').show();
+        $('#msg').html('<p><i class="icon-loading"></i> Loading…</p>').show();
     },
-    hide_article_loading: function() {
-        $('#loading').hide();
+    show_no_results: function() {
+        $('#msg').html('<p><i class="icon-attention"></i> No articles</p>').show();
+    },
+    hide_message: function() {
+        $('#msg').hide();
     },
     // Add the next chunk of articles for the current query
     add_more_articles: function() {
@@ -493,7 +510,8 @@ var akorn = {
 
         // Add handlers for loading box
         ak.articles_container.on('akorn.loading', ak.show_article_loading);
-        ak.articles_container.on('akorn.loaded', ak.hide_article_loading);
+        ak.articles_container.on('akorn.loaded', ak.hide_message);
+        ak.articles_container.on('akorn.no_results', ak.show_no_results);
 
         // Listen to window scroll events
         // Reduce spurious calls by adding a 250 ms delay between triggers
