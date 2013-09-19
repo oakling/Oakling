@@ -5,7 +5,7 @@ from .views import JournalAutoCompleteView, DeleteSavedSearchView,\
 urlpatterns = patterns('',
     url(r'^journals$', JournalAutoCompleteView.as_view(), name='journals'),
     url(r'^articles$', ArticlesView.as_view(), name='articles'),
-    url(r'^save_search$', SavedSearchView.as_view(), name='save_search'),
+    url(r'^searches$', SavedSearchView.as_view(), name='save_search'),
     url(r'^remove_search$', DeleteSavedSearchView.as_view(), name='remove_search'),
     url(r'^num_new$', ArticleCountView.as_view(), name='num_new'),
 )

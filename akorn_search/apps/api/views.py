@@ -9,8 +9,10 @@ import couchdb
 from datetime import datetime, date
 import string
 import requests
+from requests.exceptions import ConnectionError
 
 from django.conf import settings
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -25,14 +27,11 @@ from couch import db_store, db_journals
 class BadRequest(Exception):
     pass
 
-
 class LuceneFailed(Exception):
     pass
 
-
 class NoResults(Exception):
     pass
-
 
 class JSONResponseMixin(object):
     response_class = HttpResponse
@@ -47,29 +46,6 @@ class JSONResponseMixin(object):
     def convert_context_to_json(self, context):
         # TODO Add support for objects that cannot be serialized directly
         return json.dumps(context)
-
-
-def get_journal_docs(db=None):
-  db = db_journals
-
-  journal_docs = list([db[doc_id] for doc_id in db])
-
-  for doc in journal_docs:
-    if 'aliases' in doc:
-      doc['sorted_aliases'] = sorted([(clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
-    else:
-      doc['sorted_aliases'] = []
-
-  return journal_docs
-
-def clean_journal(s):
-  # keep only alphanumeric characters for comparison purposes
-  try:
-    return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
-  except:
-    return None
-
-journal_doc_cache = get_journal_docs()
 
 
 class SavedSearchMixin(object):
@@ -118,6 +94,13 @@ class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
         self.set_saved_searches(searches, user)
         # Return the saved query's id
         return query_id
+
+    def get(self, request, **kwargs):
+        """
+        Return all saved searches
+        """
+        searches, user = self.get_saved_searches()
+        return self.render_to_response(searches)
 
     @method_decorator(csrf_exempt)
     def post(self, request, **kwargs):
@@ -168,6 +151,7 @@ class ArticlesView(TemplateView):
     template_name = 'search/article_list.html'
     lucene_url = settings.LUCENE_URL
     max_limit = 50
+    delimiter = '|'
 
     @property
     def doc_limit(self):
@@ -196,33 +180,33 @@ class ArticlesView(TemplateView):
         # Check if a number of articles to skip has been specified
         if self.doc_skip:
             options['skip'] = self.doc_skip
-        try:
-            return requests.get(self.lucene_url, params=options).json()
-        except ValueError as e:
-            raise LuceneFailed(e.message)
+        response = requests.get(self.lucene_url, params=options)
+        if response.status_code == 404:
+            raise ConnectionError('Lucene not found')
+        return response.json()
 
     @staticmethod
     def lucene_process(response):
         return [x['doc'] for x in response['rows']]
 
-    @staticmethod
-    def lucene_split_keywords(arg):
+    @classmethod
+    def lucene_split_keywords(cls, arg):
         try:
             arg = arg.strip()
             if not arg:
                 return []
-            args = arg.split('|')
+            args = arg.split(cls.delimiter)
             return [_.split(' ') for _ in args]
         except AttributeError:
             return []
 
-    @staticmethod
-    def lucene_split_arg(arg):
+    @classmethod
+    def lucene_split_arg(cls, arg):
         try:
             arg = arg.strip()
             if not arg:
                 return []
-            return arg.split('|')
+            return arg.split(cls.delimiter)
         except AttributeError:
             return []
 
@@ -237,7 +221,7 @@ class ArticlesView(TemplateView):
         if keywords:
             # AND between all keywords
             # The last word may not be complete - add a wildcard character
-            keywords_str = "(" + " OR ".join(["\"" + " ".join(_) + "\"" for _ in keywords]) + ")"
+            keywords_str = "(" + " OR ".join(["\"" + ' '.join(_) + "\"" for _ in keywords]) + ")"
         # Deal with the case that there are no journals to be filtered by
         if journals:
            journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])
@@ -260,33 +244,20 @@ class ArticlesView(TemplateView):
         for d in lucene_docs:
             # Cannot use _id inside a Django template
             d['docid'] = d['_id']
-
+            # Convert unix timestamp to date object
             d['date'] = self.get_doc_date(d)
-
-            if 'citation' in d and 'journal' in d['citation']:
-              d['journal'] = d['citation']['journal']
-            elif 'categories' in d and 'arxiv' in d['categories']:
-              d['journal'] = d['categories']['arxiv'][0] + " (arxiv)"
-
         return lucene_docs
 
-    # TODO Behaviour of this method should be in scrapers/couch views
     @staticmethod
     def get_doc_date(doc):
         """
         Select the most relevant date from the ones available
         """
-        # TODO Need a reliable property to access for date
-        date_props = ['date_published', 'date_revised', 'date_received']
-        try:
-            for prop in date_props:
-                timestamp = doc.get(prop)
-                if timestamp:
-                    # Process the timestamp to produce a datetime
-                    return datetime.fromtimestamp(timestamp)
-            return datetime.now()
-        except TypeError:
-            return datetime.now()
+        timestamp = doc.get('date_scraped')
+        if timestamp:
+            # Process the timestamp to produce a datetime
+            return datetime.fromtimestamp(timestamp)
+        return None
 
     def get_context_data(self, **kwargs):
         """
@@ -314,11 +285,41 @@ class ArticlesView(TemplateView):
 
 
 class JournalAutoCompleteView(JSONResponseMixin, View):
+    @classmethod
+    def get_journal_docs(cls, db=None):
+        cache_key = 'journals'
+        cached = cache.get(cache_key)
+        if cached:
+            return cached
+
+        # If it is not cached then work it out
+        db = db_journals
+        journal_docs = list([db[doc_id] for doc_id in db])
+
+        for doc in journal_docs:
+            if 'aliases' in doc:
+                doc['sorted_aliases'] = sorted([(cls.clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
+            else:
+                doc['sorted_aliases'] = []
+
+        # Set the cache, expiring after 1 day
+        cache.set(cache_key, journal_docs, 86400)
+        return journal_docs
+
     @staticmethod
-    def find_journals(query):
+    def clean_journal(s):
+        # keep only alphanumeric characters for comparison purposes
+        try:
+            return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
+        except:
+            return None
+
+    @classmethod
+    def find_journals(cls, query):
         # Set up empty list to store what we want to return
         journals = []
-        for doc in journal_doc_cache:
+        # Note that get_journal_docs is an expensive call
+        for doc in cls.get_journal_docs():
             try:
                 for alias in doc['sorted_aliases']:
                     if query and query in alias[0]:
@@ -334,7 +335,7 @@ class JournalAutoCompleteView(JSONResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         # Get string to look for
-        query = clean_journal(request.GET.get('term'))
+        query = self.clean_journal(request.GET.get('term'))
         found = self.find_journals(query)
         return self.render_to_response(found)
 

@@ -12,5 +12,4 @@ def get_server_url(server_root, username, password):
         return "http://%(server)s" % {"server": server_root }
 
 COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
-#COUCH_SERVER = "http://couchdb.private:5984"
-
+LUCENE_URL = COUCH_SERVER+'/store/_fti/_design/lucene/by_title'

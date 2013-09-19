@@ -12,6 +12,21 @@
     textarea {
         height: 450px;
     }
+
+    input {
+        margin-bottom: 0;
+    }
+
+    p {
+        margin-top: 1em;
+    }
+
+    .helptext {
+        float: left;
+        font-style: italic;
+        font-size: 85%;
+        margin-bottom: 1em;
+    }
 }
 
 #preview {
