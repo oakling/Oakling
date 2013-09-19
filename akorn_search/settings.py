@@ -195,6 +195,8 @@ LOGIN_REDIRECT_URL = 'main'
 
 AUTH_USER_MODEL = 'accounts.AkornUser'
 
+DEFAULT_FROM_EMAIL = 'admin@akorn.org'
+
 try:
     from local_settings import *
 except ImportError:
