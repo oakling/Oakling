@@ -1,13 +1,11 @@
 import json
 import couchdb
 import sys
-
-db = couchdb.Server()['store']
+from celery.couch import db_store as db
 
 duplicate_sources = []
 i = 0
 
-#result = db.view('dupes/duplicate_sources', group=True, reduce=True)
 result = json.load(open('data_dumps/duplicate_doi_scraper?reduce=true&group=true'))
 rows = result['rows']
 
