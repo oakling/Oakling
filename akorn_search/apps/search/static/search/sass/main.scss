@@ -300,7 +300,7 @@ p.lead {
         }
         .delete {
             font-size: 300%;
-            color: $cards_bottom;
+            color: #CEE4E7;
             float: right;
             cursor: pointer;
             margin-top: 0.1em;
@@ -318,4 +318,14 @@ p.lead {
             }
         }
     }
+}
+
+#content {
+    padding-left:18px;
+    padding-right:18px;
+}
+
+div.author_name {
+  float:left;
+  margin-right:0.25em;
 }

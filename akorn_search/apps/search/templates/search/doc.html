@@ -14,29 +14,31 @@
 <meta property="fb:admins" content="506422046" />
 {% endblock %}
 
-{% block content %}
+{% block container %}
 <div id="fb-root"></div>
 
-<div itemscope itemtype="http://schema.org/CreativeWork" class="span12">
+<div id="content" class="container-fluid">
 
-<div class='span12 box_title alpha'><div class='box_inner'>
-  <h1 itemprop="name"><a href='{{ doc.source_urls.0 }}'>{{ doc.title }}</a></h1>
-</div></div>
+<div itemscope itemtype="http://schema.org/CreativeWork">
+<div class="row-fluid">
+    <div class='span8 box_title'>
+        <h1 itemprop="name"><a href='{{ doc.source_urls.0 }}'>{{ doc.title }}</a></h1>
+    </div>
+</div>
 
-<div class='clear'></div>
+<div class='row-fluid'>
+    <div class='span8 box_date'>
+      {% if date_published %}
+        published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href="{% url 'search:journal' doc.journal_id %}">{{ doc.citation.journal }}</a></strong>
+      {% else %}
+        published on <strong>{{ date_published }}</strong> in <strong><a href="{% url 'search:journal' doc.journal_id %}">{{ doc.citation.journal }}</a></strong>
+      {% endif %}
+    </div>
+</div>
 
-<div class='span8 box_date alpha'><div class='box_inner'>
-  {% if date_published %}
-    published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href="{% url 'search:journal' doc.journal_id %}">{{ doc.citation.journal }}</a></strong>
-  {% else %}
-    published on <strong>{{ date_published }}</strong> in <strong><a href="{% url 'search:journal' doc.journal_id %}">{{ doc.citation.journal }}</a></strong>
-  {% endif %}
-</div></div>
-
-<div class='clear'></div>
-
-<div class='span12 box_authors alpha'><div class='box_inner'>
-      {% for author in doc.author_names %}
+<div class='row-fluid'>
+    <div class='span8 box_authors'>
+        {% for author in doc.author_names %}
           <div class='author_name {% if forloop.counter > 10 %}author_name_hidden{% endif %}'>
           {% if author.surname %}
             {{ author.forename }} {{ author.surname }}{% if not forloop.last %},{% endif %}
@@ -47,56 +49,61 @@
           {% if forloop.counter == 11 %}
             <div class='author_name author_name_show_link'><a onclick="$('.author_name_hidden').show();$(this).hide();">see all {{ doc.author_names|length }}</a></div>
           {% endif %}
-      {% endfor %}
-  </div></div>
+        {% endfor %}
+    </div>
+</div>
 
-<div class='clear'></div>
+<div class='row-fluid'>
+    <div class='span6 box_abstract' itemprop="description">
+      {% if doc.abstract %}
+      <div class='abstract'>
+        {{ doc.abstract }}
+      </div>
+      {% endif %}
+    </div>
 
-<div class='span6 box_abstract alpha' itemprop="description"><div class='box_inner'>
-  {% if doc.abstract %}
-  <div class='abstract'>
-    {{ doc.abstract }}
-  </div>
-  {% endif %}
-</div></div>
+    <div class='span4 box_info'>
+      {% if doc.ids.doi %}<strong>doi</strong> <a href='http://dx.doi.org/{{ doc.ids.doi }}'>{{ doc.ids.doi }}</a>{% endif %}<br/>
+      {% if doc.ids.url %}<strong>link</strong> <a href='{{ doc.ids.url }}'>{{ doc.ids.url|domain }}</a>{% endif %}<br/>
+      {#{% if doc.source_url or doc.source_urls %}<strong>from</strong> <a href='{{ doc|scraped_location }}'>{{ doc|scraped_location }}</a> by {{ doc.scraper_module }}{% endif %}#}<br/>
+    </div>
 
-<div class='span4 box_info'><div class='box_inner'>
-  {% if doc.ids.doi %}<strong>doi</strong> <a href='http://dx.doi.org/{{ doc.ids.doi }}'>{{ doc.ids.doi }}</a>{% endif %}<br/>
-  {% if doc.ids.url %}<strong>link</strong> <a href='{{ doc.ids.url }}'>{{ doc.ids.url|domain }}</a>{% endif %}<br/>
-  {#{% if doc.source_url or doc.source_urls %}<strong>from</strong> <a href='{{ doc|scraped_location }}'>{{ doc|scraped_location }}</a> by {{ doc.scraper_module }}{% endif %}#}<br/>
-</div></div>
+    <div class='span4 box_share'>
+      <div class="share-button g-plusone"></div>
 
-<div class='span4 box_share'><div class='box_inner'>
-  <div class="share-button g-plusone"></div>
+      <div class="share-button tweet">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>
+      </div>
 
-  <div class="share-button tweet">
-    <a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>
-  </div>
-
-  <div class="share-button fb-like" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false" data-action="like" data-colorscheme="light"></div>
-</div></div>
+      <div class="share-button fb-like" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false" data-action="like" data-colorscheme="light"></div>
+    </div>
+</div>
 
 </div>
 
-<div id="panes" class="span6">
-    {% for p in panes %}
-        <div class="accordion-group" data-pane-url="{{ p.url }}">
-            <div class="accordion-heading">
-                <a class="accordion-toggle"
-                    href="#collapse{{ forloop.counter }}">
-                    {{ p.name }}
-                    <i class="icon-chevron-right"></i>
-            </a>
-            </div>
+<div class='row-fluid'>
+    <div id="panes" class="span6">
+        {% for p in panes %}
+            <div class="accordion-group" data-pane-url="{{ p.url }}">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle"
+                        href="#collapse{{ forloop.counter }}">
+                        {{ p.name }}
+                        <i class="icon-chevron-right"></i>
+                </a>
+                </div>
 
-            <div id="collapse{{ forloop.counter }}"
-                style="display:none">
-                <div class="accordion-inner">
-                    Loading&hellip;
+                <div id="collapse{{ forloop.counter }}"
+                    style="display:none">
+                    <div class="accordion-inner">
+                        Loading&hellip;
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+
 </div>
 {% endblock %}
 
