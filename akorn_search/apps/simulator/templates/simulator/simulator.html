@@ -8,6 +8,17 @@
     {% endassets %}
 {% endblock %}
 
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $('.retry-article').on('click', function(e) {
+            var url = $(e.currentTarget).parent().data('url');
+            $('#id_article_url').val(url);
+            $('#config_form').submit();
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
 
 {% if error %}
@@ -39,7 +50,7 @@
                 <ul>{{ config.unused|unordered_list }}</ul>
             </div>
     {% endif %}
-    <form name="config" action="." method="post">
+    <form name="config" action="." method="post" id="config_form">
         {% csrf_token %}
         {{ form.as_p }}
         <p>
@@ -61,7 +72,7 @@
     <p>Tried {{ articles|length }} random articles from the feed:</p>
     <ul>
     {% for a in articles %}
-        <li>{{ a.url }}</li>
+    <li data-url="{{ a.url }}">{{ a.url }} <i class="icon-refresh retry-article"></i></li>
     {% endfor %}
     </ul>
 
