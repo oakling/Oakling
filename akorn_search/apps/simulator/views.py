@@ -3,6 +3,7 @@ import functools
 import lxml
 import random
 
+from django.core.cache import cache
 from django.core.mail import mail_managers
 from django.http import HttpResponse
 from django.views.generic import FormView
@@ -30,6 +31,16 @@ class SimulatedScraper(base.BaseScraper):
         """
         self.config = SimulatedConfig(config_str)
 
+    def fetch_url(self, url):
+        # Check cache first
+        content = cache.get(url)
+        if not content:
+            content = super(SimulatedScraper, self).fetch_url(url)
+            # Cache for 10 minutes
+            cache.set(url, content, 10*60)
+        urls, page, page_url = content
+        return urls, page, page_url
+
     def valid(self, data):
         missing = []
         # Curry check_value with container for missing properties
@@ -49,6 +60,13 @@ class SimulatorView(FormView):
         """
         Return list of article URLS to scrape
         """
+
+        cache_key = feed_url+url_key
+        # Look in the cache first
+        article_urls = cache.get(cache_key)
+        if article_urls:
+            return article_urls
+
         items = feedparser.parse(feed_url).get('items')
         if not items:
             raise Exception("Failed to scrape feed")
@@ -57,6 +75,9 @@ class SimulatorView(FormView):
 
         if not article_urls:
             raise Exception("Failed to find URLs in feed. Try one of: {}.".format(', '.join(item.keys())))
+
+        # Cache for 10 minutes
+        cache.set(cache_key, article_urls, 10*60)
 
         return article_urls
 
@@ -94,12 +115,21 @@ class SimulatorView(FormView):
             feed_url = form.cleaned_data['feed_url']
             url_key = form.cleaned_data['article_tag']
             config = form.cleaned_data['scraper_config']
-            # Parse the feed and find the article urls
-            articles = self.scrape_feed(feed_url, url_key)
+            article_url = form.cleaned_data['article_url']
+            # If specific articles are requested, then ignore the feed
+            if article_url:
+                articles = [article_url]
+                # Reset the article_url value
+                context['form'].data['article_url'] = ''
+            else:
+                # Parse the feed and find the article urls
+                articles = self.scrape_feed(feed_url, url_key)
             # Instantiate the scraper with the supplied configuration
             scraper = SimulatedScraper(config)
-            # Grab any 2 articles
-            articles = random.sample(articles, 2)
+            # Grab at most 2 articles
+            sample = 2
+            if len(articles) > sample:
+                articles = random.sample(articles, sample)
             # Try to scrape the selected articles
             context['articles'] = [self.scrape_article(url, scraper) for url in articles]
         except KeyError as e:
@@ -118,6 +148,9 @@ class SimulatorView(FormView):
         if self.request.POST.get('save'):
             self.email_config(form)
         else:
+            # Copy the data so that it is mutable
+            form.data = self.request.POST.copy()
+            # Run the configuration
             context = self.run_config(form, context)
 
         # Render the original template with the new context

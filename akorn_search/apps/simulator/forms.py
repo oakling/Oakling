@@ -28,3 +28,4 @@ class SimulatorForm(forms.Form):
     scraper_config = forms.CharField(widget=forms.Textarea, initial=example_config)
     feed_url = forms.URLField(initial="http://", label="Feed URL")
     article_tag = forms.CharField(initial="link", help_text="The tag that contains the article URL in each feed item")
+    article_url = forms.CharField(widget=forms.HiddenInput, required=False)

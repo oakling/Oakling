@@ -11,9 +11,21 @@
       "src": "fontawesome"
     },
     {
+      "uid": "c76b7947c957c9b78b11741173c8349b",
+      "css": "attention",
+      "code": 59396,
+      "src": "fontawesome"
+    },
+    {
       "uid": "598a5f2bcf3521d1615de8e1881ccd17",
       "css": "loading",
       "code": 59395,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "a73c5deb486c8d66249811642e5d719a",
+      "css": "refresh",
+      "code": 59397,
       "src": "fontawesome"
     },
     {

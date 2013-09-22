@@ -187,7 +187,7 @@ class ArticlesView(TemplateView):
 
     @staticmethod
     def lucene_process(response):
-        return [x['doc'] for x in response['rows']]
+        return [x['doc'] for x in response.get('rows', [])]
 
     @classmethod
     def lucene_split_keywords(cls, arg):
