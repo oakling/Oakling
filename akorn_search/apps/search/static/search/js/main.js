@@ -61,7 +61,7 @@ var select2_options = {
 // Namespace for akorn js
 var akorn = {
     query: {},
-    limit: 10,
+    limit: 20,
     skip: 0,
     // Storing set nice names for months
     month_names: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
