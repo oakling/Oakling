@@ -12,33 +12,6 @@ import apps.panes.models
 class HomeView(TemplateView):
     template_name = 'search/home.html'
 
-    def get_saved_searches(self):
-        user = self.request.user
-        if user.is_authenticated():
-            return user.settings
-        else:
-            return self.request.session.get('saved_searches', {})
-
-    def get_context_data(self, **kwargs):
-        # Local cache of session data
-        session = self.request.session
-        # Get their last visit
-        last_visit = session.get('last_visit', None)
-        # Update last visit
-        session['last_visit'] = datetime.datetime.now()
-        # Get their saved search (default to empty list)
-        saved_searches = self.get_saved_searches()
-        # Check journals in each saved search for number of recent articles
-        query_objs = {}
-        for query_id, search in saved_searches.iteritems():
-            journals = [item['id'] for item in search if item['type'] == 'journal']
-            article_counts = apps.api.views.articles_since(journals)
-
-            query_objs[query_id] = {'count':sum(article_counts.values()),
-                'queries': search}
-
-        return {'last_visit': last_visit, 'saved_searches': query_objs}
-
 
 class DocView(TemplateView):
     template_name = "search/doc.html"
