@@ -55,16 +55,18 @@ class DocView(TemplateView):
 
         # Process the IDs to make them usable in URLS
         # TODO Make this more robust, but retain slash to underscore behaviour
-        pane_doc_ids = {k: v.replace('/', '_') for k, v in doc['ids'].iteritems()}
+        #pane_doc_ids = {k: v.replace('/', '_') for k, v in doc['ids'].iteritems()}
 
-        panes = apps.panes.models.Pane.objects.all()
+        #panes = apps.panes.models.Pane.objects.all()
+
         valid_panes = []
-        for p in panes:
-            try:
-                valid_panes.append({'name': p.name,\
-                    'url': p.url.format(**pane_doc_ids)})
-            except KeyError:
-                print "Pane not valid for article"
+
+        #for p in panes:
+        #    try:
+        #        valid_panes.append({'name': p.name,\
+        #            'url': p.url.format(**pane_doc_ids)})
+        #    except KeyError:
+        #        print "Pane not valid for article"
 
         return {'doc': doc, 'date_published': date_published,\
             'panes': valid_panes}
