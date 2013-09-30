@@ -26,12 +26,23 @@
     </div>
 </div>
 
+{% if date_warning %}
+<div class='row-fluid'>
+    <div class='span8' style='background-color:#FFC;text-style:italic;padding:5px;'>
+        This article was originally published on <strong>{{ date_published|date:"D j F Y" }}</strong> although we only indexed it on <strong>{{ date_scraped|date:"D j F Y" }}</strong>
+    </div>
+</div>
+{% endif %}
+
 <div class='row-fluid'>
     <div class='span8 box_date'>
       {% if date_published %}
         published on <strong>{{ date_published|date:"D j F Y" }}</strong> in <strong><a href="{% url 'search:journal' doc.journal_id %}">{{ doc.journal }}</a></strong>
       {% else %}
         published on <strong>{{ date_published }}</strong> in <strong><a href="{% url 'search:journal' doc.journal_id %}">{{ doc.journal }}</a></strong>
+      {% endif %}
+      {% if date_revised %}
+        and revised on <strong>{{ date_revised|date:"D j F Y" }}</strong>.
       {% endif %}
     </div>
 </div>
@@ -63,6 +74,7 @@
     </div>
 
     <div class='span4 box_info'>
+      {% if doc.publisher %}<strong>published by</strong> {{ doi.publisher }}<br/>{% endif %}
       {% if doc.doi %}<strong>doi</strong> <a href='http://dx.doi.org/{{ doc.doi }}'>{{ doc.doi }}</a><br/>{% endif %}
       {% if doc.arxiv %}<strong>arxiv</strong> <a href='http://arxiv.org/abs/'>{{ doc.arxiv }}</a><br/>{% endif %}
     </div>

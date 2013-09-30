@@ -52,6 +52,24 @@ class DocView(TemplateView):
             date_published = datetime.datetime.fromtimestamp(doc['date_published'])
         except:
             date_published = None
+        
+        try:
+            date_scraped = datetime.datetime.fromtimestamp(doc['date_scraped'])
+        except:
+            date_scraped = None
+        
+        try:
+            if doc['date_revised'] != doc['date_published']:
+                date_revised = datetime.datetime.fromtimestamp(doc['date_revised'])
+            else:
+                date_revised = None
+        except:
+            date_revised = None
+
+        date_warning = False
+        if date_scraped is not None and date_published is not None:
+            if date_scraped.date > date_published.date:
+                date_warning = True
 
         # Process the IDs to make them usable in URLS
         # TODO Make this more robust, but retain slash to underscore behaviour
@@ -68,8 +86,12 @@ class DocView(TemplateView):
         #    except KeyError:
         #        print "Pane not valid for article"
 
-        return {'doc': doc, 'date_published': date_published,\
-            'panes': valid_panes}
+        return {'doc': doc,
+                'date_published': date_published,
+                'date_scraped': date_scraped,
+                'date_warning': date_warning,
+                'date_revised': date_revised,
+                'panes': valid_panes}
 
 
 class JournalView(TemplateView):
