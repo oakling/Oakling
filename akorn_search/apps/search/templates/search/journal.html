@@ -7,10 +7,10 @@
 // When the document has loaded start the show
 $(document).ready(function() {
         var ak = akorn;
-        var query = "{{ journal.id }}";
+        var query = [{'type': 'journal', 'id': '{{ journal.id }}'}];
         ak.query = query;
         ak.articles_container = $('#articles');
-        ak.get_articles(20, undefined, query, true);
+        ak.get_articles(query, true);
         $(window).scroll(ak.throttle(function() {
             ak.check_position();
         }, 250));
@@ -18,23 +18,28 @@ $(document).ready(function() {
 </script>
 {% endblock %}
 
-{% block content_class %}journal_page{% endblock %}
-{% block content %}
+{% block container %}
+<div id="content" class="container-fluid">
 
-<div class='span12 box_title alpha'><div class='box_inner'>
-  <h1>{{ journal.name }}</h1>
-</div></div>
+<div class="row-fluid">
+    <div class='span12 box_title'>
+        <h1>{{ journal.name }}</h1>
+    </div>
+</div>
 
-<div class='clear'></div>
+<div class="row-fluid">
+    <div class='span8 box_date'>
+      Also known as: {% for alias in journal.aliases %}{{ alias }}{% if not forloop.last %}, {% endif %}{% endfor %}
+    </div>
+</div>
 
-<div class='span8 box_date alpha'><div class='box_inner'>
-  Also known as: {% for alias in journal.aliases %}{{ alias }}{% if not forloop.last %}, {% endif %}{% endfor %}
-</div></div>
+<div class="row-fluid">
+    <div class=''></div>
+    <div class='span8 offset3 box_articles'>
+        <ul id='articles'>
+        </ul>
+    </div>
+</div>
 
-<div class='span8 box_articles alpha'><div class='box_inner'>
-  <h3>Latest articles</h3>
-  <ul id='latest_articles' class='articles'>
-  </ul>
-</div></div>
-
+</div>
 {% endblock %}
