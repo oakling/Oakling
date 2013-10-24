@@ -20,7 +20,6 @@
                 <nav id="menu">
                     <ul>
                         <li><a href="{% url "about" %}">{% trans "About" %}</a></li>
-                        <li><a href="http://blog.akorn.org/">{% trans "Blog" %}</a></li>
                         {% if request.user.is_authenticated %}
                         <li><a href="#">{% trans "Account" %}</a></li>
                         <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
