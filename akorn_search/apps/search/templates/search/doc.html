@@ -74,7 +74,7 @@
     </div>
 
     <div class='span4 box_info'>
-      {% if doc.publisher %}<strong>published by</strong> {{ doi.publisher }}<br/>{% endif %}
+      {% if doc.publisher %}<strong>published by</strong> {{ doc.publisher }}<br/>{% endif %}
       {% if doc.doi %}<strong>doi</strong> <a href='http://dx.doi.org/{{ doc.doi }}'>{{ doc.doi }}</a><br/>{% endif %}
       {% if doc.arxiv %}<strong>arxiv</strong> <a href='http://arxiv.org/abs/'>{{ doc.arxiv }}</a><br/>{% endif %}
     </div>
