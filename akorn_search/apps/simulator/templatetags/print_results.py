@@ -1,6 +1,8 @@
 from django.template import Library
 from django.utils.safestring import mark_safe
 
+str = unicode
+
 register = Library()
 
 @register.filter
