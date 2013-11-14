@@ -1,5 +1,6 @@
 import feedparser
 import functools
+import hashlib
 import lxml
 import random
 
@@ -33,11 +34,12 @@ class SimulatedScraper(base.BaseScraper):
 
     def fetch_url(self, url):
         # Check cache first
-        content = cache.get(url)
+        cache_key = hashlib.sha224(url).hexdigest()
+        content = cache.get(cache_key)
         if not content:
             content = super(SimulatedScraper, self).fetch_url(url)
             # Cache for 10 minutes
-            cache.set(url, content, 10*60)
+            cache.set(cache_key, content, 10*60)
         urls, page, page_url = content
         return urls, page, page_url
 
@@ -61,7 +63,7 @@ class SimulatorView(FormView):
         Return list of article URLS to scrape
         """
 
-        cache_key = feed_url+url_key
+        cache_key = hashlib.sha224(feed_url+url_key).hexdigest()
         # Look in the cache first
         article_urls = cache.get(cache_key)
         if article_urls:
