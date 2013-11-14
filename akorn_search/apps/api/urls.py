@@ -1,8 +1,9 @@
 from django.conf.urls import patterns, include, url
 from .views import JournalAutoCompleteView, DeleteSavedSearchView,\
-    ArticlesView, SavedSearchView, ArticleCountView
+    ArticlesView, SavedSearchView, ArticleCountView, LoginView
 
 urlpatterns = patterns('',
+    url(r'^login$', LoginView.as_view(), name='api_login'),
     url(r'^journals$', JournalAutoCompleteView.as_view(), name='journals'),
     url(r'^articles$', ArticlesView.as_view(), name='articles'),
     url(r'^searches$', SavedSearchView.as_view(), name='save_search'),

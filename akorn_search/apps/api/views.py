@@ -12,6 +12,7 @@ import requests
 from requests.exceptions import ConnectionError
 
 from django.conf import settings
+from django.contrib.auth import authenticate, login
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -74,6 +75,18 @@ class SavedSearchMixin(object):
             session = self.request.session
             session['saved_searches'] = saved_searches
             session.modified = True
+
+
+class LoginView(View):
+    def post(self, request):
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return HttpResponse(status=204)
+        return HttpResponse(status=400)
 
 
 class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
