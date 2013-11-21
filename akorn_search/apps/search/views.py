@@ -41,7 +41,7 @@ class DocView(TemplateView):
 
         date_warning = False
         if date_scraped is not None and date_published is not None:
-            if date_scraped.date > date_published.date + datetime.timedelta(days=7):
+            if date_scraped.date() > date_published.date() + datetime.timedelta(days=7):
                 date_warning = True
 
         # Process the IDs to make them usable in URLS
