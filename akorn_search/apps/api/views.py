@@ -156,7 +156,6 @@ class DeleteSavedSearchView(SavedSearchMixin, View):
         # Success but no content
         return HttpResponse(status=204)
 
-
 class ArticlesView(TemplateView):
     """
     Takes a search query and responds with a list of articles as HTML
@@ -224,24 +223,33 @@ class ArticlesView(TemplateView):
             return []
 
     @staticmethod
-    def lucene_get_query(keywords=[], journals=[]):
-        # Creating some empty strings
-        keywords_str = ''
-        journals_str = ''
+    def lucene_get_query(keywords=[], journals=[], since=None):
         # It is badness to not search for anything
         if not keywords and not journals:
             raise BadRequest()
+
+        parts = []
+
         if keywords:
             # AND between all keywords
             # The last word may not be complete - add a wildcard character
             keywords_str = "(" + " OR ".join(['(' + ' AND '.join(_) + ')' for _ in keywords]) + ")"
+
+            parts.append(keywords_str)
+
         # Deal with the case that there are no journals to be filtered by
         if journals:
-           journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])
-           # If there are keywords then AND the journals to them
-           if keywords:
-               journals_str = ' AND '+journals_str
-        return ''.join([keywords_str, journals_str])
+            journals_str = 'journalID:({})'.format(' OR '.join(journals))
+            
+            parts.append(journals_str)
+
+        # Add timestamp lower bound if present
+        if since is not None:
+            since_str = 'sort_date:[{} TO *]'.format(since)
+            
+            parts.append(since_str)
+          
+        return ' AND '.join(parts)
 
     def lucene_search(self):
         # Get keywords from request parameters
