@@ -112,7 +112,9 @@ class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
         """
         Return all saved searches
         """
+
         searches, user = self.get_saved_searches()
+
         return self.render_to_response(searches)
 
     @method_decorator(csrf_exempt)
@@ -296,6 +298,8 @@ class ArticlesView(TemplateView):
         except LuceneFailed as e:
             return HttpResponse(e.message, status=503)
 
+class ArticlesViewXML(ArticlesView):
+    template_name = 'search/article_list.xml'
 
 class JournalAutoCompleteView(JSONResponseMixin, View):
     @classmethod
