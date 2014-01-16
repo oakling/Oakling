@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <articles>
 {% for doc in docs %}
 <article>
@@ -13,7 +14,7 @@
   {% endif %}
   <journal_id>{{ doc.journal_id }}</journal_id>
   <journal>{{ doc.journal }}</journal>
-  <link>{{ doc.canonical_url }}</link>
+  <link><![CDATA[{{ doc.canonical_url }}]]></link>
   <abstract>{{ doc.abstract }}</abstract>
 </article>
 {% endfor %}
