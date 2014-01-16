@@ -158,46 +158,10 @@ class DeleteSavedSearchView(SavedSearchMixin, View):
         # Success but no content
         return HttpResponse(status=204)
 
-class ArticlesView(TemplateView):
-    """
-    Takes a search query and responds with a list of articles as HTML
-    """
-    template_name = 'search/article_list.html'
+class LuceneRequest(object):
     lucene_url = settings.LUCENE_URL
     max_limit = 50
     delimiter = '|'
-
-    @property
-    def doc_limit(self):
-        try:
-            return int(self.request.GET.get('limit', self.max_limit))
-        except ValueError:
-            raise BadRequest('Invalid value supplied for limit')
-
-    @property
-    def doc_skip(self):
-        try:
-            return int(self.request.GET.get('skip'))
-        except TypeError:
-            return None
-        except ValueError:
-            raise BadRequest('Invalid value supplied for skip')
-
-    def lucene_request(self, query):
-        options = {
-            'q': query,
-            'include_docs': 'true',
-            'stale': 'ok',
-            'limit': self.doc_limit,
-            'sort': '\sort_date'
-            }
-        # Check if a number of articles to skip has been specified
-        if self.doc_skip:
-            options['skip'] = self.doc_skip
-        response = requests.get(self.lucene_url, params=options)
-        if response.status_code == 404:
-            raise ConnectionError('Lucene not found')
-        return response.json()
 
     @staticmethod
     def lucene_process(response):
@@ -223,6 +187,26 @@ class ArticlesView(TemplateView):
             return arg.split(cls.delimiter)
         except AttributeError:
             return []
+
+    def lucene_request(self, query, doc_limit, doc_skip):
+        options = {
+            'q': query,
+            'include_docs': 'true',
+            'stale': 'ok',
+            'limit': doc_limit,
+            'sort': '\sort_date'
+            }
+
+        # Check if a number of articles to skip has been specified
+        if doc_skip:
+            options['skip'] = doc_skip
+
+        response = requests.get(self.lucene_url, params=options)
+
+        if response.status_code == 404:
+            raise ConnectionError('Lucene not found')
+
+        return response.json()
 
     @staticmethod
     def lucene_get_query(keywords=[], journals=[], since=None):
@@ -253,15 +237,40 @@ class ArticlesView(TemplateView):
           
         return ' AND '.join(parts)
 
+class ArticlesView(LuceneRequest, TemplateView):
+    """
+    Takes a search query and responds with a list of articles as HTML
+    """
+    template_name = 'search/article_list.html'
+
     def lucene_search(self):
         # Get keywords from request parameters
         keywords = self.lucene_split_keywords(self.request.GET.get('k'))
+
         # Get journals from request parameters
         journals = self.lucene_split_arg(self.request.GET.get('j'))
+
         # Construct the lucene query
         query = self.lucene_get_query(keywords, journals)
-        resp = self.lucene_request(query)
+        resp = self.lucene_request(query, self.doc_limit, self.doc_skip)
+
         return self.lucene_process(resp)
+
+    @property
+    def doc_limit(self):
+        try:
+            return int(self.request.GET.get('limit', self.max_limit))
+        except ValueError:
+            raise BadRequest('Invalid value supplied for limit')
+
+    @property
+    def doc_skip(self):
+        try:
+            return int(self.request.GET.get('skip'))
+        except TypeError:
+            return None
+        except ValueError:
+            raise BadRequest('Invalid value supplied for skip')
 
     def process_docs(self, lucene_docs):
         for d in lucene_docs:
@@ -386,21 +395,24 @@ def articles_since(journals, timestamp=None):
 
     return output
 
-class ArticleCountView(JSONResponseMixin, View):
-    def articles_since(self, journals, timestamp=None):
-        """
-        Returns as JSON a dict of journal IDs and article counts
-        Takes a list of journal IDs and a timestamp to count from
-        """
-        if timestamp:
-            try:
-                # TODO Should probably validate user supplied timestamp
-                timestamp = int(timestamp)
-            except ValueError:
-                # TODO Should be doing this with exceptions
-                return HttpResponse(status=400)
+class ArticleCountView(JSONResponseMixin, View, LuceneRequest):
+    doc_limit = 100
+    doc_skip = 0
 
-        return self.render_to_response(articles_since(journals, timestamp))
+    def lucene_search(self):
+        # Get keywords from request parameters
+        keywords = self.lucene_split_keywords(self.request.GET.get('k'))
+
+        # Get journals from request parameters
+        journals = self.lucene_split_arg(self.request.GET.get('j'))
+
+        timestamp = int(self.request.GET.get('time'))
+
+        # Construct the lucene query
+        query = self.lucene_get_query(keywords, journals, timestamp)
+        resp = self.lucene_request(query, self.doc_limit, self.doc_skip)
+
+        return resp #self.lucene_process(resp)
 
     def get(self, *args, **kwargs):
         """
@@ -408,19 +420,17 @@ class ArticleCountView(JSONResponseMixin, View):
         Takes a + separated string of journal IDs and a UNIX timestamp in s:
         If no timestamp is provided it gives count of articles published today
         """
-        journals_s = self.request.GET.get('q')
-        time_s = self.request.GET.get('time', None)
-        if not journals_s:
-            return HttpResponse(status=400)
-        return self.articles_since(journals_s.split('+'), time_s)
 
-    def post(self, *args, **kwargs):
-        """
-        Returns as JSON a dict of journal IDs and article counts
-        Takes a JSON serialize query object and a UNIX timestamp in s
-        """
-        query = self.request.POST.get('q')
-        time_s = self.request.POST.get('time')
-        if not query:
-            return HttpResponse(status=400)
-        return self.articles_since(json.loads(query.keys()), time_s)
+        return HttpResponse(self.lucene_search()['total_rows'])
+
+    #def post(self, *args, **kwargs):
+    #    """
+    #    Returns as JSON a dict of journal IDs and article counts
+    #    Takes a JSON serialize query object and a UNIX timestamp in s
+    #    """
+    #    query = self.request.POST.get('q')
+    #    time_s = self.request.POST.get('time')
+    #    if not query:
+    #        return HttpResponse(status=400)
+    #    return self.articles_since(json.loads(query.keys()), time_s)
+
