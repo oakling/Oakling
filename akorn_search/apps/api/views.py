@@ -115,6 +115,8 @@ class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
 
         searches, user = self.get_saved_searches()
 
+        # Add code in here to add new article counts.
+
         return self.render_to_response(searches)
 
     @method_decorator(csrf_exempt)
