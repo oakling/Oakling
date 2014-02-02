@@ -22,6 +22,7 @@ from django.views.generic import View, TemplateView
 from django.utils.decorators import method_decorator
 
 from utils import JSONResponseMixin
+from apps.accounts.views import RegisterView
 
 from lib.search import citeulike, mendeley, arxiv
 
@@ -426,3 +427,16 @@ class ArticleCountView(JSONResponseMixin, View, LuceneRequest):
     #        return HttpResponse(status=400)
     #    return self.articles_since(json.loads(query.keys()), time_s)
 
+
+class JSONRegisterView(JSONResponseMixin, RegisterView):
+    def post(self, request, *args, **kwargs):
+	form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        context = {}
+        status = 200
+        if form.is_valid():
+		self.create_user(form)
+	else:
+            context['errors'] = form.errors
+            status = 400
+        return self.render_to_response(context, status=status)
