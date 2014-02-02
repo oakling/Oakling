@@ -1,5 +1,7 @@
 from django.views.generic.edit import FormView
 
+from utils import JSONResponseMixin
+
 from .models import AkornUser
 from .forms import AkornUserCreationForm
 
@@ -28,3 +30,15 @@ class RegisterView(FormView):
             settings=self.add_saved_searches()
         )
         return super(RegisterView, self).form_valid(form)
+
+
+class JSONRegisterView(JSONResponseMixin, RegisterView):
+    def post(self, request, *args, **kwargs):
+	form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        context = {}
+        status = 200
+        if form.errors:
+            context['errors'] = form.errors
+            status = 400
+        return self.render_to_response(context, status=status)

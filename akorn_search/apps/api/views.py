@@ -21,6 +21,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView
 from django.utils.decorators import method_decorator
 
+from utils import JSONResponseMixin
+
 from lib.search import citeulike, mendeley, arxiv
 
 from couch import db_store, db_journals
@@ -28,25 +30,13 @@ from couch import db_store, db_journals
 class BadRequest(Exception):
     pass
 
+
 class LuceneFailed(Exception):
     pass
 
+
 class NoResults(Exception):
     pass
-
-class JSONResponseMixin(object):
-    response_class = HttpResponse
-
-    def render_to_response(self, context, **response_kwargs):
-        response_kwargs['content_type'] = 'application/json'
-        return self.response_class(
-            self.convert_context_to_json(context),
-            **response_kwargs
-        )
-
-    def convert_context_to_json(self, context):
-        # TODO Add support for objects that cannot be serialized directly
-        return json.dumps(context)
 
 
 class SavedSearchMixin(object):
