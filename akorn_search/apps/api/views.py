@@ -316,21 +316,27 @@ class JournalAutoCompleteView(JSONResponseMixin, View):
     def get_journal_docs(cls, db=None):
         cache_key = 'journals'
         cached = cache.get(cache_key)
+
         if cached:
-            return cached
+            print "cache size", len(cached)
+            return json.loads(cached)
 
         # If it is not cached then work it out
         db = db_journals
         journal_docs = list([db[doc_id] for doc_id in db])
 
         for doc in journal_docs:
+            doc['id'] = doc.id
             if 'aliases' in doc:
                 doc['sorted_aliases'] = sorted([(cls.clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
             else:
                 doc['sorted_aliases'] = []
 
         # Set the cache, expiring after 1 day
-        cache.set(cache_key, journal_docs, 86400)
+        cache.set(cache_key, json.dumps(journal_docs), 86400)
+	
+	print "to cache size", len(json.dumps(journal_docs))
+
         return journal_docs
 
     @staticmethod
@@ -350,10 +356,10 @@ class JournalAutoCompleteView(JSONResponseMixin, View):
             try:
                 for alias in doc['sorted_aliases']:
                     if query and query in alias[0]:
-                        journals.append({'full': doc['name'], 'text': alias[1], 'id': doc.id, 'type': 'journal'})
+                        journals.append({'full': doc['name'], 'text': alias[1], 'id': doc['id'], 'type': 'journal'})
                         break
                     elif not query:
-                        journals.append({'full': doc['name'], 'text': alias[1], 'id':doc.id, 'type': 'journal'})
+                        journals.append({'full': doc['name'], 'text': alias[1], 'id': doc['id'], 'type': 'journal'})
                         break
             except KeyError:
                 # If the journal has no name, skip it
