@@ -19,7 +19,7 @@ $(document).ready(akorn.init);
     <div class="span9 search" id="search_bar">
         <form action="/search/" method="get" class="form-inline">
             <input type="hidden" name="q" placeholder="Search for journals and keywords…" id="search">
-            <button id="save_search" class="btn btn-primary" title="Save this search">Save filter</button>
+            <button id="save_search" class="btn btn-primary" title="Save this search">Save search</button>
         </form>
     </div>
 </div>
@@ -28,9 +28,18 @@ $(document).ready(akorn.init);
     <div class="span3">
         <ul id="saved_searches">
         </ul>
+        {% if not request.user.is_authenticated %}
+        <a style='display:block;padding:0.5em;margin:0.5em;margin-left:25px;width:10em;' href='{% url "accounts:register" %}'>Sign up to keep your saved searches</a>
+        {% endif %} 
     </div>
 
     <div id="articles_container" class="span8">
+        <div id='intro'>
+          <p>To create a search, start by typing in names of journals or keywords in the box above and press 'enter' to finish.</p>
+          <p>Names of journals will autocomplete and then you can select the journal you want.</p>
+          <p>For keywords, just type a series of keywords that you want to be ANDed together and press 'enter'.</p>
+          <p>'Save search' will keep the search as a convenient link in the left hand column.</p>
+        </div>
         <ul id="articles">
         </ul>
         <div id="msg" style="display: none">

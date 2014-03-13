@@ -97,6 +97,7 @@ var akorn = {
     },
     // Replaces the articles with a new set, rather than appending
     replace_articles: function(data) {
+        $("#intro").hide();
         var ak = akorn;
         // Clear the articles
         ak.clear_articles();
