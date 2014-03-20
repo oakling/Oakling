@@ -1,5 +1,3 @@
-# Django settings for akorn project.
-
 import os.path
 
 BASE_PATH = os.path.normpath(os.path.dirname(__file__))
@@ -8,7 +6,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Craig Loftus', 'craigloftus@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -17,6 +15,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_PATH, 'db/akorn.sqlite'),
+    }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+        'LOCATION': '127.0.0.1:11211'
     }
 }
 
@@ -80,7 +85,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'django_assets.finders.AssetsFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -95,7 +100,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+#    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -114,17 +119,18 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.flatpages',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django_assets',
+    'akorn_search.apps.accounts',
     'akorn_search.apps.search',
     'akorn_search.apps.api',
     'akorn_search.apps.panes',
-    #'akorn_search',
-    #'akorn.scrapers',
-    #'akorn',
+    'akorn_search.apps.simulator',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    )
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -158,8 +164,10 @@ LOGGING = {
 # Mendeley consumer key
 MENDELEY_CONSUMER_KEY='c03c2cb64ec7dc1522b71127085747ac04f2d516d'
 
+# Base URL for database
+COUCH_SERVER = 'http://couchdb.private:5984'
 # Base URL for search engine
-LUCENE_URL = 'http://couchdb.private:5984/store/_fti/_design/lucene/by_title'
+LUCENE_URL = COUCH_SERVER+'/store/_fti/_design/lucene/by_title'
 
 STATIC_ROOT = os.path.join(BASE_PATH, 'collectedstatic/')
 
@@ -169,6 +177,25 @@ ALLOWED_HOSTS = ['akorn.org']
 
 # Directory to search for fixtures
 FIXTURE_DIRS = ('fixtures/flatpages',)
+
+# Ensure request data is available in RequestContext
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    "django.core.context_processors.request")
+
+# Point to the login URL
+LOGIN_URL = 'auth_login'
+LOGIN_REDIRECT_URL = 'main'
+
+AUTH_USER_MODEL = 'accounts.AkornUser'
+
+DEFAULT_FROM_EMAIL = 'admin@akorn.org'
 
 try:
     from local_settings import *

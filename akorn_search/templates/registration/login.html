@@ -1,0 +1,25 @@
+{% extends "page.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div id="login">
+<h2>{% trans "Log in" %}</h2>
+{% if form.errors %}
+<p class="alert alert-error">{% trans "Username and password did not match." %}</p>
+{% endif %}
+
+<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+    {% csrf_token %}
+    {% for field in form %}
+        <p>
+        {{ field.label_tag }}
+        {{ field }}
+        </p>
+    {% endfor %}
+    <input class="btn-primary" type="submit" value="{% trans "Log in" %}" />
+    <input type="hidden" name="next" value="{{ next }}" />
+</form>
+</div>
+
+{% endblock %}

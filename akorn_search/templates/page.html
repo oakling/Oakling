@@ -1,27 +1,35 @@
-<!DOCTYPE html>
+{% load i18n assets %}{% load static from staticfiles %}<!DOCTYPE html>
 <html lang="en"> 
     <head> 
         <meta charset="utf-8"> 
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/bootstrap.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/ui-lightness/jquery-ui-1.8.22.custom.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/grid.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/base.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}search/css/jquery.tagit.css">
-        <title>Akorn {% block pagetitle %}open science{% endblock %}</title>
+        {% block style %}
+            {% assets "search_css" %}
+            <link rel="stylesheet" href="{{ ASSET_URL }}">
+            {% endassets %}
+            <link rel="stylesheet" href="{% static "search/fontello/css/fontello.css" %}">
+            <link rel="stylesheet" href="{% static "search/select2/select2.css" %}">
+        {% endblock %}
+        <title>Akorn {% block pagetitle %}{% trans "open science" %}{% endblock %}</title>
         {% block canonical %}{% endblock %}
         {% block og_meta %}{% endblock %}
     </head>
     <body>
         <div class="navbar">
             <div class="navbar-inner">
-                <a class="brand" href="/">AKORN</a>
-                <ul class="nav">
-                    <li><a href="/about/">About</a></li>
-                    <li><a href="http://blog.akorn.org/">Blog</a></li>
-                </ul>
-                <p class="lead pull-right">Research in a nut shell</p>
+                <a class="brand" href="{% url "main" %}">Akorn</a>
+                <nav id="menu">
+                    <ul>
+                        <li><a href="{% url "about" %}">{% trans "About" %}</a></li>
+                        {% if request.user.is_authenticated %}
+                        <li><a href="#">{% trans "Account" %}</a></li>
+                        <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
+                        {% else %}
+                        <li><a href="{% url "accounts:register" %}">{% trans "Sign up" %}</a></li>
+                        <li><a href="{% url "auth_login" %}?next={{ request.path }}">{% trans "Log in" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
-
         </div>
 
         {% block container %}
@@ -33,10 +41,9 @@
         </div>
         {% endblock %}
     {% block scripts %}
-    <script src="{{ STATIC_URL }}search/js/jquery.min.js"></script>
-    <script src="{{ STATIC_URL }}search/js/jquery.jsonp-2.4.0.min.js"></script>
-    <script src="{{ STATIC_URL }}search/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}search/js/jquery-ui-1.8.22.custom.js"></script>
+        {% assets "search_js_libs" %}
+        <script src="{{ ASSET_URL }}"></script>
+        {% endassets %}
     {% endblock %}
     </body>
 </html>

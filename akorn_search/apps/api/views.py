@@ -6,17 +6,23 @@ import Queue
 import threading
 import itertools
 import couchdb
-import datetime
+from datetime import datetime, date
 import string
 import requests
+from requests.exceptions import ConnectionError
 
 from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView
+from django.utils.decorators import method_decorator
 
+from utils import JSONResponseMixin
+from apps.accounts.views import RegisterView
 
 from lib.search import citeulike, mendeley, arxiv
 
@@ -34,178 +40,256 @@ class NoResults(Exception):
     pass
 
 
-def get_journal_docs(db=None):
-  db = db_journals
+class SavedSearchMixin(object):
+    def get_saved_searches(self):
+        """
+        Return dict of saved searches and the AkornUser object (or None)
+        """
+        user = self.request.user
+        if user.is_authenticated():
+            return user.settings, user
+        else:
+            return self.request.session.get('saved_searches', {}), None
 
-  journal_docs = list([db[doc_id] for doc_id in db])
+    def set_saved_searches(self, saved_searches, user):
+        """
+        Save the saved searches against the AkornUser or against the session
 
-  for doc in journal_docs:
-    if 'aliases' in doc:
-      doc['sorted_aliases'] = sorted([(clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
-    else:
-      doc['sorted_aliases'] = []
+        Arguments:
+            saved_searches -- dict, the saved searches
+            user -- AkornUser instance, the user to save against
+        """
+        if user:
+            user.settings = saved_searches
+            user.save()
+        else:
+            session = self.request.session
+            session['saved_searches'] = saved_searches
+            session.modified = True
 
-  return journal_docs
 
-def clean_journal(s):
-  # keep only alphanumeric characters for comparison purposes
-  try:
-    return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
-  except:
-    return None
-
-journal_doc_cache = get_journal_docs()
-
-@csrf_exempt
-def save_search(request):
-    """
-    Stores searches that the user explicitly requests to be saved
-    """
-    query_str = request.POST.get('query')
-
-    if not query_str:
-        # Without a query to save, this is a bad request
+class LoginView(View):
+    def post(self, request):
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return HttpResponse(status=204)
         return HttpResponse(status=400)
 
-    query = json.loads(query_str)
 
-    saved_searches = request.session.get('saved_searches', None)
-    # Check the user has a saved search list
-    if not saved_searches:
-        # Make an empty list
-        request.session['saved_searches'] = {}
-    # Make an ID for this query
-    query_id = str(uuid.uuid4())
-    # Add the query to the users saved_search list
-    request.session['saved_searches'][query_id] = query
-    # Make sure sessions is saved
-    request.session.modified = True
-    # Success, and return the saved query's id
-    return HttpResponse(json.dumps({'query_id': query_id}), mimetype="application/json", status=200)
+class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
+    def process_query(self, query):
+        """
+        Return a unique ID for the query, having saved it
 
-def del_saved_search(request):
-    """
-    Removes a users stored search
-    """
-    query_id = request.GET.get('query_id')
-    if not query_id:
-        # Without a query this is a bad request
-        return HttpResponse(status=400)
-    # Get the list of searches
-    saved_searches = request.session.get('saved_searches')
-    if not saved_searches:
-        return HttpResponse(status=404)
-    # Rip out the query if it exists
-    try:
-        del request.session['saved_searches'][query_id]
-        # Raises a KeyError if item does not exist
-    except KeyError:
-        return HttpResponse(status=400)
-    # Make sure session is saved
-    request.session.modified = True
-    # Success but no content
-    return HttpResponse(status=204)
+        Arguments:
+            query -- dict, deserialised representation of the query
+        """
+        # Check the user has a saved search list
+        searches, user = self.get_saved_searches()
+        # Make an ID for this query
+        query_id = str(uuid.uuid4())
+        # Add the query to the saved_search dict
+        searches[query_id] = query
+        # Save
+        self.set_saved_searches(searches, user)
+        # Return the saved query's id
+        return query_id
+
+    def get(self, request, **kwargs):
+        """
+        Return all saved searches
+        """
+
+        searches, user = self.get_saved_searches()
+
+        # Add code in here to add new article counts.
+
+        return self.render_to_response(searches)
+
+    @method_decorator(csrf_exempt)
+    def post(self, request, **kwargs):
+        """
+        Stores searches that the user explicitly requests to be saved
+        """
+        query_str = request.POST.get('query')
+        if not query_str:
+            # Without a query to save, this is a bad request
+            return HttpResponse(status=400)
+        # Deserialise the give payload
+        query = json.loads(query_str)
+        # Add the given query
+        query_id = self.process_query(query)
+        return self.render_to_response({'query_id': query_id})
 
 
-class ArticlesView(TemplateView):
-    """
-    Takes a search query and responds with a list of articles as HTML
-    """
-    template_name = 'search/article_list.html'
+class DeleteSavedSearchView(SavedSearchMixin, View):
+    def get(self, request, *args, **kwargs):
+        """
+        Removes a users stored search
+        """
+        query_id = request.GET.get('query_id')
+        if not query_id:
+            # Without a query this is a bad request
+            return HttpResponse(status=400)
+        # Get the list of searches
+        saved_searches, user = self.get_saved_searches()
+        # If there are no saved searches yet
+        if not saved_searches:
+            return HttpResponse(status=404)
+        try:
+            # Rip out the query if it exists
+            del saved_searches[query_id]
+            # Save the modified saved_searches dict
+            self.set_saved_searches(saved_searches, user)
+        except KeyError:
+            # If item does not exist then it is a bad request
+            return HttpResponse(status=400)
+        # Success but no content
+        return HttpResponse(status=204)
+
+class LuceneRequest(object):
     lucene_url = settings.LUCENE_URL
     max_limit = 50
+    delimiter = '|'
 
-    def lucene_request(self, query, skip=None):
-        options = {
-            'q': query,
-            'include_docs': 'true',
-            'stale': 'ok'
-            }
-        # Check if a limit has been specified
-        limit = int(self.request.GET.get('limit'))
-        if limit and limit < self.max_limit:
-            options['limit'] = limit
-        else:
-            options['limit'] = self.max_limit
-        # Check if a number of articles to skip has been specified
-        skip = self.request.GET.get('skip')
-        if skip:
-            options['skip'] = int(skip)
-        try:
-            return requests.get(self.lucene_url, params=options).json()
-        except ValueError as e:
-            raise LuceneFailed(e.message)
+    @staticmethod
+    def lucene_process(response):
+        return [x['doc'] for x in response.get('rows', [])]
 
-    def lucene_process(self, response):
-        return [x['doc'] for x in response['rows']]
-
-    def lucene_split_arg(self, arg):
+    @classmethod
+    def lucene_split_keywords(cls, arg):
         try:
             arg = arg.strip()
             if not arg:
                 return []
-            return arg.split('+')
+            args = arg.split(cls.delimiter)
+            return [_.split(' ') for _ in args]
         except AttributeError:
             return []
 
-    def lucene_get_query(self):
-        keywords = self.lucene_split_arg(self.request.GET.get('k'))
-        journals = self.lucene_split_arg(self.request.GET.get('j'))
-        # Creating some empty strings
-        keywords_str = ''
-        journals_str = ''
+    @classmethod
+    def lucene_split_arg(cls, arg):
+        try:
+            arg = arg.strip()
+            if not arg:
+                return []
+            return arg.split(cls.delimiter)
+        except AttributeError:
+            return []
+
+    def lucene_request(self, query, doc_limit, doc_skip):
+        options = {
+            'q': query,
+            'include_docs': 'true',
+            'stale': 'ok',
+            'limit': doc_limit,
+            'sort': '\sort_date'
+            }
+
+        # Check if a number of articles to skip has been specified
+        if doc_skip:
+            options['skip'] = doc_skip
+
+        response = requests.get(self.lucene_url, params=options)
+
+        if response.status_code == 404:
+            raise ConnectionError('Lucene not found')
+
+        return response.json()
+
+    @staticmethod
+    def lucene_get_query(keywords=[], journals=[], since=None):
         # It is badness to not search for anything
         if not keywords and not journals:
             raise BadRequest()
+
+        parts = []
+
         if keywords:
             # AND between all keywords
             # The last word may not be complete - add a wildcard character
-            keywords_str = ' AND '.join(keywords)+'*';
+            keywords_str = "(" + " OR ".join(['(' + ' AND '.join(_) + ')' for _ in keywords]) + ")"
+
+            parts.append(keywords_str)
+
         # Deal with the case that there are no journals to be filtered by
         if journals:
-           journals_str = ''.join(['journalID:(',' OR '.join(journals),')'])
-           # If there are keywords then AND the journals to them
-           if keywords:
-               journals_str = ' AND '+journals_str
-        return ''.join([keywords_str, journals_str])
+            journals_str = 'journalID:({})'.format(' OR '.join(journals))
+            
+            parts.append(journals_str)
+
+        # Add timestamp lower bound if present
+        if since is not None:
+            since_str = 'sort_date:[{} TO *]'.format(since)
+            
+            parts.append(since_str)
+          
+        return ' AND '.join(parts)
+
+class ArticlesView(LuceneRequest, TemplateView):
+    """
+    Takes a search query and responds with a list of articles as HTML
+    """
+    template_name = 'search/article_list.html'
 
     def lucene_search(self):
-        query = self.lucene_get_query()
-        resp = self.lucene_request(query)
+        # Get keywords from request parameters
+        keywords = self.lucene_split_keywords(self.request.GET.get('k'))
+
+        # Get journals from request parameters
+        journals = self.lucene_split_arg(self.request.GET.get('j'))
+
+        # Construct the lucene query
+        query = self.lucene_get_query(keywords, journals)
+        resp = self.lucene_request(query, self.doc_limit, self.doc_skip)
+
         return self.lucene_process(resp)
 
-    # TODO Behaviour of this method should be in scrapers/couch views
+    @property
+    def doc_limit(self):
+        try:
+            return int(self.request.GET.get('limit', self.max_limit))
+        except ValueError:
+            raise BadRequest('Invalid value supplied for limit')
+
+    @property
+    def doc_skip(self):
+        try:
+            return int(self.request.GET.get('skip'))
+        except TypeError:
+            return None
+        except ValueError:
+            raise BadRequest('Invalid value supplied for skip')
+
     def process_docs(self, lucene_docs):
         for d in lucene_docs:
             # Cannot use _id inside a Django template
             d['docid'] = d['_id']
-            # Process the timestamp to produce a usable datetime object
-            # TODO Need a reliable property to access for date
-            try:
-              if d.has_key('date_published') and d['date_published'] is not None:
-                  d['date'] = datetime.datetime.fromtimestamp(d['date_published'])
-              elif d.has_key('date_revised') and d['date_revised'] is not None:
-                  d['date'] = datetime.datetime.fromtimestamp(d['date_revised'])
-              elif d.has_key('date_received') and d['date_received'] is not None:
-                  d['date'] = datetime.datetime.fromtimestamp(d['date_received'])
-              else:
-                  d['date'] = datetime.datetime.now()
-            except TypeError:
-              d['date'] = datetime.datetime.now()
-
-            if 'citation' in d and 'journal' in d['citation']:
-              d['journal'] = d['citation']['journal']
-            elif 'categories' in d and 'arxiv' in d['categories']:
-              d['journal'] = d['categories']['arxiv'][0] + " (arxiv)"
-
+            # Convert unix timestamp to date object
+            d['date'] = self.get_doc_date(d)
         return lucene_docs
+
+    @staticmethod
+    def get_doc_date(doc):
+        """
+        Select the most relevant date from the ones available
+        """
+        timestamp = doc.get('date_scraped')
+        if timestamp:
+            # Process the timestamp to produce a datetime
+            return datetime.fromtimestamp(timestamp)
+        return None
 
     def get_context_data(self, **kwargs):
         """
         Return the context to the template
         """
         docs = self.process_docs(self.lucene_search())
-	if not docs:
+        if not docs:
             raise NoResults()
         # Create the context structure
         context = {'docs': docs}
@@ -224,130 +308,69 @@ class ArticlesView(TemplateView):
         except LuceneFailed as e:
             return HttpResponse(e.message, status=503)
 
+class ArticlesViewXML(ArticlesView):
+    template_name = 'search/article_list.xml'
 
-def latest(request, num):
-    db = db_store
+class JournalAutoCompleteView(JSONResponseMixin, View):
+    @classmethod
+    def get_journal_docs(cls, db=None):
+        cache_key = 'journals'
+        cached = cache.get(cache_key)
 
-    num = min(int(num), 100)
+        if cached:
+            print "cache size", len(cached)
+            return json.loads(cached)
 
-    journals_s = request.GET.get('q')
+        # If it is not cached then work it out
+        db = db_journals
+        journal_docs = list([db[doc_id] for doc_id in db])
 
-    if journals_s:
-      journals = journals_s.split('+')
-    else:
-      journals = None
-   
-    if 'last_ids' in request.GET: 
-      last_ids = json.loads(request.GET['last_ids'])
-    else:
-      last_ids = {}
+        for doc in journal_docs:
+            doc['id'] = doc.id
+            if 'aliases' in doc:
+                doc['sorted_aliases'] = sorted([(cls.clean_journal(alias), alias) for alias in doc['aliases']], key=lambda a: len(a), reverse=True)
+            else:
+                doc['sorted_aliases'] = []
 
-    if journals is not None:
-      all_rows = []
-      for journal in journals:
-        if journal in last_ids:
-          print journal, last_ids[journal]
-          rows = db.view('articles/latest_journal', limit=num, include_docs=True, startkey=last_ids[journal][0], startkey_docid=last_ids[journal][1], endkey=[journal], skip=1, descending=True)
-        else:
-          rows = db.view('articles/latest_journal', limit=num, include_docs=True, endkey=[journal], startkey=[journal,{}], descending=True)
+        # Set the cache, expiring after 1 day
+        cache.set(cache_key, json.dumps(journal_docs), 86400)
+	
+	print "to cache size", len(json.dumps(journal_docs))
 
-        rows_journal = rows.rows # list(rows[[journal,{}]:[journal]])
-        #last_ids[journal] = (rows_journal[-1].key, rows_journal[-1].doc['_id'])
-        all_rows += rows_journal
+        return journal_docs
 
-      all_rows = sorted(all_rows, key=lambda row: row.doc['date_published'], reverse=True)[:num]
-
-      for row in all_rows:
-        last_ids[row.key[0]] = (row.key, row.doc['_id'])
-      
-      last_ids_json = json.dumps(last_ids)
-    else:
-      if 'all' in last_ids:
-        all_rows = list(db.view('articles/latest', limit=num, include_docs=True, startkey=last_ids['all'][0], startkey_docid=last_ids['all'][1], skip=1, descending=True))
-      else:
-        all_rows = list(db.view('articles/latest', limit=num, include_docs=True, descending=True))
-
-      last_ids_json = json.dumps({'all': (all_rows[-1].key, all_rows[-1].doc['_id'])})
-      
-      all_rows = sorted(all_rows, key=lambda row: row.doc['date_published'], reverse=True)
-
-    docs = []
-    for row in all_rows:
-        d = row.doc
-        # Cannot use _id inside a Django template
-        d['docid'] = d['_id']
-        # Process the timestamp to produce a usable datetime object
-        # TODO Need a reliable property to access for date
+    @staticmethod
+    def clean_journal(s):
+        # keep only alphanumeric characters for comparison purposes
         try:
-          if d.has_key('date_published') and d['date_published'] is not None:
-              d.date = datetime.datetime.fromtimestamp(d['date_published'])
-          elif d.has_key('date_revised') and d['date_revised'] is not None:
-              d.date = datetime.datetime.fromtimestamp(d['date_revised'])
-          elif d.has_key('date_received') and d['date_received'] is not None:
-              d.date = datetime.datetime.fromtimestamp(d['date_received'])
-          else:
-              d.date = datetime.datetime.now()
-        except TypeError:
-          d.date = datetime.datetime.now()
+            return re.sub('\s+', ' ', re.sub('[^a-z]', ' ', s.lower()))
+        except:
+            return None
 
-        if 'citation' in d and 'journal' in d['citation']:
-          d.journal = d['citation']['journal']
-        elif 'categories' in d and 'arxiv' in d['categories']:
-          d.journal = d['categories']['arxiv'][0] + " (arxiv)"
+    @classmethod
+    def find_journals(cls, query):
+        # Set up empty list to store what we want to return
+        journals = []
+        # Note that get_journal_docs is an expensive call
+        for doc in cls.get_journal_docs():
+            try:
+                for alias in doc['sorted_aliases']:
+                    if query and query in alias[0]:
+                        journals.append({'full': doc['name'], 'text': alias[1], 'id': doc['id'], 'type': 'journal'})
+                        break
+                    elif not query:
+                        journals.append({'full': doc['name'], 'text': alias[1], 'id': doc['id'], 'type': 'journal'})
+                        break
+            except KeyError:
+                # If the journal has no name, skip it
+                continue
+        return journals
 
-        docs.append(d)
-
-    return render_to_response('search/article_list.html', {'docs': docs, 'last_ids_json': last_ids_json})
-
-def journals(request):
-  db = db_store
- 
-  rows = db.view('index/journals', group=True)
-
-  if 'term' in request.GET:
-    filter = clean_journal(request.GET['term'])
-  else:
-    filter = None
-
-  return HttpResponse(json.dumps([row.key for row in rows if filter is None or
-                                  filter in clean_journal(row.key)]),
-                      content_type='application/json')
-
-def journals_new(request):
-  if 'term' in request.GET:
-    filter = clean_journal(request.GET['term'])
-  else:
-    filter = None
-
-  journals = []
-
-  for doc in journal_doc_cache:
-    if 'name' not in doc:
-      continue
-
-    for alias in doc['sorted_aliases']:
-      if filter is not None and filter in alias[0]:
-        journals.append((doc['name'], alias[1], doc.id))
-        break
-      elif filter is None:
-        journals.append((doc['name'], alias[1], doc.id))
-        break
-  return HttpResponse(json.dumps(journals), content_type='application/json')
-
-
-class JSONResponseMixin(object):
-    response_class = HttpResponse
-
-    def render_to_response(self, context, **response_kwargs):
-        response_kwargs['content_type'] = 'application/json'
-        return self.response_class(
-            self.convert_context_to_json(context),
-            **response_kwargs
-        )
-
-    def convert_context_to_json(self, context):
-        # TODO Add support for objects that cannot be serialized directly
-        return json.dumps(context)
+    def get(self, request, *args, **kwargs):
+        # Get string to look for
+        query = self.clean_journal(request.GET.get('term'))
+        found = self.find_journals(query)
+        return self.render_to_response(found)
 
 def articles_since(journals, timestamp=None):
     """
@@ -358,7 +381,7 @@ def articles_since(journals, timestamp=None):
     output = {}
 
     #if timestamp is not None:
-    timestamp = time.mktime(datetime.date.today().timetuple())
+    timestamp = time.mktime(date.today().timetuple())
 
     # TODO Do this with one couch query?
     for journal_id in journals:
@@ -371,21 +394,24 @@ def articles_since(journals, timestamp=None):
 
     return output
 
-class ArticleCountView(JSONResponseMixin, View):
-    def articles_since(self, journals, timestamp=None):
-        """
-        Returns as JSON a dict of journal IDs and article counts
-        Takes a list of journal IDs and a timestamp to count from
-        """
-        if timestamp:
-            try:
-                # TODO Should probably validate user supplied timestamp
-                timestamp = int(timestamp)
-            except ValueError:
-                # TODO Should be doing this with exceptions
-                return HttpResponse(status=400)
+class ArticleCountView(JSONResponseMixin, View, LuceneRequest):
+    doc_limit = 100
+    doc_skip = 0
 
-        return self.render_to_response(articles_since(journals, timestamp))
+    def lucene_search(self):
+        # Get keywords from request parameters
+        keywords = self.lucene_split_keywords(self.request.GET.get('k'))
+
+        # Get journals from request parameters
+        journals = self.lucene_split_arg(self.request.GET.get('j'))
+
+        timestamp = int(self.request.GET.get('time'))
+
+        # Construct the lucene query
+        query = self.lucene_get_query(keywords, journals, timestamp)
+        resp = self.lucene_request(query, self.doc_limit, self.doc_skip)
+
+        return resp #self.lucene_process(resp)
 
     def get(self, *args, **kwargs):
         """
@@ -393,19 +419,30 @@ class ArticleCountView(JSONResponseMixin, View):
         Takes a + separated string of journal IDs and a UNIX timestamp in s:
         If no timestamp is provided it gives count of articles published today
         """
-        journals_s = self.request.GET.get('q')
-        time_s = self.request.GET.get('time', None)
-        if not journals_s:
-            return HttpResponse(status=400)
-        return self.articles_since(journals_s.split('+'), time_s)
 
-    def post(self, *args, **kwargs):
-        """
-        Returns as JSON a dict of journal IDs and article counts
-        Takes a JSON serialize query object and a UNIX timestamp in s
-        """
-        query = self.request.POST.get('q')
-        time_s = self.request.POST.get('time')
-        if not query:
-            return HttpResponse(status=400)
-        return self.articles_since(json.loads(query.keys()), time_s)
+        return HttpResponse(self.lucene_search()['total_rows'])
+
+    #def post(self, *args, **kwargs):
+    #    """
+    #    Returns as JSON a dict of journal IDs and article counts
+    #    Takes a JSON serialize query object and a UNIX timestamp in s
+    #    """
+    #    query = self.request.POST.get('q')
+    #    time_s = self.request.POST.get('time')
+    #    if not query:
+    #        return HttpResponse(status=400)
+    #    return self.articles_since(json.loads(query.keys()), time_s)
+
+
+class JSONRegisterView(JSONResponseMixin, RegisterView):
+    def post(self, request, *args, **kwargs):
+	form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        context = {}
+        status = 200
+        if form.is_valid():
+		self.create_user(form)
+	else:
+            context['errors'] = form.errors
+            status = 400
+        return self.render_to_response(context, status=status)

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<articles>
+{% for doc in docs %}
+<article>
+  <id>{{ doc.docid }}</id>
+  <title>{{ doc.title }}</title>
+  <date_published>{{ doc.date|date:"c" }}</date_published>
+  {% if doc.author_names %}
+  <authors>
+    {% for author_name in doc.author_names %}
+    <author>{{ author_name }}</author>
+    {% endfor %}
+  </authors>
+  {% endif %}
+  <journal_id>{{ doc.journal_id }}</journal_id>
+  <journal>{{ doc.journal }}</journal>
+  <link><![CDATA[{{ doc.canonical_url }}]]></link>
+  <abstract>{{ doc.abstract }}</abstract>
+</article>
+{% endfor %}
+</articles>
+

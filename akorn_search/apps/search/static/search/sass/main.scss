@@ -1,0 +1,341 @@
+@import "colors.scss";
+@import "mixins.scss";
+
+html, body {
+    background: $background;
+    color: $main_text;
+}
+
+a {
+    color: $link_text;
+}
+
+.navbar a, .navbar {
+    color: $nav_text !important;
+}
+
+.container-fluid {
+    padding: 0;
+    background-color: $background;
+}
+
+.select2-drop {
+    background: rgba($feature_color, 0.8) !important;
+    border-radius: 0px !important;
+    color: $white !important;
+}
+
+.select2-results {
+    padding-left: 0 !important;
+    margin-right: 0 !important;
+    overflow-y: hidden !important;
+    li {
+        padding-left: 3px;
+        background: none !important;
+        &.select2-highlighted {
+            background: rgba(darken($feature_color, 20), 0.8) !important;
+        }
+
+        i {
+            margin-right: 8px;
+            line-height: 1.3em;
+            font-weight: normal;
+        }
+    }
+}
+
+#search_bar {
+    margin-left: 16em;
+
+    form {
+        margin: 2em 0;
+
+        /* Turn off blue halo */
+        input, input:focus, input:active {
+            background: none;
+            outline: 0px !important;
+            -webkit-appearance: none !important;
+            border: none !important;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+        }
+
+        button {
+            margin-left: 1em;
+        }
+    }
+
+    .select2-container {
+        background: #fff;
+        width: 80%;
+    }
+
+    .select2-choices {
+        border: 1px solid $hr_indent;
+        box-shadow: none;
+        min-height: 33px;
+    }
+
+    .select2-search-choice {
+        background-color: $background;
+
+        padding-left: 3px;
+        padding-right: 25px;
+
+        height: 1.5em;
+        line-height: 1.5em;
+
+        border-radius: 0px;
+        border: 1px solid $hr_indent;
+
+        i {
+            margin-right: 8px;
+            line-height: 1.3em;
+            font-weight: normal;
+        }
+
+        div {
+            font-weight: bold;
+            color: $feature_color;
+        }
+    }
+
+    .select2-search-choice-close {
+        left: auto;
+        right: 3px;
+        top: 5px;
+    }
+}
+
+.btn-primary {
+    background-color: $feature_color !important;
+    background-image: none;
+    border-radius: 0px;
+    font-weight: bold;
+    line-height: 23px;
+    margin-top: 0 !important;
+}
+
+a.brand {
+    margin-left: 0.1em !important;
+    margin-top: 10px !important;
+    font-size: 3em !important;
+    text-transform: uppercase;
+}
+
+p.lead {
+    margin-right: 1.5em;
+    margin-top: 0.5em;
+    font-size: 190%;
+}
+
+.navbar-inner {
+    height: 6em;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    @include gradient($header_top, $header_bottom);
+}
+
+#menu {
+    float: right;
+    margin-top: 27px;
+    line-height: 1;
+    margin-right: 1.5em;
+
+    li {
+        display: inline;
+        list-style-type: none;
+        padding: 0 0.8em;
+        /* Use negative margin to eliminate space to left of border */
+        margin: 0 0 0 -4px;
+        border-left: 1px solid $nav_text;
+
+        /* Turn off border separator for first item */
+        &:first-child {
+            border-left: none;
+        }
+
+        a {
+            text-transform: uppercase;
+            padding: 0;
+        }
+    }
+}
+
+#login, #signup {
+    margin: 2em auto 0 auto;
+    width: 22%;
+    text-align: center;
+
+    .errorlist {
+        display: none;
+    }
+
+    input {
+        width: 100%;
+        font-size: 110%;
+
+        &[type="submit"] {
+            width: 30%;
+        }
+    }
+
+    label {
+        font-weight: bold;
+        text-align: left;
+    }
+}
+
+#articles {
+    border-left: 1px solid $hr_indent;
+
+    h2 {
+        color: $white;
+        background: $date_block;
+        padding: 0.3em 0;
+        line-height: 1;
+        float: left;
+        width: 2.5em;
+        margin-left: -2.5em;
+
+        span {
+            width: 100%;
+            text-align: center;
+            float:left;
+            &.month {
+                font-size: 60%;
+            }
+            &.day {
+                font-size: 120%;
+            }
+        }
+    }
+
+    li {
+        padding-left: 2em;
+        min-height: 4em;
+        list-style: none;
+        margin-bottom: 1.2em;
+
+        $triangle_size: 15px;
+    
+        .flag:hover {
+            @include triangle($flag_color, $triangle_size);
+        }
+
+        .flag {
+            /* For some reason using a variable name won't work here */
+            @include triangle(rgb(226, 226, 226), $triangle_size);
+            cursor: pointer;
+        }
+
+        p.abstract {
+            text-align: justify;
+        }
+
+        h3 {
+            font-size: 120%;
+            a {
+               color: $feature_color;
+            }
+            line-height:1.5em;
+            margin-bottom:0.25em;
+        }
+
+        span.original a {
+            color: #aaa;
+            font-size: 80%;
+        }
+
+        span.journal {
+            font-style: italic;
+        }
+    }
+}
+
+#msg {
+    width: 50%;
+    margin: 0 auto 1.5em auto;
+    padding: 1em 0;
+    background: $light_grey;
+    border: 1px solid $dark_grey;
+
+    p {
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        font-size: 120%;
+
+        i {
+            margin-right: 0.5em;
+        }
+    }
+}
+
+#saved_searches {
+    li {
+        /* Setting position to allow bottom position  terms */
+        position: relative;
+        list-style-type: none;
+        @include gradient($cards_top, $cards_bottom);
+        width: 10em;
+        height: 10em;
+        margin: 0.5em;
+        padding: 0.5em;
+        color: $white;
+
+        &:hover, &.selected {
+            color: $black;
+            @include gradient($white, $background);
+        }
+
+        &:first-child {
+            margin-top: 0;
+        }
+
+        .count {
+            font-size: 500%;
+            position: relative;
+            top: 0.3em;
+        }
+        .delete {
+            font-size: 300%;
+            color: #CEE4E7;
+            float: right;
+            cursor: pointer;
+            margin-top: 0.1em;
+            &:hover {
+                color: $white;
+            }
+        }
+        .terms {
+            position: absolute;
+            left: 0.2em;
+            bottom: 0px;
+
+            i {
+                margin-right: 8px;
+            }
+        }
+    }
+}
+
+#content {
+    padding-left:18px;
+    padding-right:18px;
+}
+
+div.box_authors {
+    line-height:1.5em;
+    margin-bottom:1.0em;
+}
+
+div.author_name {
+  float:left;
+  margin-right:0.25em;
+  font-style:italic;
+  color:$link_text;
+  font-size:1.1em;
+}

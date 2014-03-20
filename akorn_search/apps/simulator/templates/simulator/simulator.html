@@ -1,0 +1,98 @@
+{% extends 'page.html' %}
+{% load i18n assets print_results %}
+
+{% block style %}
+    {{ block.super }}
+    {% assets "sim_css" %}
+        <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {% endassets %}
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $('.retry-article').on('click', function(e) {
+            var url = $(e.currentTarget).parent().data('url');
+            $('#id_article_url').val(url);
+            $('#config_form').submit();
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+
+{% if error %}
+    <div id="error" class="alert alert-error">
+        {{ error }}
+    </div>
+{% endif %}
+
+<div id="config" class="span5">
+    <h2>{% trans "Config" %}</h2>
+    {{ form.errors }}
+    {% if config.missing %}
+            <div class="alert alert-error">
+                <h4>{% trans "Missing:" %}</h4>
+                <ul>{{ config.missing|unordered_list }}</ul>
+            </div>
+    {% endif %}
+
+    {% if config.not_allowed %}
+            <div class="alert alert-error">
+                <h4>{% trans "Invalid properties:" %}</h4>
+                <ul>{{ config.not_allowed|unordered_list }}</ul>
+            </div>
+    {% endif %}
+
+    {% if config.unused %}
+            <div class="alert alert-info">
+                <h4>{% trans "Consider adding:" %}</h4>
+                <ul>{{ config.unused|unordered_list }}</ul>
+            </div>
+    {% endif %}
+    <form name="config" action="." method="post" id="config_form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p>
+        <input class="btn-primary btn-large" type="submit" value="{% trans "Run" %}" />
+        </p>
+
+        {% if articles and not config.not_allowed and not config.missing and not form.errors and not out_missing %}
+        <p>
+        <input class="btn-primary btn-large" name="save" type="submit" value="{% trans "Submit" %}" />
+        </p>
+        {% endif %}
+    </form>
+</div>
+<div id="preview" class="span5">
+    <h2>{% trans "Preview" %}</h2>
+
+    {% if articles %}
+
+    <p>Tried {{ articles|length }} random articles from the feed:</p>
+    <ul>
+    {% for a in articles %}
+    <li data-url="{{ a.url }}">{{ a.url }} <i class="icon-refresh retry-article"></i></li>
+    {% endfor %}
+    </ul>
+
+    {% for a in articles %}
+        {% if a.out_error %}
+            <div class="alert alert-error">
+                <h4>{% trans "Error" %}</h4>
+            <p>{{ a.out_error }}</p>
+            </div>
+        {% else %}
+            {% if a.out_missing %}
+                <div class="alert alert-error">
+                    <h4>{% trans "Missing properties" %}</h4>
+                    <p>{{ a.out_missing|join:", " }}</p>
+                </div>
+            {% endif %}
+            {{ a.scraped|to_dl }}
+        {% endif %}
+    {% endfor %}
+
+    {% endif %}
+</div>
+{% endblock %}

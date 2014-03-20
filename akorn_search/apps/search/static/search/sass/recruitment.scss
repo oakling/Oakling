@@ -1,0 +1,38 @@
+#recruitment {
+    padding: 20px 0;
+    text-align: center;
+
+    .header_row {
+        margin: 3em auto;
+    }
+
+    .header_row h2 {
+        padding: 0;
+        margin-bottom: 0.3em;
+        width: 100%;
+        text-align: center;
+    }
+
+    .header_row p {
+        padding-top: 0;
+    }
+
+    h3 {
+        color: #d68400;
+        font-size: 1.7em;
+        margin: 1.5em auto;
+    }
+
+    h4 {
+        margin-top: 1.5em;
+    }
+
+    .email {
+        text-align: center;
+        font-weight: bold; 
+    }
+
+    ul {
+        list-style-position: inside;
+    }
+}
