@@ -339,3 +339,10 @@ div.author_name {
   color:$link_text;
   font-size:1.1em;
 }
+
+#intro img {
+  max-width:inherit;
+  position: relative;
+  left: -40px;
+  top: -20px;
+}
