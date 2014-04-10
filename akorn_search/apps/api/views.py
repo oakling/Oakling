@@ -2,12 +2,8 @@ import time
 import uuid
 import re
 import json
-import Queue
-import threading
-import itertools
 import couchdb
 from datetime import datetime, date
-import string
 import requests
 from requests.exceptions import ConnectionError
 
@@ -23,8 +19,6 @@ from django.utils.decorators import method_decorator
 
 from utils import JSONResponseMixin
 from apps.accounts.views import RegisterView
-
-from lib.search import citeulike, mendeley, arxiv
 
 from couch import db_store, db_journals
 
@@ -116,13 +110,18 @@ class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
         Stores searches that the user explicitly requests to be saved
         """
         query_str = request.POST.get('query')
+
         if not query_str:
             # Without a query to save, this is a bad request
             return HttpResponse(status=400)
+
         # Deserialise the give payload
         query = json.loads(query_str)
+        print "Saved search JSON loaded:", query
+
         # Add the given query
         query_id = self.process_query(query)
+
         return self.render_to_response({'query_id': query_id})
 
 
