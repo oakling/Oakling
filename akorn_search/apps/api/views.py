@@ -116,6 +116,7 @@ class SavedSearchView(SavedSearchMixin, JSONResponseMixin, View):
             return HttpResponse(status=400)
 
         # Deserialise the give payload
+        print "Saved search JSON raw", query_str
         query = json.loads(query_str)
         print "Saved search JSON loaded:", query
 
